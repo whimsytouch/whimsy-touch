@@ -1,5 +1,6 @@
 /* Runner list — edit here to add/change runners.
-   max: last gathering it's available for — 0 Sweetheart, 1 Storybook, 2 Once Upon, 3 Ever After */
+   max: last gathering it's available for — 0 Sweetheart, 1 Storybook, 2 Once Upon, 3 Ever After
+   layer: shown as "Always available" when picking a layering color (the rest are subject to availability) */
 window.RUNNER_GROUPS = [
   { title: "Sheer & Airy", desc: "Airy, soft and dreamy. Light that filters through.", items: [
     { name: "Green",     fabric: "Tulle", hex: "#8FB29C", max: 1, img: "img/runner-green.jpg" },
@@ -17,7 +18,7 @@ window.RUNNER_GROUPS = [
     { name: "Midnight Black", fabric: "Cheesecloth", hex: "#111111", max: 2, img: "img/runner-black-cheesecloth.jpg" }
   ]},
   { title: "Bold & Dramatic", desc: "Deep, rich color with more body. Made for evenings that want a little drama.", items: [
-    { name: "Ruby Red", fabric: "Organza", hex: "#960A14", max: 2, layer: true, img: "img/runner-red-organza.jpg" },
-    { name: "Onyx Black", fabric: "Katrina", hex: "#000000", max: 2, layer: true, img: "img/runner-black-katrina.jpg" }
+    { name: "Ruby Red", fabric: "Organza", hex: "#960A14", max: 2, img: "img/runner-red-organza.jpg" },
+    { name: "Onyx Black", fabric: "Katrina", hex: "#000000", max: 2, img: "img/runner-black-katrina.jpg" }
   ]}
 ];

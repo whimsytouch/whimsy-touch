@@ -164,6 +164,17 @@ var WT = (function () {
   var q = new URLSearchParams(location.search).get('runner');
   if (q) RUN.forEach(function (r, i) { if (r.name === q) s.runner = i; });
   if (new URLSearchParams(location.search).get('alc')) s.alc = true;
+  // runner availability for the chosen date (from the bookings sheet)
+  var AV = null, avDate = '', avBusy = false, avLost = '';
+  function isBooked(r, n) { return !!(AV && AV['b' + n] && AV['b' + n].indexOf(r.name) >= 0); }
+  function niceDate(v) { var p = String(v).split('-'); var mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return p.length === 3 ? mo[+p[1] - 1] + ' ' + (+p[2]) : v; }
+  function checkAvail(v, done) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(v || '') || !window.WT_SHEETS_URL) { AV = null; avDate = ''; render(); if (done) done(); return; }
+    avBusy = true; avDate = v; render();
+    fetch(window.WT_SHEETS_URL + '?avail=' + v).then(function (r) { return r.json(); }).then(function (j) {
+      if (avDate !== v) return; AV = (j && j.b1) ? j : null; avBusy = false; render(); if (done) done();
+    }).catch(function () { if (avDate !== v) return; AV = null; avBusy = false; render(); if (done) done(); });
+  }
 
   function opt(label, sub, on, click, disabled) {
     var b = WT.el('button', 'q-opt', label + (sub ? '<small>' + sub + '</small>' : ''));
@@ -198,39 +209,58 @@ var WT = (function () {
     ab.appendChild(WT.el('p', 'q-note', 'Napkins: ask us what’s available.' + (s.alc ? ' À la carte orders carry a ' + WT.peso(ALA_DEP) + ' refundable security deposit.' : '')));
     var alaLines = ALA.filter(function (it) { return s.ala[it.id]; }).map(function (it) { var q = s.ala[it.id]; return [q + ' × ' + it.name + ' (' + it.set + ')', q * it.price]; });
     // 2 runner
+    var NRt = [1, 1, 2, 3][t];
+    avLost = '';
+    if (s.runner != null && isBooked(RUN[s.runner], NRt)) { avLost = RUN[s.runner].name; s.runner = null; }
+    if (s.runner2 != null && isBooked(RUN[s.runner2], NRt)) { avLost = RUN[s.runner2].name; s.runner2 = null; }
     if (s.runner != null && RUN[s.runner].max < t) s.runner = null;
     if (s.runner2 != null && (RUN[s.runner2].max < t || s.runner2 === s.runner)) s.runner2 = null;
+    var avN = $('qAvNote');
+    if (avN) {
+      avN.classList.toggle('warn', !!avLost);
+      avN.textContent = avBusy ? 'Checking what’s available on ' + niceDate(avDate) + '…' :
+        avLost ? 'Sorry, ' + avLost + ' is already booked on ' + niceDate(avDate) + '. Please pick another color.' :
+        AV && RUN.some(function (r) { return r.max >= t && isBooked(r, NRt); }) ? 'Crossed-out colors are booked that day.' :
+        AV || avDate ? '' : 'Pick your event date first to see which runners are available.';
+    }
     var rb = $('qRunner'); rb.innerHTML = '';
-    function chips(sel, exclude, pickFn) {
+    function chips(sel, exclude, pickFn, layerPick) {
       var wrap = WT.el('div', 'q-runners');
-      window.RUNNER_GROUPS.forEach(function (g) {
-        var row = WT.el('div', 'q-rgroup', '<span class="q-rlabel">' + WT.fabricLabel(g) + '</span>');
+      var groups = layerPick ? [
+        { label: 'Always available', items: RUN.filter(function (r) { return r.layer; }) },
+        { label: 'Subject to availability', items: RUN.filter(function (r) { return !r.layer; }) }
+      ] : window.RUNNER_GROUPS;
+      groups.forEach(function (g) {
+        var row = WT.el('div', 'q-rgroup', '<span class="q-rlabel">' + (g.label || WT.fabricLabel(g)) + '</span>');
         var box = WT.el('div', 'q-rrow');
         g.items.forEach(function (r) {
-          var i = RUN.indexOf(r), ok = r.max >= t && i !== exclude;
-          var b = WT.el('button', 'q-chip', '<i style="background:' + r.hex + '"></i>' + r.name);
-          b.type = 'button'; b.title = r.name + ' · ' + r.fabric;
-          b.setAttribute('aria-label', r.name + ' ' + r.fabric + (r.max >= t ? '' : ' (not available for ' + WT.TIERS[t] + ')'));
+          var i = RUN.indexOf(r), booked = r.max >= t && isBooked(r, NRt), ok = r.max >= t && i !== exclude && !booked && !!avDate;
+          var b = WT.el('button', 'q-chip' + (booked ? ' is-booked' : ''), '<i style="background:' + r.hex + '"></i>' + r.name);
+          b.type = 'button'; b.title = r.name + ' · ' + r.fabric + (booked ? ' · booked on ' + niceDate(avDate) : '');
+          b.setAttribute('aria-label', r.name + ' ' + r.fabric + (booked ? ' (booked on this date)' : r.max >= t ? '' : ' (not available for ' + WT.TIERS[t] + ')'));
           b.setAttribute('aria-pressed', sel === i ? 'true' : 'false');
           if (!ok) b.disabled = true; else b.addEventListener('click', function () { pickFn(i); render(); });
           box.appendChild(b);
         });
-        row.appendChild(box); wrap.appendChild(row);
+        if (box.children.length) { row.appendChild(box); wrap.appendChild(row); }
       });
       return wrap;
     }
     rb.appendChild(chips(s.runner, -1, function (i) { s.runner = i; }));
     var R = s.runner != null ? RUN[s.runner] : null;
     var R2 = s.layer && s.runner2 != null ? RUN[s.runner2] : null;
-    if (R) {
+    var canLayer = R && RUN.some(function (r, i) { return i !== s.runner && r.max >= t && !isBooked(r, NRt); });
+    if (R && !canLayer) { s.layer = false; s.runner2 = null; }
+    if (R && canLayer) {
       var lr = WT.el('div', 'q-layer');
       lr.appendChild(opt(s.layer ? 'Layering ✓' : 'Layer it with a second color', '+' + WT.peso(LAYER[t]) + ' · two runners, one on top of the other', s.layer, function () { s.layer = !s.layer; if (!s.layer) s.runner2 = null; render(); }));
       rb.appendChild(lr);
       if (s.layer) {
         rb.appendChild(WT.el('p', 'q-sublabel', 'Second color'));
-        rb.appendChild(chips(s.runner2, s.runner, function (i) { s.runner2 = i; }));
+        rb.appendChild(chips(s.runner2, s.runner, function (i) { s.runner2 = i; }, true));
+        rb.appendChild(WT.el('p', 'q-note', 'With Pink or White, the +' + WT.peso(LAYER[t]) + ' is part of your downpayment. Other colors are subject to availability, so we’ll confirm them one day before your event and add the +' + WT.peso(LAYER[t]) + ' to your balance then.'));
       }
-    } else { s.layer = false; s.runner2 = null; }
+    } else if (!R) { s.layer = false; s.runner2 = null; }
     var runnerName = R ? (R2 ? R.name + ' + ' + R2.name + ' (layered)' : R.name + (s.layer ? ' + second color to choose' : '')) : '';
     $('qRunnerNote').classList.remove('warn');
     $('qRunnerNote').textContent = R ? (R2 ? R.name + ' ' + R.fabric.toLowerCase() + ' layered with ' + R2.name + ' ' + R2.fabric.toLowerCase() : R.name + ' · ' + R.fabric) : 'Tap a runner. Faded ones aren’t available for ' + WT.TIERS[t] + '.';
@@ -304,7 +334,7 @@ var WT = (function () {
     if (s.up === 'none') incG.push(NT + ' gold candle holders');
     incG.push('Spare batteries and a care card');
     lines.push([WT.TIERS[t] + ' gathering', BASE[t], incG]);
-    lines.push([R ? runnerName + ' runner' : 'Runner: choose a color', s.layer && R ? LAYER[t] : 0]);
+    lines.push([R ? runnerName + ' runner' : 'Runner: choose a color', s.layer && R ? LAYER[t] : 0, null, s.layer && R && !(R2 && R2.layer) ? 'Paid with your balance once we confirm your second color' : '']);
     if (s.up === 'fd') lines.push(['Fairy Dust', FD[s.holder][t], [holderTxt]]);
     if (s.up === 'fb') lines.push(['Full Bloom', FB[t], [
       NV + (NV > 1 ? ' fresh flower arrangements, one at every vase' : ' fresh flower arrangement'),
@@ -323,7 +353,7 @@ var WT = (function () {
     var ul = $('qLines'); ul.innerHTML = '';
     lines.forEach(function (l, i) {
       total += i ? l[1] : 0;
-      var inc = l[2] ? '<ul class="q-inc">' + l[2].map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>' + (l[3] ? '<em class="q-inc-note">' + l[3] + '</em>' : '') : '';
+      var inc = (l[2] ? '<ul class="q-inc">' + l[2].map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>' : '') + (l[3] ? '<em class="q-inc-note">' + l[3] + '</em>' : '');
       ul.appendChild(WT.el('li', l[2] ? 'has-inc' : '', '<span>' + l[0] + inc + '</span><span>' + (i === 0 ? (s.alc ? '' : WT.peso(l[1])) : l[1] ? (s.alc ? WT.peso(l[1]) : '+' + WT.peso(l[1])) : (s.alc ? '' : 'included')) + '</span>'));
     });
     var tot = $('qTotal'), newTxt = WT.peso(total);
@@ -342,15 +372,15 @@ var WT = (function () {
     var first = WT.TIERS[t] + ' gathering (' + (t === 0 ? '2 pax' : 'up to ' + PAX[t] + ' pax') + ')';
     if (R && !R2) first += ', ' + R.name + ' runner';
     ml.push(first);
-    if (R2) ml.push('Layered ' + R.name + ' + ' + R2.name + ' runner, +' + WT.peso(LAYER[t]));
+    if (R2) ml.push('Layered ' + R.name + ' + ' + R2.name + ' runner, +' + WT.peso(LAYER[t]) + (R2.layer ? '' : ' (second color confirmed one day before, paid with your balance)'));
     if (s.up === 'fd') ml.push('Fairy Dust, ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders (' + rib + '), +' + WT.peso(FD[s.holder][t]));
     if (s.up === 'fb') ml.push('Full Bloom, ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders, ' + (s.mat === 'gold' ? 'sheer gold' : 'jute') + ' placemats (' + rib + '), +' + WT.peso(FB[t]));
     if (s.taper) ml.push('Pink LED taper candles, +' + WT.peso(TAPER[t]));
     if (s.gm) ml.push('Setup: Fairy Godmother Service, +' + WT.peso(GM[t]));
     alaLines.forEach(function (l) { ml.push(l[0] + ', ' + (s.alc ? '' : '+') + WT.peso(l[1])); });
     if (s.alc) ml = ['À la carte order:'].concat(alaLines.map(function (l) { return l[0] + ', ' + WT.peso(l[1]); }));
-    root._msg = { lines: ml, total: total, deposit: s.alc ? ALA_DEP : DEP[t] };
-    root._total = newTxt; root._hasRunner = s.alc ? alaLines.length > 0 : (!!R && (!s.layer || !!R2));
+    root._msg = { lines: ml, total: total, deposit: s.alc ? ALA_DEP : DEP[t], layer: (!s.alc && s.layer && R2 && !R2.layer) ? LAYER[t] : 0 };
+    root._total = newTxt; root._hasRunner = s.alc ? alaLines.length > 0 : (!!avDate && !!R && (!s.layer || !!R2));
     root._summary = 'My Whimsy Touch table:\n' + lines.map(function (l, i) { return '• ' + l[0] + (i === 0 ? ' — ' + WT.peso(l[1]) : l[1] ? ' — +' + WT.peso(l[1]) : '') + (l[2] ? l[2].map(function (x) { return '\n   – ' + x; }).join('') : ''); }).join('\n') + '\nEstimated total: ' + newTxt;
   }
   document.getElementById('qCopy').addEventListener('click', function () {
@@ -360,7 +390,7 @@ var WT = (function () {
     if (navigator.clipboard) navigator.clipboard.writeText(txt).then(done, function () { window.prompt('Copy your picks:', txt); });
     else window.prompt('Copy your picks:', txt);
   });
-  function R_missing() { if (s.alc) return 'Add at least one à la carte item first.'; return s.runner == null ? 'Pick a runner color first, then book.' : 'Pick your second layering color, or turn layering off.'; }
+  function R_missing() { if (s.alc) return 'Add at least one à la carte item first.'; if (!avDate) return 'Pick your event date first, then choose your runner.'; return s.runner == null ? 'Pick a runner color first, then book.' : 'Pick your second layering color, or turn layering off.'; }
   // ready-to-send messages for Whimsy Touch (saved in the bookings sheet)
   function buildMessages(ref, f) {
     var M = root._msg, peso = WT.peso;
@@ -376,16 +406,18 @@ var WT = (function () {
     if (/^\d{1,2}:\d{2}/.test(tm)) { var h = +tm.split(':')[0], m = tm.split(':')[1]; tt = (h % 12 || 12) + ':' + m + ' ' + (h < 12 ? 'AM' : 'PM'); }
     var dateLine = 'Date: ' + when + (tt ? ', ' + tt : '');
     var venue = 'Venue: ' + String(f.get('venue') || '').trim();
-    var half = Math.round(M.total / 2), rest = M.total - half;
+    var LF = M.layer || 0, half = Math.round((M.total - LF) / 2), rest = M.total - LF - half;
+    var layerBit = LF ? ' + ' + peso(LF) + ' layering, once your second color is confirmed' : '';
+    var closer = s.gm ? 'We can\'t wait to set your table!' : 'We hope you have the loveliest time setting up your table!';
     var pay = 'Hi ' + first + '! Thank you for booking with Whimsy Touch 🌸\n\n' +
       'Here\'s your booking summary (Ref: ' + ref + '):\n\n' + M.lines.join('\n') + '\n' + dateLine + '\n' + venue + '\n\n' +
       'Total: ' + peso(M.total) + '\nSecurity deposit: ' + peso(M.deposit) + ' (refundable)\n\n' +
       'To lock in your date, please send the 50% downpayment of ' + peso(half) + ' through the QR above.\n\n' +
-      'Your total remaining balance of ' + peso(rest + M.deposit) + ' (' + peso(rest) + ' rental balance + ' + peso(M.deposit) + ' refundable security deposit) is due on ' + due + ', one day before your event.\n\n' +
+      'Your total remaining balance of ' + peso(rest + LF + M.deposit) + ' (' + peso(rest) + ' rental balance' + layerBit + ' + ' + peso(M.deposit) + ' refundable security deposit) is due on ' + due + ', one day before your event.\n\n' +
       'Once your downpayment is in, we\'ll send your official invoice. Thank you po! ☺️';
     var conf = 'Hi ' + first + '! We\'ve received your ' + peso(half) + ' downpayment, so your date is officially booked 🌸\n\n' +
-      'Attached is your invoice for your records (Ref: ' + ref + '). Your total remaining balance of ' + peso(rest + M.deposit) + ' is due on ' + due + ', one day before your event.\n\n' +
-      'Please send your exact Google Maps pin so we can confirm delivery. We can\'t wait to set your table! Thank you po! ☺️';
+      'Attached is your invoice for your records (Ref: ' + ref + '). Your total remaining balance of ' + peso(rest + LF + M.deposit) + (LF ? ' (including ' + peso(LF) + ' layering, once your second color is confirmed)' : '') + ' is due on ' + due + ', one day before your event.\n\n' +
+      'Please send your exact Google Maps pin so we can confirm delivery. ' + closer + ' Thank you po! ☺️';
     // event today or tomorrow: full payment + deposit now
     var rush = false, dayWord = '';
     if (d.length === 3) {
@@ -403,7 +435,7 @@ var WT = (function () {
         'Once your payment is in, we\'ll send your official invoice. Thank you po! ☺️';
       conf = 'Hi ' + first + '! We\'ve received your full payment of ' + peso(full) + ', so your date is officially booked 🌸\n\n' +
         'Attached is your invoice for your records (Ref: ' + ref + '). Your ' + peso(M.deposit) + ' security deposit will be returned once every piece is back safe and sound.\n\n' +
-        'Please send your exact Google Maps pin so we can confirm delivery. We can\'t wait to set your table! Thank you po! ☺️';
+        'Please send your exact Google Maps pin so we can confirm delivery. ' + closer + ' Thank you po! ☺️';
     }
     return { pay: pay, conf: conf };
   }
@@ -411,6 +443,18 @@ var WT = (function () {
   var form = document.getElementById('qForm'), bookBtn = document.getElementById('qBookBtn');
   var dateIn = document.getElementById('qDate');
   if (dateIn) { var d = new Date(); d.setDate(d.getDate() + 1); dateIn.min = d.toISOString().slice(0, 10); }
+  var avIn = document.getElementById('qAvDate');
+  if (avIn && dateIn) {
+    avIn.min = dateIn.min;
+    avIn.addEventListener('change', function () { dateIn.value = avIn.value; checkAvail(avIn.value); });
+    dateIn.addEventListener('change', function () { if (avIn.value !== dateIn.value) { avIn.value = dateIn.value; checkAvail(dateIn.value); } });
+  }
+  function runnersField() {
+    if (s.alc || s.runner == null) return '';
+    var n = [1, 1, 2, 3][s.tier], out = [RUN[s.runner].name + ' x' + n];
+    if (s.layer && s.runner2 != null) out.push(RUN[s.runner2].name + ' x' + n + (RUN[s.runner2].layer ? '' : ' (layer)'));
+    return out.join(', ');
+  }
   bookBtn.addEventListener('click', function () {
     if (!root._hasRunner) {
       var n = document.getElementById('qRunnerNote'); n.textContent = R_missing(); n.classList.add('warn');
@@ -421,6 +465,20 @@ var WT = (function () {
   });
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+    var self = this, fdate = dateIn ? dateIn.value : '';
+    if (!e._checked && !s.alc && fdate) {
+      var sendBtn = document.getElementById('qSend'); sendBtn.disabled = true; sendBtn.textContent = 'Checking your date…';
+      if (avIn) avIn.value = fdate;
+      checkAvail(fdate, function () {
+        sendBtn.disabled = false; sendBtn.textContent = 'Send my booking';
+        if (!root._hasRunner) {
+          var n = document.getElementById('qRunnerNote'); n.textContent = (avLost || 'That color') + ' was just booked for ' + niceDate(fdate) + '. Please pick another runner, then send again.'; n.classList.add('warn');
+          document.getElementById('qRunner').scrollIntoView({ behavior: 'smooth', block: 'center' }); return;
+        }
+        var ev = new Event('submit', { cancelable: true }); ev._checked = true; self.dispatchEvent(ev);
+      });
+      return;
+    }
     render();
     var err = document.getElementById('qErr'), send = document.getElementById('qSend');
     err.hidden = true;
@@ -432,7 +490,7 @@ var WT = (function () {
     var body = new URLSearchParams(new FormData(form)).toString();
     var toNetlify = fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return true; });
-    var sheetBody = new URLSearchParams(new FormData(form)); sheetBody.set('ref', ref);
+    var sheetBody = new URLSearchParams(new FormData(form)); sheetBody.set('ref', ref); sheetBody.set('runners', runnersField());
     try { var mm = buildMessages(ref, new FormData(form)); sheetBody.set('payment_msg', mm.pay); sheetBody.set('confirm_msg', mm.conf); } catch (err) {}
     var toSheet = window.WT_SHEETS_URL
       ? fetch(window.WT_SHEETS_URL, { method: 'POST', mode: 'no-cors', body: sheetBody }).then(function () { return true; })

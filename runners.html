@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Runners — The Whimsy Touch</title>
+<meta name="description" content="Real photos of every Whimsy Touch runner — tulle, cheesecloth, organza and Katrina — and which gatherings each one comes with.">
+<link rel="icon" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body id="top">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="nav-brand" href="index.html"><img src="img/favicon.png" alt="">Whimsy Touch</a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <ul class="nav-links" id="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="gatherings.html">Gatherings</a></li>
+      <li><a href="runners.html" aria-current="page">Runners</a></li>
+      <li><a href="upgrades.html">Upgrades</a></li>
+      <li class="nav-book"><a href="book.html">Book a Table</a></li>
+      <li><a href="moments.html">Moments</a></li>
+      <li><a href="faq.html">FAQs</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="main">
+  <div class="page-head center wrap">
+    <div class="eyebrow">Reference Photos</div>
+    <h1>See every runner <em>on the table</em></h1>
+    <p>Real photos of each runner, styled on our table. Pick the fabric and color you love, then check which gatherings it comes with.</p>
+
+    <div class="daynight" role="group" aria-label="Photo lighting">
+      <button type="button" data-mode="day" aria-pressed="true"><span aria-hidden="true">☀</span> Daylight</button>
+      <button type="button" data-mode="night" aria-pressed="false"><span aria-hidden="true">☾</span> Candlelight</button>
+    </div>
+    <section class="picker" aria-label="Try a runner on the table">
+      <div class="picker-stage"><img id="pickerImg" src="img/runner-pink.jpg" alt="Pink cheesecloth runner on the table"><img id="pickerImg2" src="" alt="" aria-hidden="true"></div>
+      <div class="picker-side">
+        <div class="picker-kicker">Try it on the table</div>
+        <h2 id="pickerName">Pink</h2>
+        <p class="picker-fab" id="pickerFab">Cheesecloth</p>
+        <p class="picker-tier" id="pickerTier"></p>
+        <div class="swatches" id="pickerSwatches" role="radiogroup" aria-label="Runner color"></div>
+        <a class="btn" id="pickerQuote" href="book.html">Price this table</a>
+      </div>
+    </section>
+
+    <div class="filter" role="group" aria-label="Show runners for a gathering">
+      <span class="filter-label">Show runners for</span>
+      <div class="filter-pills">
+        <button type="button" data-tier="-1" aria-pressed="true">All</button>
+        <button type="button" data-tier="0" aria-pressed="false">Sweetheart</button>
+        <button type="button" data-tier="1" aria-pressed="false">Storybook</button>
+        <button type="button" data-tier="2" aria-pressed="false">Once Upon</button>
+        <button type="button" data-tier="3" aria-pressed="false">Ever After</button>
+      </div>
+      <p class="filter-note" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <div class="wrap" id="runners"></div>
+
+  <div class="cta-strip wrap">
+    <h2>Found your runner?</h2>
+    <p>Pick your gathering and let’s set the table.</p>
+    <a class="btn" href="book.html">Book Now</a>
+  </div>
+</main>
+
+<section class="book" id="book" style="padding:88px 0">
+  <div class="book-bg" aria-hidden="true"></div>
+  <div class="wrap">
+    <h2>Ready to gather your table?</h2>
+    <div>
+      <p>Message Whimsy Touch with your date and guest count, and we’ll match you to a gathering. Prices exclude the security deposit and delivery fee.</p>
+      <div class="actions">
+        <a class="btn ghost" href="https://ig.me/m/thewhimsytouch" target="_blank" rel="noopener">Message us on Instagram</a>
+        <a class="btn ghost" href="https://m.me/61594083157602" target="_blank" rel="noopener">Message us on Facebook</a>
+        <a class="btn" href="book.html">Book Now</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <span class="brand">Whimsy Touch</span>
+    <span>Davao City, Philippines</span>
+    <span>Prices in Philippine Pesos, exclusive of security deposit &amp; delivery fee</span>
+    <a href="terms.html">Terms &amp; Conditions</a>
+  </div>
+</footer>
+
+<script src="runners-data.js"></script>
+<script src="site.js"></script>
+</body>
+</html>

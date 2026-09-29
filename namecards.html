@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Name Cards — The Whimsy Touch</title>
+<link rel="icon" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.nc-card{max-width:900px;margin:34px 0 0;background:var(--blush);border:1px solid var(--blush-line);border-radius:24px;padding:30px 32px 34px}
+.nc-card .q-form{border-top:0;margin-top:0;padding-top:0}
+.nc-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.nc-note{font-size:15px;color:var(--muted);font-style:italic;margin-top:4px}
+.nc-sec{margin-top:18px}
+.nc-sec h3{font-family:var(--script);font-weight:400;font-size:34px;line-height:1.1;color:var(--rose);margin-bottom:6px}
+.nc-sec h3 span{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--sage-deep);color:#fff;letter-spacing:0;font-size:13px}
+.nc-count{font-size:14px;color:var(--muted);margin-top:6px}
+.nc-tables{display:flex;flex-direction:column;gap:14px}
+.nc-table{background:var(--card);border:1px solid rgba(94,87,77,.16);border-radius:18px;padding:16px 18px}
+.nc-thead{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.nc-thead b{font:600 13px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--ink);margin-right:auto}
+.nc-thead .q-opt{min-height:38px;padding:6px 14px}
+.nc-seats-in{display:flex;align-items:center;gap:8px;font:600 12px var(--sans);letter-spacing:.12em;text-transform:uppercase}
+.nc-seats-in input{width:74px;padding:8px 10px;border-radius:10px;border:1px solid rgba(94,87,77,.3);font:400 16px var(--sans)}
+.nc-rm{background:none;border:0;color:var(--rose);font:600 12px var(--sans);letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.nc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:12px}
+.nc-grid label{flex-direction:row;align-items:center;gap:8px}
+.nc-grid label i{font-style:normal;min-width:26px;color:var(--sage-deep)}
+.nc-grid input{flex:1;min-width:0;padding:9px 12px}
+.nc-add{align-self:flex-start;background:none;border:1px dashed var(--sage-deep);color:var(--sage-deep);border-radius:999px;padding:10px 18px;font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.nc-chart{margin-top:16px;background:var(--card);border:1px solid rgba(94,87,77,.16);border-radius:18px;padding:10px;overflow-x:auto}
+.nc-chart svg{display:block;width:100%;height:auto;min-width:480px}
+.nc-find{display:flex;gap:12px;align-items:flex-end}
+.nc-find label{flex:1}
+.nc-find .btn{border:0;cursor:pointer;white-space:nowrap}
+.nc-status{margin-top:4px;padding:14px 16px;border-radius:14px;background:var(--card);border:1px solid rgba(94,87,77,.16);font-size:15.5px;color:var(--body)}
+.nc-status b{color:var(--sage-deep);font-weight:600}
+.nc-status.is-warn{border-color:rgba(176,117,125,.45)}
+.nc-done{text-align:center;padding:30px 10px}
+.nc-done h3{font-family:var(--script);font-weight:400;font-size:44px;color:var(--rose)}
+.nc-done p{color:var(--body);margin-top:8px}
+@media (max-width:640px){.nc-card{padding:22px 18px 26px}.nc-two{grid-template-columns:1fr}.nc-find{flex-direction:column;align-items:stretch}}
+</style>
+</head>
+<body id="top">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="nav-brand" href="index.html"><img src="img/favicon.png" alt="">Whimsy Touch</a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <ul class="nav-links" id="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="gatherings.html">Gatherings</a></li>
+      <li><a href="runners.html">Runners</a></li>
+      <li><a href="upgrades.html">Upgrades</a></li>
+      <li class="nav-book"><a href="book.html">Book a Table</a></li>
+      <li><a href="moments.html">Moments</a></li>
+      <li><a href="faq.html">FAQs</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="main">
+<section class="quote nc">
+  <div class="wrap">
+    <div class="eyebrow"><img src="img/icon-fairies.webp" alt="">Full Bloom Name Cards</div>
+    <h2 class="script-title">A place for every guest.</h2>
+    <p class="lead">Tell us who’s joining your celebration and we’ll prepare a name card for each of them. Please send your names 1 to 3 days before your event.</p>
+    <div class="nc-card">
+      <form class="q-form" id="ncForm" novalidate>
+        <div class="nc-find">
+          <label>Booking reference <small>(from your booking message, e.g. WT-AB12CD)</small><input name="ref" id="ncRef" required placeholder="WT-" autocapitalize="characters"></label>
+          <button type="button" class="btn" id="ncFind">Find my booking</button>
+        </div>
+        <p class="nc-status" id="ncStatus" hidden></p>
+
+        <div id="ncRest" hidden>
+        <label>Your name<input name="name" id="ncName" required autocomplete="name"></label>
+
+        <!-- names only -->
+        <div class="nc-sec" id="ncList">
+          <h3>Guest names</h3>
+          <label>One name per line<textarea name="names" id="ncNames" rows="8" placeholder="Anna&#10;Miguel&#10;Lola Ising"></textarea></label>
+          <p class="nc-count"><span id="ncListCount">0 names</span> · <span id="ncListMax"></span></p>
+        </div>
+
+        <!-- seating plan -->
+        <div class="nc-sec" id="ncSeat" hidden>
+          <h3>Your seating plan</h3>
+          <p class="nc-note">Add each table as it will be set up on the day: one long table, one round table, or a few of each. Then type each guest’s name at their seat. The seat numbers match the chart below.</p>
+          <div class="nc-tables" id="ncTables"></div>
+          <button type="button" class="nc-add" id="ncAdd">+ Add another table</button>
+          <p class="nc-count" id="ncSeatCount"></p>
+          <div class="nc-chart" id="ncChart" aria-label="Seating chart preview"></div>
+        </div>
+
+        <label>Anything else? <small>(optional: spelling notes, titles like Tita or Lolo, a guest of honor…)</small><textarea name="notes" rows="2"></textarea></label>
+        <button type="submit" class="btn" id="ncSend">Send my name cards</button>
+        </div>
+        <p class="q-err" id="ncErr" hidden></p>
+      </form>
+      <div class="nc-done" id="ncDone" hidden>
+        <h3>Thank you!</h3>
+        <p>We’ve received your names. We’ll prepare every card with care and message you if anything needs checking.</p>
+      </div>
+    </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <span class="brand">Whimsy Touch</span>
+    <span>Davao City, Philippines</span>
+    <a href="terms.html">Terms &amp; Conditions</a>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var mode = 'list', maxGuests = 30, verifiedRef = '';
+  var tables = [{ shape: 'long', seats: 10, names: [] }];
+  var q = new URLSearchParams(location.search);
+  if (q.get('ref')) $('ncRef').value = q.get('ref').toUpperCase();
+
+  function esc(t) { return String(t || '').replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function setMode(m) {
+    mode = m;
+    $('ncList').hidden = m !== 'list';
+    $('ncSeat').hidden = m !== 'seat';
+    if (m === 'seat') drawTables();
+  }
+
+  // ---------- find the booking ----------
+  function status(html, warn) { var st = $('ncStatus'); st.innerHTML = html; st.hidden = false; st.classList.toggle('is-warn', !!warn); }
+  function find() {
+    var ref = $('ncRef').value.trim().toUpperCase();
+    $('ncRest').hidden = true; $('ncErr').hidden = true;
+    if (!/^WT-[A-Z0-9]{4,}$/.test(ref)) { status('Please enter your booking reference, e.g. <b>WT-AB12CD</b>. You’ll find it in our booking message.', true); return; }
+    var btn = $('ncFind'); btn.disabled = true; btn.textContent = 'Checking…';
+    fetch(window.WT_SHEETS_URL + '?booking=' + encodeURIComponent(ref)).then(function (r) { return r.json(); }).then(function (b) {
+      btn.disabled = false; btn.textContent = 'Find my booking';
+      if (!b || !b.found) { status('We couldn’t find that booking. Please check the reference, or message us on Instagram or Facebook.', true); return; }
+      if (!b.fullBloom) { status('Hi ' + esc(b.first) + '! Name cards come with our <b>Full Bloom</b> upgrade. If you’d like to add it, just message us on Instagram or Facebook.', true); return; }
+      var CAP = { 'sweetheart': 2, 'storybook': 10, 'once upon': 30, 'ever after': 40 };
+      verifiedRef = ref; maxGuests = CAP[String(b.gathering || '').toLowerCase()] || b.maxGuests || 30;
+      $('ncListMax').textContent = 'Up to ' + maxGuests + ' names for your ' + b.gathering + ' table.';
+      if (tables.length === 1 && !tables[0].names.length) tables[0].seats = Math.min(maxGuests, 10);
+      if (b.first && !$('ncName').value) $('ncName').value = b.first;
+      if (b.fairyGodmother) {
+        status('Hi ' + esc(b.first) + '! Your <b>' + esc(b.gathering) + '</b> table has Full Bloom with <b>Fairy Godmother Service</b>, so we’ll set each card at its seat. Please fill in your seating plan below.');
+        setMode('seat');
+      } else {
+        status('Hi ' + esc(b.first) + '! Your <b>' + esc(b.gathering) + '</b> table has <b>Full Bloom</b>. Just list your guests below and we’ll prepare a card for each of them.');
+        setMode('list');
+      }
+      $('ncRest').hidden = false;
+    }).catch(function () {
+      btn.disabled = false; btn.textContent = 'Find my booking';
+      status('Sorry, we couldn’t check your booking right now. Please try again, or message us on Instagram or Facebook.', true);
+    });
+  }
+  $('ncFind').addEventListener('click', find);
+  $('ncRef').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); find(); } });
+
+  function listNames() { return $('ncNames').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean); }
+  $('ncNames').addEventListener('input', function () { var n = listNames().length; var el = $('ncListCount'); el.textContent = n + (n === 1 ? ' name' : ' names') + (n > maxGuests ? ' (too many)' : ''); el.style.color = n > maxGuests ? 'var(--rose)' : ''; });
+
+  // ---------- seating tables ----------
+  function totalSeats() { return tables.reduce(function (a, t) { return a + t.seats; }, 0); }
+  function drawTables() {
+    var box = $('ncTables'); box.innerHTML = '';
+    tables.forEach(function (t, ti) {
+      var el = document.createElement('div'); el.className = 'nc-table';
+      var head = '<div class="nc-thead"><b>Table ' + (ti + 1) + '</b>' +
+        '<button type="button" class="q-opt" data-shape="long" aria-pressed="' + (t.shape === 'long') + '">Long</button>' +
+        '<button type="button" class="q-opt" data-shape="round" aria-pressed="' + (t.shape === 'round') + '">Round</button>' +
+        '<label class="nc-seats-in">Seats <input type="number" min="1" max="' + maxGuests + '" value="' + t.seats + '"></label>' +
+        (tables.length > 1 ? '<button type="button" class="nc-rm">Remove</button>' : '') + '</div>';
+      var grid = '<div class="nc-grid">';
+      for (var i = 0; i < t.seats; i++) grid += '<label><i>' + (i + 1) + '</i><input data-seat="' + i + '" value="' + esc(t.names[i] || '') + '" placeholder="Guest name"></label>';
+      el.innerHTML = head + grid + '</div>';
+      el.querySelectorAll('[data-shape]').forEach(function (b) { b.addEventListener('click', function () { t.shape = b.dataset.shape; drawTables(); }); });
+      el.querySelector('.nc-seats-in input').addEventListener('change', function () {
+        var v = Math.max(1, Math.min(maxGuests, parseInt(this.value, 10) || 1)); t.seats = v; t.names.length = Math.min(t.names.length, v); drawTables();
+      });
+      var rm = el.querySelector('.nc-rm'); if (rm) rm.addEventListener('click', function () { tables.splice(ti, 1); drawTables(); });
+      el.querySelectorAll('[data-seat]').forEach(function (inp) { inp.addEventListener('input', function () { t.names[+inp.dataset.seat] = inp.value; drawChart(); }); });
+      box.appendChild(el);
+    });
+    var n = totalSeats();
+    $('ncSeatCount').textContent = n + (n === 1 ? ' seat' : ' seats') + ' in total · up to ' + maxGuests + ' guests for your table' + (n > maxGuests ? ' (too many seats, please remove some)' : '');
+    drawChart();
+  }
+  $('ncAdd').addEventListener('click', function () { tables.push({ shape: 'round', seats: 6, names: [] }); drawTables(); });
+
+  // ---------- chart (SVG, also saved as an image) ----------
+  var W = 900;
+  function short(s, n) { s = String(s || '').trim(); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+  function tableSvg(t, ti, y0) {
+    var out = '', seatR = 13, h;
+    var label = 'Table ' + (ti + 1);
+    if (t.shape === 'round') {
+      var R = Math.max(55, t.seats * 11), cx = W / 2, cy = y0 + 40 + R + 60;
+      out += '<text x="' + cx + '" y="' + (y0 + 26) + '" class="tl">' + label + '</text>';
+      out += '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" class="tb"/>';
+      for (var i = 0; i < t.seats; i++) {
+        var a = -Math.PI / 2 + i * 2 * Math.PI / t.seats;
+        var sx = cx + Math.cos(a) * (R + 22), sy = cy + Math.sin(a) * (R + 22);
+        var nx = cx + Math.cos(a) * (R + 50), ny = cy + Math.sin(a) * (R + 50);
+        var anchor = Math.abs(Math.cos(a)) < .3 ? 'middle' : (Math.cos(a) > 0 ? 'start' : 'end');
+        out += '<circle cx="' + sx.toFixed(1) + '" cy="' + sy.toFixed(1) + '" r="' + seatR + '" class="st"/><text x="' + sx.toFixed(1) + '" y="' + (sy + 4).toFixed(1) + '" class="sn">' + (i + 1) + '</text>';
+        out += '<text x="' + nx.toFixed(1) + '" y="' + (ny + 5).toFixed(1) + '" text-anchor="' + anchor + '" class="nm">' + esc(short(t.names[i], 16)) + '</text>';
+      }
+      h = 40 + 2 * R + 130;
+    } else {
+      var perSide = Math.ceil(t.seats / 2), gap = Math.min(78, (W - 120) / Math.max(perSide, 1));
+      var len = gap * perSide, x0 = (W - len) / 2, ty = y0 + 120;
+      out += '<text x="' + (W / 2) + '" y="' + (y0 + 26) + '" class="tl">' + label + '</text>';
+      out += '<rect x="' + x0 + '" y="' + ty + '" width="' + len + '" height="54" rx="8" class="tb"/>';
+      for (var k = 0; k < t.seats; k++) {
+        var top = k < perSide, col = top ? k : (t.seats - 1 - k);
+        var sx2 = x0 + gap * col + gap / 2, sy2 = top ? ty - 22 : ty + 76;
+        out += '<circle cx="' + sx2.toFixed(1) + '" cy="' + sy2 + '" r="' + seatR + '" class="st"/><text x="' + sx2.toFixed(1) + '" y="' + (sy2 + 4) + '" class="sn">' + (k + 1) + '</text>';
+        var ny2 = top ? sy2 - 26 : sy2 + 34;
+        out += '<text x="' + sx2.toFixed(1) + '" y="' + ny2 + '" class="nm" text-anchor="middle" transform="rotate(' + (top ? -28 : 28) + ' ' + sx2.toFixed(1) + ' ' + ny2 + ')">' + esc(short(t.names[k], 14)) + '</text>';
+      }
+      h = 290;
+    }
+    return { svg: out, h: h };
+  }
+  function chartSvg() {
+    var y = 70, body = '';
+    tables.forEach(function (t, i) { var r = tableSvg(t, i, y); body += r.svg; y += r.h; });
+    var ref = esc($('ncRef').value.trim().toUpperCase());
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + (y + 20) + '" width="' + W + '" height="' + (y + 20) + '">' +
+      '<style>.tl{font:600 15px Georgia,serif;letter-spacing:3px;fill:#8C6E3F;text-anchor:middle;text-transform:uppercase}' +
+      '.tb{fill:#EFE8DA;stroke:#B89A6A;stroke-width:1.5}.st{fill:#fff;stroke:#4F5536;stroke-width:1.4}' +
+      '.sn{font:600 11px Arial,sans-serif;fill:#4F5536;text-anchor:middle}.nm{font:15px Georgia,serif;fill:#2E2A24}' +
+      '.hd{font:italic 28px Georgia,serif;fill:#4F5536;text-anchor:middle}.sub{font:12px Arial,sans-serif;fill:#8C8479;text-anchor:middle;letter-spacing:2px}</style>' +
+      '<rect width="100%" height="100%" fill="#FBF9F4"/>' +
+      '<text x="' + (W / 2) + '" y="38" class="hd">Whimsy Touch · Seating plan</text>' +
+      '<text x="' + (W / 2) + '" y="58" class="sub">' + (ref ? 'BOOKING ' + ref : '') + '</text>' + body + '</svg>';
+  }
+  function drawChart() { $('ncChart').innerHTML = chartSvg(); }
+  $('ncRef').addEventListener('input', function () { if (mode === 'seat') drawChart(); });
+
+  function chartPng() {
+    return new Promise(function (res) {
+      var svg = chartSvg(), img = new Image();
+      img.onload = function () {
+        var c = document.createElement('canvas'), s = 1.5; c.width = img.width * s; c.height = img.height * s;
+        var x = c.getContext('2d'); x.scale(s, s); x.drawImage(img, 0, 0);
+        res(c.toDataURL('image/png').split(',')[1]);
+      };
+      img.onerror = function () { res(''); };
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    });
+  }
+
+  // ---------- send ----------
+  $('ncForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var err = $('ncErr'); err.hidden = true;
+    var fd = new FormData(this), ref = verifiedRef, name = String(fd.get('name') || '').trim();
+    function fail(m) { err.textContent = m; err.hidden = false; }
+    if (!ref || ref !== String(fd.get('ref') || '').trim().toUpperCase()) return fail('Please tap “Find my booking” first.');
+    if (!name) return fail('Please enter your name.');
+    var lines = [], guests = 0;
+    if (mode === 'list') {
+      var ns = listNames(); guests = ns.length;
+      if (!guests) return fail('Please add at least one name.');
+      if (guests > maxGuests) return fail('Your table is for up to ' + maxGuests + ' guests, so please send up to ' + maxGuests + ' names. Message us if you need more.');
+      lines = ns.map(function (n, i) { return (i + 1) + '. ' + n; });
+    } else {
+      tables.forEach(function (t, ti) {
+        lines.push('Table ' + (ti + 1) + ' (' + (t.shape === 'round' ? 'round' : 'long') + ', ' + t.seats + ' seats)');
+        for (var i = 0; i < t.seats; i++) { var n = String(t.names[i] || '').trim(); if (n) guests++; lines.push('   Seat ' + (i + 1) + ': ' + (n || '(empty)')); }
+      });
+      if (!guests) return fail('Please type at least one guest name at a seat.');
+      if (guests > maxGuests) return fail('Your table is for up to ' + maxGuests + ' guests, so please fill in up to ' + maxGuests + ' names. Message us if you need more.');
+    }
+    var btn = $('ncSend'); btn.disabled = true; btn.textContent = 'Sending…';
+    (mode === 'seat' ? chartPng() : Promise.resolve('')).then(function (png) {
+      var body = new URLSearchParams();
+      body.set('type', 'namecards'); body.set('ref', ref); body.set('name', name);
+      body.set('mode', mode === 'seat' ? 'Seating plan' : 'Names only');
+      body.set('guests', String(guests)); body.set('names', lines.join('\n'));
+      body.set('notes', String(fd.get('notes') || '')); if (png) body.set('chart', png);
+      return fetch(window.WT_SHEETS_URL, { method: 'POST', mode: 'no-cors', body: body });
+    }).then(function () {
+      $('ncForm').hidden = true; $('ncDone').hidden = false; window.scrollTo({ top: 0, behavior: 'smooth' });
+    }).catch(function () {
+      btn.disabled = false; btn.textContent = 'Send my name cards';
+      fail('Sorry, that didn’t go through. Please try again, or message us on Instagram or Facebook.');
+    });
+  });
+
+  if ($('ncRef').value) find();
+})();
+</script>
+</body>
+</html>

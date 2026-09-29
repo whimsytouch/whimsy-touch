@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book a Table — The Whimsy Touch</title>
+<meta name="description" content="Borrow the table of your dreams. Runners, LED candlelight and fresh blooms for gatherings of 2 to 40 guests in Davao City.">
+<meta property="og:title" content="The Whimsy Touch">
+<meta property="og:description" content="The table of your dreams, borrowed, not bought. Table décor rentals in Davao City.">
+<meta property="og:image" content="img/standard-setup.jpg">
+<link rel="icon" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body id="top">
+<a class="skip" href="#main">Skip to content</a>
+
+
+<header class="nav">
+  <div class="wrap">
+    <a class="nav-brand" href="index.html"><img src="img/favicon.png" alt="">Whimsy Touch</a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <ul class="nav-links" id="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="gatherings.html">Gatherings</a></li>
+      <li><a href="runners.html">Runners</a></li>
+      <li><a href="upgrades.html">Upgrades</a></li>
+      <li class="nav-book"><a href="book.html" aria-current="page">Book a Table</a></li>
+      <li><a href="moments.html">Moments</a></li>
+      <li><a href="faq.html">FAQs</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- QUOTE -->
+<section class="quote" id="quote">
+  <div class="wrap">
+    <div class="eyebrow"><img src="img/icon-treehouse.webp" alt="">Build Your Table</div>
+    <h2 class="script-title">Dream it up, see the price.</h2>
+    <p class="lead">Pick your gathering, your runner and any extras, and watch your table come together.</p>
+    <div class="q-grid">
+      <div class="q-steps">
+        <fieldset class="q-step"><legend><span>1</span>Gathering</legend><div class="q-opts" id="qTier"></div></fieldset>
+        <fieldset class="q-step q-pkg"><legend><span>2</span>Runner</legend><div class="q-runners" id="qRunner"></div><p class="q-note" id="qRunnerNote"></p></fieldset>
+        <fieldset class="q-step q-pkg"><legend><span>3</span>Upgrade</legend><div class="q-opts" id="qUp"></div><div class="q-sub" id="qUpSub"></div></fieldset>
+        <fieldset class="q-step q-pkg"><legend><span>4</span>Setup</legend><div class="q-opts" id="qSetup"></div><p class="q-note" id="qSetupNote"></p></fieldset>
+        <fieldset class="q-step q-pkg"><legend><span>5</span>Little extras</legend><div class="q-checks" id="qExtras"></div></fieldset>
+        <fieldset class="q-step"><legend><span id="qAlaNum">6</span>À la carte <small class="q-opt-tag" id="qAlaTag">optional</small></legend><div class="q-ala" id="qAla"></div></fieldset>
+      </div>
+      <aside class="q-summary" aria-live="polite">
+        <div class="q-photo"><img id="qPhoto" src="img/standard-setup.jpg" alt="Standard setup"><figure class="q-inset" id="qInset" hidden><img src="" alt=""><figcaption></figcaption></figure></div>
+        <h3>Your table</h3>
+        <ul id="qLines"></ul>
+        <div class="q-total"><span>Estimated total</span><strong id="qTotal">₱500</strong></div>
+        <p class="q-fine">Excludes security deposit &amp; delivery. We’ll confirm your final price when you book.</p>
+        <div class="q-actions">
+          <button type="button" class="btn" id="qBookBtn">Book this table</button>
+          <button type="button" class="btn ghost" id="qCopy">Copy my picks</button>
+        </div>
+        <form class="q-form" id="qForm" name="booking" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden>
+          <input type="hidden" name="form-name" value="booking">
+          <p class="q-hp"><label>Leave this empty <input name="bot-field"></label></p>
+          <input type="hidden" name="order" id="qOrder">
+          <input type="hidden" name="total" id="qOrderTotal">
+          <h4>Almost there — where should we bring it?</h4>
+          <label>Your name<input name="name" required autocomplete="name"></label>
+          <label>Mobile number<input name="phone" type="tel" required autocomplete="tel" placeholder="09XX XXX XXXX"></label>
+          <label>Email<input name="email" type="email" required autocomplete="email" placeholder="you@email.com"></label>
+          <label>Instagram or Facebook <small>(the account you message us from)</small><input name="social" required placeholder="@yourname or Facebook name"></label>
+          <div class="q-two"><label>Event date<input name="date" type="date" required id="qDate"></label><label>Event time<input name="time" type="time" required></label></div>
+          <label>Venue or delivery address<textarea name="venue" rows="2" required></textarea></label>
+          <label>Anything else? <small>(optional: ribbon color, mixed runners, theme…)</small><textarea name="notes" rows="2"></textarea></label>
+          <label class="q-agree q-req"><input type="checkbox" name="request_ack" value="yes" required> <span><strong>I understand this is a booking request, not a confirmed booking.</strong> Whimsy Touch will message me to confirm availability, and my date is only secured once the downpayment is paid.</span></label>
+          <div class="q-terms">
+            <button type="button" class="q-read" id="qReadTerms"><span class="q-read-ic">✦</span><span><b>Read the Terms &amp; Conditions</b><small>Required before booking: deposit, delivery, damages &amp; cancellation</small></span></button>
+            <label class="q-agree is-locked" id="qAgreeLabel"><input type="checkbox" name="agree" value="yes" required disabled id="qAgree"> <span id="qAgreeText">Open and read the Terms &amp; Conditions first to tick this box.</span></label>
+          </div>
+          <button type="submit" class="btn" id="qSend">Send my booking</button>
+          <p class="q-err" id="qErr" hidden></p>
+        </form>
+        <div class="q-done" id="qDone" hidden>
+          <h4>Booking request sent!</h4>
+          <p><strong>Your date isn’t booked yet.</strong> <strong>We’ll message you to confirm your date, deposit and delivery.</strong> Here’s your copy — take a screenshot to keep it.</p>
+          <div class="q-notify">
+            <p><strong>Please message us now</strong> to let us know you’ve sent your booking, so we can reply faster:</p>
+            <div class="q-notify-btns">
+              <a class="btn" href="https://ig.me/m/thewhimsytouch" target="_blank" rel="noopener" id="qNotifyIg">Message us on Instagram</a>
+              <a class="btn ghost" href="https://m.me/61594083157602" target="_blank" rel="noopener">Message us on Facebook</a>
+            </div>
+          </div>
+          <p class="q-ref" id="qRef"></p>
+          <pre id="qCopyTxt"></pre>
+          <button type="button" class="btn ghost" id="qCopy2">Copy my booking</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- BOOK -->
+<section class="book" id="book">
+  <div class="book-bg" aria-hidden="true"></div>
+  <div class="wrap">
+    <h2>Good to know before you book</h2>
+    <div>
+      <p>Have a question first? Message us on Instagram or Facebook. Prices exclude the security deposit and delivery fee — every booking carries a security deposit, sized to the gathering. Small bookings are delivered and returned by Grab — booked and paid for by you, no more than 24 hours ahead of the event. Larger bookings, and any booking with Full Bloom, are delivered and picked up in person.</p>
+      <div class="actions">
+        <a class="btn ghost" href="https://ig.me/m/thewhimsytouch" target="_blank" rel="noopener">Message us on Instagram</a>
+        <a class="btn ghost" href="https://m.me/61594083157602" target="_blank" rel="noopener">Message us on Facebook</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <span class="brand">Whimsy Touch</span>
+    <span>Davao City, Philippines</span>
+    <span>Prices in Philippine Pesos, exclusive of security deposit &amp; delivery fee</span>
+    <a href="terms.html">Terms &amp; Conditions</a>
+  </div>
+</footer>
+
+<script src="runners-data.js"></script>
+<script src="site.js"></script>
+</body>
+</html>

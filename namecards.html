@@ -153,7 +153,7 @@
       btn.disabled = false; btn.textContent = 'Find my booking';
       if (!b || !b.found) { status('We couldn’t find that booking. Please check the reference, or message us on Instagram or Facebook.', true); return; }
       if (!b.fullBloom) { status('Hi ' + esc(b.first) + '! Name cards come with our <b>Full Bloom</b> upgrade. If you’d like to add it, just message us on Instagram or Facebook.', true); return; }
-      var CAP = { 'sweetheart': 2, 'storybook': 10, 'once upon': 30, 'ever after': 40 };
+      var CAP = { 'sweetheart': 2, 'storybook': 15, 'once upon': 30, 'ever after': 40 };
       verifiedRef = ref; maxGuests = CAP[String(b.gathering || '').toLowerCase()] || b.maxGuests || 30;
       gatheringName = b.gathering || ''; drawNameBoxes();
       if (tables.length === 1 && !tables[0].names.length) tables[0].seats = Math.min(maxGuests, 10);

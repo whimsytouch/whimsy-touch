@@ -88,8 +88,9 @@
         <!-- names only -->
         <div class="nc-sec" id="ncList">
           <h3>Guest names</h3>
-          <label>One name per line<textarea name="names" id="ncNames" rows="8" placeholder="Anna&#10;Miguel&#10;Lola Ising"></textarea></label>
-          <p class="nc-count"><span id="ncListCount">0 names</span> · <span id="ncListMax"></span></p>
+          <p class="nc-note">One guest per box, just as you’d like it written on their card.</p>
+          <div class="nc-grid" id="ncNames"></div>
+          <p class="nc-count"><span id="ncListCount"></span><span id="ncListMax" hidden></span></p>
         </div>
 
         <!-- seating plan -->
@@ -154,7 +155,7 @@
       if (!b.fullBloom) { status('Hi ' + esc(b.first) + '! Name cards come with our <b>Full Bloom</b> upgrade. If you’d like to add it, just message us on Instagram or Facebook.', true); return; }
       var CAP = { 'sweetheart': 2, 'storybook': 10, 'once upon': 30, 'ever after': 40 };
       verifiedRef = ref; maxGuests = CAP[String(b.gathering || '').toLowerCase()] || b.maxGuests || 30;
-      $('ncListMax').textContent = 'Up to ' + maxGuests + ' names for your ' + b.gathering + ' table.';
+      gatheringName = b.gathering || ''; drawNameBoxes();
       if (tables.length === 1 && !tables[0].names.length) tables[0].seats = Math.min(maxGuests, 10);
       if (b.first && !$('ncName').value) $('ncName').value = b.first;
       if (b.fairyGodmother) {
@@ -173,8 +174,24 @@
   $('ncFind').addEventListener('click', find);
   $('ncRef').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); find(); } });
 
-  function listNames() { return $('ncNames').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean); }
-  $('ncNames').addEventListener('input', function () { var n = listNames().length; var el = $('ncListCount'); el.textContent = n + (n === 1 ? ' name' : ' names') + (n > maxGuests ? ' (too many)' : ''); el.style.color = n > maxGuests ? 'var(--rose)' : ''; });
+  var gatheringName = '';
+  function listNames() { return Array.prototype.map.call($('ncNames').querySelectorAll('input'), function (i) { return i.value.trim(); }).filter(Boolean); }
+  function countNames() {
+    var n = listNames().length, el = $('ncListCount');
+    el.textContent = n + ' of ' + maxGuests + ' names' + (gatheringName ? ' for your ' + gatheringName + ' table' : '') + (n >= maxGuests ? ' (all set)' : '');
+  }
+  function drawNameBoxes() {
+    var box = $('ncNames'), keep = listNames(), html = '';
+    for (var i = 0; i < maxGuests; i++) html += '<label><i>' + (i + 1) + '</i><input data-name="' + i + '" value="' + esc(keep[i] || '') + '" placeholder="Guest name" autocomplete="off"></label>';
+    box.innerHTML = html;
+    box.querySelectorAll('input').forEach(function (inp) {
+      inp.addEventListener('input', countNames);
+      inp.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); var nx = box.querySelector('[data-name="' + (+inp.dataset.name + 1) + '"]'); if (nx) nx.focus(); }
+      });
+    });
+    countNames();
+  }
 
   // ---------- seating tables ----------
   function totalSeats() { return tables.reduce(function (a, t) { return a + t.seats; }, 0); }
@@ -192,17 +209,23 @@
       el.innerHTML = head + grid + '</div>';
       el.querySelectorAll('[data-shape]').forEach(function (b) { b.addEventListener('click', function () { t.shape = b.dataset.shape; drawTables(); }); });
       el.querySelector('.nc-seats-in input').addEventListener('change', function () {
-        var v = Math.max(1, Math.min(maxGuests, parseInt(this.value, 10) || 1)); t.seats = v; t.names.length = Math.min(t.names.length, v); drawTables();
+        var room = maxGuests - (totalSeats() - t.seats);
+        var v = Math.max(1, Math.min(room, parseInt(this.value, 10) || 1)); t.seats = v; t.names.length = Math.min(t.names.length, v); drawTables();
       });
       var rm = el.querySelector('.nc-rm'); if (rm) rm.addEventListener('click', function () { tables.splice(ti, 1); drawTables(); });
       el.querySelectorAll('[data-seat]').forEach(function (inp) { inp.addEventListener('input', function () { t.names[+inp.dataset.seat] = inp.value; drawChart(); }); });
       box.appendChild(el);
     });
     var n = totalSeats();
+    $('ncSeatCount').style.color = '';
     $('ncSeatCount').textContent = n + (n === 1 ? ' seat' : ' seats') + ' in total · up to ' + maxGuests + ' guests for your table' + (n > maxGuests ? ' (too many seats, please remove some)' : '');
     drawChart();
   }
-  $('ncAdd').addEventListener('click', function () { tables.push({ shape: 'round', seats: 6, names: [] }); drawTables(); });
+  $('ncAdd').addEventListener('click', function () {
+    var room = maxGuests - totalSeats();
+    if (room < 1) { $('ncSeatCount').textContent = 'You’ve reached ' + maxGuests + ' seats, the limit for your table. Lower the seats on a table to add another.'; $('ncSeatCount').style.color = 'var(--rose)'; return; }
+    tables.push({ shape: 'round', seats: Math.min(6, room), names: [] }); drawTables();
+  });
 
   // ---------- chart (SVG, also saved as an image) ----------
   var W = 900;

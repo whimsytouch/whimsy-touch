@@ -539,6 +539,7 @@ var WT = (function () {
   function detailsMode(on) {
     var qs = document.getElementById('quote'), grid = qs.querySelector('.q-grid'), bk = document.getElementById('book');
     grid.classList.toggle('is-details', on);
+    qs.classList.toggle('is-details', on);
     ['.eyebrow', '.script-title', '.lead'].forEach(function (sel) { var el = qs.querySelector('.wrap > ' + sel); if (el) el.style.display = on ? 'none' : ''; });
     if (bk) bk.style.display = on ? 'none' : '';
     document.getElementById('qBack').hidden = !on;
@@ -622,7 +623,7 @@ var WT = (function () {
         var done = document.getElementById('qDone'), qs = document.getElementById('quote'), wrap = qs.querySelector('.wrap');
         Array.prototype.forEach.call(wrap.children, function (el) { el.style.display = 'none'; });
         var bk = document.getElementById('book'); if (bk) bk.style.display = 'none';
-        wrap.appendChild(done); done.classList.add('q-done-page'); done.hidden = false;
+        wrap.appendChild(done); done.classList.add('q-done-page'); done.hidden = false; qs.classList.add('is-details');
         window.scrollTo(0, Math.max(0, qs.getBoundingClientRect().top + window.pageYOffset - 90));
         document.getElementById('qCopy2').onclick = function () {
           var b = this; if (navigator.clipboard) navigator.clipboard.writeText('Ref ' + ref + '\n' + copy).then(function () { b.textContent = 'Copied!'; });

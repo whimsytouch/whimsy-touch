@@ -785,3 +785,8 @@ section{padding:96px 0}
 .q-pay-rest[hidden]{display:none}
 .q-pay-rest small{display:block;font-size:12.5px;margin-top:2px}
 .q-pay-rest b{font-weight:600;color:var(--ink);white-space:nowrap}
+.q-two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.q-two > label{min-width:0}
+.q-two input{width:100%;min-width:0;box-sizing:border-box}
+.q-form input:not([type=checkbox]):not([type=file]),.q-form textarea,.q-venue input{width:100%;box-sizing:border-box}
+section.quote.is-details{padding-top:28px}

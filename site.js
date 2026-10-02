@@ -401,9 +401,10 @@ var WT = (function () {
     var tot = $('qTotal'), newTxt = WT.peso(total), shown = WT.peso(total + depAmt);
     var pending = needsDelivery() && !DLV;
     var info = $('qDlvInfo');
-    if (info) info.textContent = !needsDelivery() ? 'So we know where your table is going. Delivery is arranged on the day and paid to the courier directly.' :
-      s.gm ? 'With Fairy Godmother Service, delivery is free within Lanang to Roxas. Farther venues: ₱250 each way up to 10 km past, ₱300 each way up to 20 km past.' :
-      'Full Bloom is a big setup that doesn’t fit on a motorbike, so we deliver and pick it up by car. Each way: ₱100 within Buhangin, ₱200 within Lanang to Roxas, ₱250 up to 10 km past, ₱300 up to 20 km past.';
+    var R24 = ' The rental is for 24 hours from when you receive the items, so plan where everything will be picked up.';
+    if (info) info.textContent = !needsDelivery() ? 'So we know where your items are going. Delivery and return are arranged by you and paid to the courier directly. The rental is for 24 hours from when you receive the items, so plan where you’ll send everything back from.' :
+      s.gm ? 'With Fairy Godmother Service, delivery is free within Lanang to Roxas. Farther venues: ₱250 each way up to 10 km past, ₱300 each way up to 20 km past.' + R24 :
+      'Full Bloom is a big setup that doesn’t fit on a motorbike, so we deliver and pick it up by car. Each way: ₱100 within Buhangin, ₱200 within Lanang to Roxas, ₱250 up to 10 km past, ₱300 up to 20 km past.' + R24;
     var fine = $('qFine');
     if (fine) fine.textContent = s.alc ? 'Includes the refundable security deposit. Pickup or delivery is arranged on the day and paid to the courier directly.' :
       needsDelivery() ? (DLV ? 'Includes delivery and the refundable security deposit.' : 'Includes the refundable security deposit. Check your venue to add your delivery fee.') :

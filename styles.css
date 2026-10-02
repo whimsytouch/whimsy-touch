@@ -745,3 +745,43 @@ section{padding:96px 0}
 
 .q-avail{display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px 16px;margin-bottom:14px}.q-avail label{display:flex;flex-direction:column;gap:6px;font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}.q-avail input{padding:10px 12px;border-radius:12px;border:1px solid rgba(94,87,77,.3);font:400 16px var(--sans);background:var(--card);color:var(--ink)}.q-avail .q-note{margin:0 0 10px;flex:1;min-width:200px}
 .q-chip.is-booked{text-decoration:line-through;text-decoration-color:rgba(46,42,36,.5)}
+.q-dlv{display:flex;flex-direction:column;gap:8px;margin:-4px 0 6px}.q-dlv .btn{align-self:flex-start}.q-dlv .q-note{margin:0}.q-dlv small{color:var(--muted)}
+.q-pay{background:var(--card);border:1px solid rgba(94,87,77,.18);border-radius:18px;padding:18px;margin:14px 0;text-align:center}
+.q-pay h5{font-family:var(--script);font-weight:400;font-size:32px;color:var(--rose);margin:0 0 6px}
+.q-pay-amt{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-top:1px solid rgba(94,87,77,.15);border-bottom:1px solid rgba(94,87,77,.15);padding:10px 2px;margin-bottom:12px;text-align:left}
+.q-pay-amt strong{font-family:var(--serif);font-size:26px;color:var(--sage-deep)}
+.q-pay-qr{width:210px;max-width:75%;display:block;margin:4px auto 12px}
+.q-pay-acct{font-size:15px;line-height:1.6}
+.q-pay-copy{background:none;border:1px solid rgba(94,87,77,.3);border-radius:999px;padding:2px 10px;font:600 11px var(--sans);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;color:var(--sage-deep)}
+.q-pay-up{display:flex;flex-direction:column;gap:6px;text-align:left;margin:12px 0 10px;font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase}
+.q-pay-up input{font:400 14px var(--sans);letter-spacing:0;text-transform:none}
+.q-pay .btn{width:100%;border:0;cursor:pointer}
+.q-done-page{max-width:560px;margin:10px auto 0;text-align:left}
+.q-done-page h4{font-family:var(--script);font-weight:400;font-size:44px;color:var(--rose);line-height:1.1;margin-bottom:6px}
+.q-done-page .q-ref{font:600 13px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--sage-deep);margin-bottom:10px}
+.q-mycopy{margin:14px 0;background:var(--card);border:1px solid rgba(94,87,77,.18);border-radius:18px;padding:12px 16px}
+.q-mycopy summary{cursor:pointer;font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+.q-mycopy pre{white-space:pre-wrap;font:400 14px/1.6 var(--sans);margin:12px 0}
+.q-sublabel small{font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted)}
+#qLines li.has-inc{padding-bottom:18px;margin-bottom:6px}
+#qLines li.q-joined{border-bottom:0!important;padding-bottom:2px!important;margin-bottom:0}#qLines li.q-joined + li{padding-top:2px!important}
+.q-grid.is-details{grid-template-columns:minmax(0,1fr);max-width:640px;margin-left:auto;margin-right:auto;margin-top:0}
+.q-grid.is-details .q-steps,.q-grid.is-details .q-photo,.q-grid.is-details .q-inc{display:none}
+.q-grid.is-details .q-summary{position:static}
+.q-back{background:none;border:0;padding:4px 0 12px;font:600 12px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--sage-deep);cursor:pointer}
+.q-venue{display:flex;flex-direction:column;gap:12px;margin:0 0 20px;padding-bottom:20px;border-bottom:1px dashed rgba(94,87,77,.35)}
+.q-venue[hidden]{display:none!important}
+.q-venue h4{font-family:var(--script);font-weight:400;font-size:32px;color:var(--rose);line-height:1.1}
+.q-venue label{display:flex;flex-direction:column;gap:5px;font:600 12px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+.q-venue label small{font-weight:400;letter-spacing:0;text-transform:none;font-size:12.5px;color:var(--muted)}
+.q-venue input{font:400 16px var(--sans);letter-spacing:0;text-transform:none;padding:12px 14px;border-radius:12px;border:1px solid rgba(94,87,77,.3);background:#fff;color:var(--ink)}
+.q-venue input:focus{outline:2px solid var(--sage-deep);outline-offset:1px}
+.q-venue .btn{cursor:pointer}
+.q-total small{font:400 15px var(--sans);color:var(--muted);margin-left:4px}
+.q-venue h4,.q-venue>.q-note{margin:0}
+#qLines > li > span:first-child{font-weight:600;color:var(--ink)}
+#qLines .q-inc,#qLines .q-inc-note{font-weight:400}
+.q-pay-rest{display:flex;justify-content:space-between;gap:12px;text-align:left;margin:-4px 2px 14px;font-size:14px;color:var(--muted)}
+.q-pay-rest[hidden]{display:none}
+.q-pay-rest small{display:block;font-size:12.5px;margin-top:2px}
+.q-pay-rest b{font-weight:600;color:var(--ink);white-space:nowrap}

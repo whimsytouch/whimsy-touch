@@ -166,6 +166,18 @@ var WT = (function () {
   if (new URLSearchParams(location.search).get('alc')) s.alc = true;
   // runner availability for the chosen date (from the bookings sheet)
   var AV = null, avDate = '', avBusy = false, avLost = '';
+  // delivery (Full Bloom / Fairy Godmother): zone check runs in the bookings sheet
+  var DLV = null, dlvBusy = false, dlvFor = '';
+  function needsDelivery() { return !s.alc && (s.gm || (s.up === 'fb' && (s.tier === 1 || s.tier === 2))); }
+  var ZONE_NAME = { buhangin: 'Buhangin', lanang: 'Lanang to Roxas' };
+  function deliveryLine() {
+    if (!needsDelivery() || !DLV) return null;
+    var out = DLV.zone === 'outside', km = DLV.km || 0, extra = out ? 30 * km : 0;
+    if (s.gm) return [out ? 'Delivery: ' + km + ' km outside Lanang to Roxas' : 'Delivery: free within ' + ZONE_NAME[DLV.zone], extra, null, out ? km + ' km × ₱30, with Fairy Godmother Service' : ''];
+    var base = DLV.zone === 'buhangin' ? 200 : 400;
+    return [out ? 'Delivery & pickup: ' + km + ' km outside Lanang to Roxas' : 'Delivery & pickup: ' + ZONE_NAME[DLV.zone], base + extra, null,
+      out ? '₱200 drop-off + ₱200 pickup + ' + km + ' km × ₱30' : '₱' + (base / 2) + ' drop-off + ₱' + (base / 2) + ' pickup'];
+  }
   function isBooked(r, n) { return !!(AV && AV['b' + n] && AV['b' + n].indexOf(r.name) >= 0); }
   function niceDate(v) { var p = String(v).split('-'); var mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return p.length === 3 ? mo[+p[1] - 1] + ' ' + (+p[2]) : v; }
   function checkAvail(v, done) {
@@ -215,6 +227,17 @@ var WT = (function () {
     if (s.runner2 != null && isBooked(RUN[s.runner2], NRt)) { avLost = RUN[s.runner2].name; s.runner2 = null; }
     if (s.runner != null && RUN[s.runner].max < t) s.runner = null;
     if (s.runner2 != null && (RUN[s.runner2].max < t || s.runner2 === s.runner)) s.runner2 = null;
+    var dBox = $('qDlv');
+    if (dBox) {
+      dBox.hidden = !needsDelivery();
+      var dN = $('qDlvNote'), dlNow = deliveryLine();
+      dN.classList.remove('warn');
+      if (dlvBusy) dN.textContent = 'Checking your location…';
+      else if (DLV === false) { dN.textContent = 'We couldn’t read that link. Please copy the Google Maps link of your exact venue again (Share → Copy link) and paste it above.'; dN.classList.add('warn'); }
+      else if (dlNow) dN.innerHTML = '<b>' + dlNow[0] + (dlNow[1] ? ': ' + WT.peso(dlNow[1]) : '') + '</b>' + (DLV.place ? '<br><small>📍 ' + DLV.place + '</small>' : '') +
+        '<br><small>We’ll double-check your location and let you know if anything changes.</small>';
+      else dN.textContent = '';
+    }
     var avN = $('qAvNote');
     if (avN) {
       avN.classList.toggle('warn', !!avLost);
@@ -318,7 +341,7 @@ var WT = (function () {
     var gmOk = t < 3 && s.up === 'fb';
     sb.appendChild(opt('I’ll set it up', 'included · with our care card', !s.gm, function () { s.gm = false; render(); }));
     sb.appendChild(opt('Fairy Godmother Service', t < 3 ? 'we set it up for you · +' + WT.peso(GM[t]) : 'not for Ever After', s.gm, function () { s.gm = true; render(); }, !gmOk));
-    $('qSetupNote').textContent = gmOk ? 'Fairy Godmother Service covers Lanang to Roxas. Venues beyond that are ₱50 per km from downtown.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
+    $('qSetupNote').textContent = gmOk ? 'Fairy Godmother Service covers Lanang to Roxas. Venues beyond that are ₱30 per km.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
     // summary
     var lines = [], total = s.alc ? 0 : BASE[t];
     if (s.alc) lines.push(['À la carte order', 0]);
@@ -328,25 +351,22 @@ var WT = (function () {
     var holderTxt = NT + ' ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders with ' + ribTxt;
     var incG = [
       NR + (NR > 1 ? ' runners' : ' runner') + (R ? ' in ' + runnerName : ''),
-      NV + (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase'),
-      NT + ' ' + (s.taper ? 'pink' : 'cream') + ' LED taper candles'
+      NV + (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase')
     ];
-    if (s.up === 'none') incG.push(NT + ' gold candle holders');
-    incG.push('Spare batteries and a care card');
-    lines.push([WT.TIERS[t] + ' gathering', BASE[t], incG]);
-    lines.push([R ? runnerName + ' runner' : 'Runner: choose a color', s.layer && R ? LAYER[t] : 0, null, s.layer && R && !(R2 && R2.layer) ? 'Paid with your balance once we confirm your second color' : '']);
-    if (s.up === 'fd') lines.push(['Fairy Dust', FD[s.holder][t], [holderTxt]]);
-    if (s.up === 'fb') lines.push(['Full Bloom', FB[t], [
+    if (s.up === 'fb') incG.push(
       NV + (NV > 1 ? ' fresh flower arrangements, one at every vase' : ' fresh flower arrangement'),
-      NV + (NV > 1 ? ' LED pillar candles, one at every vase' : ' LED pillar candle'),
-      holderTxt,
-      (s.mat === 'gold' ? 'Sheer gold' : 'Jute') + ' placemats',
-      'Cloth napkins with rings',
-      'Name cards',
-      'Kraft-paper wrap to take a bloom home'
-    ], 'Tableware (plates, glasses and cutlery) not included']);
+      NV + (NV > 1 ? ' LED pillar candles, one at every vase' : ' LED pillar candle'));
+    incG.push(NT + ' ' + (s.taper ? 'pink' : 'cream') + ' LED taper candles');
+    incG.push(s.up === 'none' ? NT + ' gold candle holders' : holderTxt);
+    if (s.up === 'fb') incG.push((s.mat === 'gold' ? 'Sheer gold' : 'Jute') + ' placemats', 'Cloth napkins with rings', 'Name cards', 'Kraft-paper wrap to take a bloom home');
+    incG.push('Spare batteries and a care card');
+    lines.push([WT.TIERS[t] + ' gathering', BASE[t], s.up === 'none' ? incG : null]);
+    if (s.up === 'fd') lines.push(['Fairy Dust', FD[s.holder][t], incG]);
+    if (s.up === 'fb') lines.push(['Full Bloom', FB[t], incG, 'Tableware (plates, glasses and cutlery) not included']);
+    if (s.layer && R) lines.push([R2 ? 'Layering: ' + R2.name : 'Layering: second color to choose', LAYER[t], null, !(R2 && R2.layer) ? 'Paid with your balance once we confirm your second color' : '']);
     if (s.taper) lines.push(['Pink LED taper candles', TAPER[t]]);
     if (s.gm) lines.push(['Setup: Fairy Godmother Service', GM[t]]);
+    var dl = deliveryLine();
     }
     alaLines.forEach(function (l) { lines.push(l); });
     if (s.alc && !alaLines.length) lines.push(['Add at least one item', 0]);
@@ -354,10 +374,23 @@ var WT = (function () {
     lines.forEach(function (l, i) {
       total += i ? l[1] : 0;
       var inc = (l[2] ? '<ul class="q-inc">' + l[2].map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>' : '') + (l[3] ? '<em class="q-inc-note">' + l[3] + '</em>' : '');
-      ul.appendChild(WT.el('li', l[2] ? 'has-inc' : '', '<span>' + l[0] + inc + '</span><span>' + (i === 0 ? (s.alc ? '' : WT.peso(l[1])) : l[1] ? (s.alc ? WT.peso(l[1]) : '+' + WT.peso(l[1])) : (s.alc ? '' : 'included')) + '</span>'));
+      ul.appendChild(WT.el('li', (l[2] ? 'has-inc' : '') + (i === 0 && !s.alc && s.up !== 'none' ? ' q-joined' : ''), '<span>' + l[0] + inc + '</span><span>' + (i === 0 ? (s.alc ? '' : WT.peso(l[1])) : l[1] ? (s.alc ? WT.peso(l[1]) : '+' + WT.peso(l[1])) : (s.alc ? '' : 'included')) + '</span>'));
     });
-    var tot = $('qTotal'), newTxt = WT.peso(total);
-    if (tot.textContent !== newTxt) { tot.textContent = newTxt; tot.classList.remove('pop'); void tot.offsetWidth; tot.classList.add('pop'); }
+    var depAmt = s.alc ? (alaLines.length ? ALA_DEP : 0) : (s.up === 'fb' ? [350, 500, 600, 500] : [300, 300, 500, 500])[t];
+    if (depAmt) ul.appendChild(WT.el('li', '', '<span>Security deposit<em class="q-inc-note">Refundable once every piece is back safe and sound</em></span><span>+' + WT.peso(depAmt) + '</span>'));
+    if (dl) { total += dl[1]; ul.appendChild(WT.el('li', '', '<span>' + dl[0] + (dl[3] ? '<em class="q-inc-note">' + dl[3] + '</em>' : '') + '</span><span>' + (dl[1] ? '+' + WT.peso(dl[1]) : 'free') + '</span>')); }
+    var tot = $('qTotal'), newTxt = WT.peso(total), shown = WT.peso(total + depAmt);
+    var pending = needsDelivery() && !DLV;
+    var info = $('qDlvInfo');
+    if (info) info.textContent = !needsDelivery() ? 'So we know where your table is going. Delivery is arranged on the day and paid to the courier directly.' :
+      s.gm ? 'With Fairy Godmother Service, delivery is free within Lanang to Roxas. Venues beyond that are ₱30 per km.' :
+      'Full Bloom is a big setup that doesn’t fit on a motorbike, so we deliver and pick it up by car: ₱100 each way within Buhangin, ₱200 each way within Lanang to Roxas, plus ₱30 per km beyond that.';
+    var fine = $('qFine');
+    if (fine) fine.textContent = s.alc ? 'Includes the refundable security deposit. Pickup or delivery is arranged on the day and paid to the courier directly.' :
+      needsDelivery() ? (DLV ? 'Includes delivery and the refundable security deposit.' : 'Includes the refundable security deposit. Check your venue to add your delivery fee.') :
+      'Includes the refundable security deposit. Delivery is arranged on the day and paid to the courier directly.';
+    if (pending) tot.innerHTML = shown + '<small>+ delivery</small>';
+    else if (tot.textContent !== shown) { tot.textContent = shown; tot.classList.remove('pop'); void tot.offsetWidth; tot.classList.add('pop'); }
     var ph = $('qPhoto'), want = (!s.alc && R) ? R.img : 'img/standard-setup.jpg';
     if (ph.getAttribute('src') !== want) { ph.classList.add('fade'); var pre = new Image(); pre.onload = pre.onerror = function () { if (ph._want === want) { ph.src = want; ph.classList.remove('fade'); } }; ph._want = want; pre.src = want; }
     ph.alt = R ? R.name + ' ' + R.fabric + ' runner' : 'Standard setup';
@@ -377,11 +410,12 @@ var WT = (function () {
     if (s.up === 'fb') ml.push('Full Bloom, ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders, ' + (s.mat === 'gold' ? 'sheer gold' : 'jute') + ' placemats (' + rib + '), +' + WT.peso(FB[t]));
     if (s.taper) ml.push('Pink LED taper candles, +' + WT.peso(TAPER[t]));
     if (s.gm) ml.push('Setup: Fairy Godmother Service, +' + WT.peso(GM[t]));
+    if (dl) ml.push(dl[0] + (dl[1] ? ', +' + WT.peso(dl[1]) : ''));
     alaLines.forEach(function (l) { ml.push(l[0] + ', ' + (s.alc ? '' : '+') + WT.peso(l[1])); });
     if (s.alc) ml = ['À la carte order:'].concat(alaLines.map(function (l) { return l[0] + ', ' + WT.peso(l[1]); }));
-    root._msg = { lines: ml, total: total, deposit: s.alc ? ALA_DEP : DEP[t], layer: (!s.alc && s.layer && R2 && !R2.layer) ? LAYER[t] : 0 };
+    root._msg = { lines: ml, total: total, deposit: s.alc ? ALA_DEP : depAmt, layer: (!s.alc && s.layer && R2 && !R2.layer) ? LAYER[t] : 0, delivery: dl ? dl[1] : 0 };
     root._total = newTxt; root._hasRunner = s.alc ? alaLines.length > 0 : (!!avDate && !!R && (!s.layer || !!R2));
-    root._summary = 'My Whimsy Touch table:\n' + lines.map(function (l, i) { return '• ' + l[0] + (i === 0 ? ' — ' + WT.peso(l[1]) : l[1] ? ' — +' + WT.peso(l[1]) : '') + (l[2] ? l[2].map(function (x) { return '\n   – ' + x; }).join('') : ''); }).join('\n') + '\nEstimated total: ' + newTxt;
+    root._summary = 'My Whimsy Touch table:\n' + lines.map(function (l, i) { return '• ' + l[0] + (i === 0 ? ' — ' + WT.peso(l[1]) : l[1] ? ' — +' + WT.peso(l[1]) : '') + (l[2] ? l[2].map(function (x) { return '\n   – ' + x; }).join('') + '\n' : ''); }).join('\n') + (depAmt ? '\n• Security deposit (refundable) — +' + WT.peso(depAmt) : '') + (dl ? '\n• ' + dl[0] + (dl[1] ? ' — +' + WT.peso(dl[1]) : ' — free') : '') + '\nTotal: ' + shown + (depAmt ? ' (' + newTxt + ' rental + ' + WT.peso(depAmt) + ' refundable deposit)' : '');
   }
   document.getElementById('qCopy').addEventListener('click', function () {
     render();
@@ -406,17 +440,17 @@ var WT = (function () {
     if (/^\d{1,2}:\d{2}/.test(tm)) { var h = +tm.split(':')[0], m = tm.split(':')[1]; tt = (h % 12 || 12) + ':' + m + ' ' + (h < 12 ? 'AM' : 'PM'); }
     var dateLine = 'Date: ' + when + (tt ? ', ' + tt : '');
     var venue = 'Venue: ' + String(f.get('venue') || '').trim();
-    var LF = M.layer || 0, half = Math.round((M.total - LF) / 2), rest = M.total - LF - half;
-    var layerBit = LF ? ' + ' + peso(LF) + ' layering, once your second color is confirmed' : '';
+    var LF = M.layer || 0, DF = M.delivery || 0, half = Math.round((M.total - LF - DF) / 2), rest = M.total - LF - DF - half;
+    var layerBit = (DF ? ' + ' + peso(DF) + ' delivery' : '') + (LF ? ' + ' + peso(LF) + ' layering, once your second color is confirmed' : '');
     var closer = s.gm ? 'We can\'t wait to set your table!' : 'We hope you have the loveliest time setting up your table!';
     var pay = 'Hi ' + first + '! Thank you for booking with Whimsy Touch 🌸\n\n' +
       'Here\'s your booking summary (Ref: ' + ref + '):\n\n' + M.lines.join('\n') + '\n' + dateLine + '\n' + venue + '\n\n' +
       'Total: ' + peso(M.total) + '\nSecurity deposit: ' + peso(M.deposit) + ' (refundable)\n\n' +
       'To lock in your date, please send the 50% downpayment of ' + peso(half) + ' through the QR above.\n\n' +
-      'Your total remaining balance of ' + peso(rest + LF + M.deposit) + ' (' + peso(rest) + ' rental balance' + layerBit + ' + ' + peso(M.deposit) + ' refundable security deposit) is due on ' + due + ', one day before your event.\n\n' +
+      'Your total remaining balance of ' + peso(rest + LF + DF + M.deposit) + ' (' + peso(rest) + ' rental balance' + layerBit + ' + ' + peso(M.deposit) + ' refundable security deposit) is due on ' + due + ', one day before your event.\n\n' +
       'Once your downpayment is in, we\'ll send your official invoice. Thank you po! ☺️';
     var conf = 'Hi ' + first + '! We\'ve received your ' + peso(half) + ' downpayment, so your date is officially booked 🌸\n\n' +
-      'Attached is your invoice for your records (Ref: ' + ref + '). Your total remaining balance of ' + peso(rest + LF + M.deposit) + (LF ? ' (including ' + peso(LF) + ' layering, once your second color is confirmed)' : '') + ' is due on ' + due + ', one day before your event.\n\n' +
+      'Attached is your invoice for your records (Ref: ' + ref + '). Your total remaining balance of ' + peso(rest + LF + DF + M.deposit) + (DF || LF ? ' (including ' + [DF ? peso(DF) + ' delivery' : '', LF ? peso(LF) + ' layering, once your second color is confirmed' : ''].filter(String).join(' and ') + ')' : '') + ' is due on ' + due + ', one day before your event.\n\n' +
       'Please send your exact Google Maps pin so we can confirm delivery. ' + closer + ' Thank you po! ☺️';
     // event today or tomorrow: full payment + deposit now
     var rush = false, dayWord = '';
@@ -437,7 +471,7 @@ var WT = (function () {
         'Attached is your invoice for your records (Ref: ' + ref + '). Your ' + peso(M.deposit) + ' security deposit will be returned once every piece is back safe and sound.\n\n' +
         'Please send your exact Google Maps pin so we can confirm delivery. ' + closer + ' Thank you po! ☺️';
     }
-    return { pay: pay, conf: conf };
+    return { pay: pay, conf: conf, due: rush ? M.total + M.deposit : half, rush: rush, rest: rush ? 0 : rest + LF + DF + M.deposit, restDue: due, df: DF, dep: M.deposit };
   }
   // booking form (Netlify Forms)
   var form = document.getElementById('qForm'), bookBtn = document.getElementById('qBookBtn');
@@ -449,23 +483,101 @@ var WT = (function () {
     avIn.addEventListener('change', function () { dateIn.value = avIn.value; checkAvail(avIn.value); });
     dateIn.addEventListener('change', function () { if (avIn.value !== dateIn.value) { avIn.value = dateIn.value; checkAvail(dateIn.value); } });
   }
+  function showPayment(ref, mm) {
+    var box = document.getElementById('qPay'); if (!box || !mm) return;
+    box.hidden = false;
+    document.getElementById('qPayAmt').textContent = WT.peso(mm.due);
+    document.getElementById('qPayWhat').textContent = mm.rush ? 'Full payment (your event is very soon)' : '50% downpayment';
+    var restEl = document.getElementById('qPayRest');
+    if (restEl) { restEl.hidden = !mm.rest; if (mm.rest) restEl.innerHTML = '<span>Remaining balance' + (mm.restDue ? ', due ' + mm.restDue : '') + '<small>' + ['rental balance', mm.df ? 'delivery' : '', 'refundable security deposit'].filter(String).join(' + ') + '</small></span><b>' + WT.peso(mm.rest) + '</b>'; }
+    var fileIn = document.getElementById('qRcpt'), btn = document.getElementById('qRcptSend'), note = document.getElementById('qRcptNote');
+    document.getElementById('qPayCopy').onclick = function () { var b = this; if (navigator.clipboard) navigator.clipboard.writeText('15454836781').then(function () { b.textContent = 'Copied!'; }); };
+    btn.onclick = function () {
+      var f = fileIn.files && fileIn.files[0];
+      if (!f) { note.textContent = 'Please choose a screenshot of your receipt first.'; note.classList.add('warn'); return; }
+      btn.disabled = true; btn.textContent = 'Sending…'; note.classList.remove('warn'); note.textContent = '';
+      var rd = new FileReader();
+      rd.onload = function () {
+        var img = new Image();
+        img.onload = function () {
+          var k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+          c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          var body = new URLSearchParams(); body.set('type', 'receipt'); body.set('ref', ref); body.set('amount', WT.peso(mm.due));
+          body.set('file', c.toDataURL('image/jpeg', 0.85).split(',')[1]);
+          fetch(window.WT_SHEETS_URL, { method: 'POST', mode: 'no-cors', body: body }).then(function () {
+            btn.textContent = 'Receipt sent ✓'; fileIn.disabled = true;
+            note.textContent = 'Thank you! We’ll check your payment and email your invoice shortly.';
+          }).catch(function () {
+            btn.disabled = false; btn.textContent = 'Send my receipt';
+            note.textContent = 'Sorry, that didn’t go through. Please try again, or send your receipt to us on Instagram or Facebook.'; note.classList.add('warn');
+          });
+        };
+        img.onerror = function () { btn.disabled = false; btn.textContent = 'Send my receipt'; note.textContent = 'Please upload an image (a screenshot of your receipt).'; note.classList.add('warn'); };
+        img.src = rd.result;
+      };
+      rd.readAsDataURL(f);
+    };
+  }
+  var venueIn = document.getElementById('qVenueLink'), venueName = document.getElementById('qVenueName'), dlvBtn = document.getElementById('qDlvBtn');
+  if (venueIn) venueIn.addEventListener('input', function () { if (DLV !== null || dlvFor) { DLV = null; dlvFor = ''; render(); } });
+  if (dlvBtn) dlvBtn.addEventListener('click', function () {
+    var q = venueIn.value.trim();
+    if (!isMapsLink(q)) { DLV = false; dlvFor = ''; render(); $('qDlvNote').textContent = 'Please paste the Google Maps link of your exact venue (it starts with https://maps.app.goo.gl/ or https://www.google.com/maps/).'; $('qDlvNote').classList.add('warn'); venueIn.focus(); return; }
+    dlvBusy = true; dlvFor = q; DLV = null; render(); dlvBtn.disabled = true;
+    fetch(window.WT_SHEETS_URL + '?delivery=' + encodeURIComponent(q)).then(function (r) { return r.json(); }).then(function (j) {
+      if (dlvFor !== q) return; DLV = j && j.ok ? j : false;
+    }).catch(function () { if (dlvFor === q) DLV = false; }).then(function () { dlvBusy = false; dlvBtn.disabled = false; render(); });
+  });
+  function isMapsLink(v) { return /^https?:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|(www\.)?google\.[a-z.]+\/maps|maps\.google\.[a-z.]+)\S*/i.test(String(v || '').trim()); }
   function runnersField() {
     if (s.alc || s.runner == null) return '';
     var n = [1, 1, 2, 3][s.tier], out = [RUN[s.runner].name + ' x' + n];
     if (s.layer && s.runner2 != null) out.push(RUN[s.runner2].name + ' x' + n + (RUN[s.runner2].layer ? '' : ' (layer)'));
     return out.join(', ');
   }
+  function detailsMode(on) {
+    var qs = document.getElementById('quote'), grid = qs.querySelector('.q-grid'), bk = document.getElementById('book');
+    grid.classList.toggle('is-details', on);
+    ['.eyebrow', '.script-title', '.lead'].forEach(function (sel) { var el = qs.querySelector('.wrap > ' + sel); if (el) el.style.display = on ? 'none' : ''; });
+    if (bk) bk.style.display = on ? 'none' : '';
+    document.getElementById('qBack').hidden = !on;
+    document.getElementById('qVenueStep').hidden = !on;
+    document.getElementById('qCopy').style.display = on ? 'none' : '';
+    if (!on) { form.hidden = true; bookBtn.hidden = false; document.getElementById('qErr').hidden = true; }
+    window.scrollTo(0, Math.max(0, qs.getBoundingClientRect().top + window.pageYOffset - 90));
+  }
+  document.getElementById('qBack').addEventListener('click', function () { detailsMode(false); });
   bookBtn.addEventListener('click', function () {
     if (!root._hasRunner) {
       var n = document.getElementById('qRunnerNote'); n.textContent = R_missing(); n.classList.add('warn');
       document.getElementById(s.alc ? 'qAla' : 'qRunner').scrollIntoView({ behavior: 'smooth', block: 'center' }); return;
     }
     form.hidden = false; bookBtn.hidden = true;
-    form.querySelector('input[name="name"]').focus();
+    detailsMode(true);
   });
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var self = this, fdate = dateIn ? dateIn.value : '';
+    if (!venueName.value.trim()) {
+      var er3 = document.getElementById('qErr'); er3.hidden = false; er3.textContent = 'Please add your venue name at the top.';
+      venueName.focus(); return;
+    }
+    if (!isMapsLink(venueIn.value)) {
+      var er1 = document.getElementById('qErr'); er1.hidden = false; er1.textContent = 'Please paste the Google Maps link of your exact venue (open Google Maps, tap your venue, then Share → Copy link).';
+      venueIn.focus(); return;
+    }
+    document.getElementById('qVenue').value = venueName.value.trim() + ' · ' + venueIn.value.trim();
+    var ig = document.getElementById('qIg').value.trim(), fb = document.getElementById('qFb').value.trim();
+    if (!ig && !fb) {
+      var er2 = document.getElementById('qErr'); er2.hidden = false; er2.textContent = 'Please add your Instagram or Facebook (the account you message us from).';
+      document.getElementById('qIg').focus(); return;
+    }
+    document.getElementById('qSocial').value = [ig ? 'IG: ' + ig : '', fb ? 'FB: ' + fb : ''].filter(String).join(' · ');
+    if (needsDelivery() && !(DLV && dlvFor === venueIn.value.trim())) {
+      var er0 = document.getElementById('qErr'); er0.hidden = false; er0.textContent = 'Please tap “Check delivery fee” under your venue first, so your delivery is included in your total.';
+      document.getElementById('qDlv').scrollIntoView({ behavior: 'smooth', block: 'center' }); return;
+    }
     if (!e._checked && !s.alc && fdate) {
       var sendBtn = document.getElementById('qSend'); sendBtn.disabled = true; sendBtn.textContent = 'Checking your date…';
       if (avIn) avIn.value = fdate;
@@ -491,7 +603,10 @@ var WT = (function () {
     var toNetlify = fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return true; });
     var sheetBody = new URLSearchParams(new FormData(form)); sheetBody.set('ref', ref); sheetBody.set('runners', runnersField());
-    try { var mm = buildMessages(ref, new FormData(form)); sheetBody.set('payment_msg', mm.pay); sheetBody.set('confirm_msg', mm.conf); } catch (err) {}
+    var mm = null;
+    try { mm = buildMessages(ref, new FormData(form)); sheetBody.set('payment_msg', mm.pay); sheetBody.set('confirm_msg', mm.conf); } catch (err) {}
+    var dlx = deliveryLine();
+    if (dlx) { sheetBody.set('delivery_fee', String(dlx[1])); sheetBody.set('delivery_info', WT.peso(dlx[1]) + ' · ' + dlx[0].replace(/^Delivery( & pickup)?: /, '') + (DLV.from ? ' (from ' + DLV.from + ')' : '') + (DLV.place ? ' · ' + DLV.place : '') + ' · checked from: ' + venueIn.value.trim()); }
     var toSheet = window.WT_SHEETS_URL
       ? fetch(window.WT_SHEETS_URL, { method: 'POST', mode: 'no-cors', body: sheetBody }).then(function () { return true; })
       : Promise.reject(new Error('no sheet'));
@@ -501,10 +616,14 @@ var WT = (function () {
         var f = new FormData(form);
         var copy = root._summary + '\n\nName: ' + f.get('name') + '\nMobile: ' + f.get('phone') + '\nInstagram/Facebook: ' + f.get('social') + '\nDate: ' + f.get('date') + ' at ' + f.get('time') + '\nVenue: ' + f.get('venue') + (f.get('notes') ? '\nNotes: ' + f.get('notes') : '');
         document.getElementById('qRef').textContent = 'Booking reference: ' + ref;
+        showPayment(ref, mm);
         document.getElementById('qCopyTxt').textContent = copy;
         form.hidden = true; document.querySelector('.q-actions').hidden = true;
-        var done = document.getElementById('qDone'); done.hidden = false;
-        done.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var done = document.getElementById('qDone'), qs = document.getElementById('quote'), wrap = qs.querySelector('.wrap');
+        Array.prototype.forEach.call(wrap.children, function (el) { el.style.display = 'none'; });
+        var bk = document.getElementById('book'); if (bk) bk.style.display = 'none';
+        wrap.appendChild(done); done.classList.add('q-done-page'); done.hidden = false;
+        window.scrollTo(0, Math.max(0, qs.getBoundingClientRect().top + window.pageYOffset - 90));
         document.getElementById('qCopy2').onclick = function () {
           var b = this; if (navigator.clipboard) navigator.clipboard.writeText('Ref ' + ref + '\n' + copy).then(function () { b.textContent = 'Copied!'; });
         };

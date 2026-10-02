@@ -55,11 +55,19 @@
         <fieldset class="q-step"><legend><span id="qAlaNum">6</span>À la carte <small class="q-opt-tag" id="qAlaTag">optional</small></legend><div class="q-ala" id="qAla"></div></fieldset>
       </div>
       <aside class="q-summary" aria-live="polite">
+        <button type="button" class="q-back" id="qBack" hidden>← Back to edit my table</button>
+        <div class="q-venue" id="qVenueStep" hidden>
+          <h4>Where’s your celebration?</h4>
+          <p class="q-note" id="qDlvInfo"></p>
+          <label>Venue name <small>(restaurant, hall or home)</small><input id="qVenueName" placeholder="e.g. Rustica Bistro, Lanang branch"></label>
+          <label>Google Maps link of your venue <small>(open Google Maps, tap your exact venue, then Share → Copy link)</small><input id="qVenueLink" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/…"></label>
+          <div class="q-dlv" id="qDlv" hidden><button type="button" class="btn ghost" id="qDlvBtn">Check delivery fee</button><p class="q-note" id="qDlvNote"></p></div>
+        </div>
         <div class="q-photo"><img id="qPhoto" src="img/standard-setup.jpg" alt="Standard setup"><figure class="q-inset" id="qInset" hidden><img src="" alt=""><figcaption></figcaption></figure></div>
         <h3>Your table</h3>
         <ul id="qLines"></ul>
-        <div class="q-total"><span>Estimated total</span><strong id="qTotal">₱500</strong></div>
-        <p class="q-fine">Excludes security deposit &amp; delivery. We’ll confirm your final price when you book.</p>
+        <div class="q-total"><span>Total</span><strong id="qTotal">₱500</strong></div>
+        <p class="q-fine" id="qFine">Includes the refundable security deposit.</p>
         <div class="q-actions">
           <button type="button" class="btn" id="qBookBtn">Book this table</button>
           <button type="button" class="btn ghost" id="qCopy">Copy my picks</button>
@@ -69,15 +77,17 @@
           <p class="q-hp"><label>Leave this empty <input name="bot-field"></label></p>
           <input type="hidden" name="order" id="qOrder">
           <input type="hidden" name="total" id="qOrderTotal">
-          <h4>Almost there — where should we bring it?</h4>
+          <h4>Almost there — your details</h4>
           <label>Your name<input name="name" required autocomplete="name"></label>
           <label>Mobile number<input name="phone" type="tel" required autocomplete="tel" placeholder="09XX XXX XXXX"></label>
           <label>Email<input name="email" type="email" required autocomplete="email" placeholder="you@email.com"></label>
-          <label>Instagram or Facebook <small>(the account you message us from)</small><input name="social" required placeholder="@yourname or Facebook name"></label>
+          <input type="hidden" name="social" id="qSocial">
+          <p class="q-sublabel">The account you message us from <small>(fill in at least one)</small></p>
+          <div class="q-two"><label>Instagram<input id="qIg" placeholder="@yourname" autocapitalize="off"></label><label>Facebook<input id="qFb" placeholder="Your Facebook name"></label></div>
           <div class="q-two"><label>Event date<input name="date" type="date" required id="qDate"></label><label>Event time<input name="time" type="time" required></label></div>
-          <label>Venue or delivery address<textarea name="venue" rows="2" required></textarea></label>
-          <label>Anything else? <small>(optional: ribbon color, mixed runners, theme…)</small><textarea name="notes" rows="2"></textarea></label>
-          <label class="q-agree q-req"><input type="checkbox" name="request_ack" value="yes" required> <span><strong>I understand this is a booking request, not a confirmed booking.</strong> Whimsy Touch will message me to confirm availability, and my date is only secured once the downpayment is paid.</span></label>
+          <input type="hidden" name="venue" id="qVenue">
+          <label>Anything else? <small>(optional: what you’re celebrating, special requests, or anything we should know)</small><textarea name="notes" rows="2"></textarea></label>
+          <label class="q-agree q-req"><input type="checkbox" name="request_ack" value="yes" required> <span><strong>I understand this is a booking request, not a confirmed booking.</strong> My date is only secured once Whimsy Touch confirms my downpayment.</span></label>
           <div class="q-terms">
             <button type="button" class="q-read" id="qReadTerms"><span class="q-read-ic">✦</span><span><b>Read the Terms &amp; Conditions</b><small>Required before booking: deposit, delivery, damages &amp; cancellation</small></span></button>
             <label class="q-agree is-locked" id="qAgreeLabel"><input type="checkbox" name="agree" value="yes" required disabled id="qAgree"> <span id="qAgreeText">Open and read the Terms &amp; Conditions first to tick this box.</span></label>
@@ -87,17 +97,30 @@
         </form>
         <div class="q-done" id="qDone" hidden>
           <h4>Booking request sent!</h4>
-          <p><strong>Your date isn’t booked yet.</strong> <strong>We’ll message you to confirm your date, deposit and delivery.</strong> Here’s your copy — take a screenshot to keep it.</p>
+          <p class="q-ref" id="qRef"></p>
+          <p><strong>Your date isn’t booked yet.</strong> It’s secured once we confirm your payment.</p>
+          <div class="q-pay" id="qPay" hidden>
+            <h5>Pay to secure your date</h5>
+            <p class="q-pay-amt"><span id="qPayWhat">50% downpayment</span><strong id="qPayAmt"></strong></p>
+            <p class="q-pay-rest" id="qPayRest" hidden></p>
+            <img src="img/pay-qr.png" alt="InstaPay QR code for Whimsy Touch" class="q-pay-qr">
+            <p class="q-pay-acct">MariBank · <b>Jinnalyn Olbinar</b><br>Account no. <b>1545 4836 781</b> <button type="button" class="q-pay-copy" id="qPayCopy">Copy</button></p>
+            <p class="q-note">Scan with any bank or e-wallet app through InstaPay, then upload your receipt below.</p>
+            <label class="q-pay-up">Upload your receipt<input type="file" accept="image/*" id="qRcpt"></label>
+            <button type="button" class="btn" id="qRcptSend">Send my receipt</button>
+            <p class="q-note" id="qRcptNote"></p>
+          </div>
+          <details class="q-mycopy"><summary>See your booking details</summary>
+            <pre id="qCopyTxt"></pre>
+            <button type="button" class="btn ghost" id="qCopy2">Copy my booking</button>
+          </details>
           <div class="q-notify">
-            <p><strong>Please message us now</strong> to let us know you’ve sent your booking, so we can reply faster:</p>
+            <p><strong>Questions?</strong> Message us anytime:</p>
             <div class="q-notify-btns">
               <a class="btn" href="https://ig.me/m/thewhimsytouch" target="_blank" rel="noopener" id="qNotifyIg">Message us on Instagram</a>
               <a class="btn ghost" href="https://m.me/61594083157602" target="_blank" rel="noopener">Message us on Facebook</a>
             </div>
           </div>
-          <p class="q-ref" id="qRef"></p>
-          <pre id="qCopyTxt"></pre>
-          <button type="button" class="btn ghost" id="qCopy2">Copy my booking</button>
         </div>
       </aside>
     </div>

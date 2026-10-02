@@ -352,10 +352,14 @@ var WT = (function () {
     check('Pink LED taper candles', TAPER[t], s.taper, pinkOk, 'Pick a Pink or Pink + White runner', function (v) { s.taper = v; });
     // 4 setup
     var sb = $('qSetup'); sb.innerHTML = '';
-    var gmOk = t < 3 && s.up === 'fb';
+    // Dates when Fairy Godmother Service is not available (edit this list anytime: ['start', 'end'])
+    var GM_OFF = [['2026-10-30', '2026-11-06'], ['2026-11-27', '2026-11-29']];
+    var gmOffDay = !!avDate && GM_OFF.some(function (r) { return avDate >= r[0] && avDate <= r[1]; });
+    if (gmOffDay) s.gm = false;
+    var gmOk = t < 3 && s.up === 'fb' && !gmOffDay;
     sb.appendChild(opt('I’ll set it up', 'included · with our care card', !s.gm, function () { s.gm = false; render(); }));
-    sb.appendChild(opt('Fairy Godmother Service', t < 3 ? 'we set it up for you · +' + WT.peso(GM[t]) : 'not for Ever After', s.gm, function () { s.gm = true; render(); }, !gmOk));
-    $('qSetupNote').textContent = gmOk ? 'Free delivery within Lanang to Roxas. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
+    sb.appendChild(opt('Fairy Godmother Service', gmOffDay ? 'not available on ' + niceDate(avDate) : t < 3 ? 'we set it up for you · +' + WT.peso(GM[t]) : 'not for Ever After', s.gm, function () { s.gm = true; render(); }, !gmOk));
+    $('qSetupNote').textContent = gmOffDay ? 'Fairy Godmother Service isn’t available on ' + niceDate(avDate) + ', but you can still book your table and set it up yourself with our care card.' : gmOk ? 'Free delivery within Lanang to Roxas. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
     // summary
     var lines = [], total = s.alc ? 0 : BASE[t];
     if (s.alc) lines.push(['À la carte order', 0]);
@@ -374,6 +378,7 @@ var WT = (function () {
     incG.push(s.up === 'none' ? NT + ' gold candle holders' : holderTxt);
     if (s.up === 'fb') incG.push((s.mat === 'gold' ? 'Sheer gold' : 'Jute') + ' placemats', 'Cloth napkins with rings', 'Name cards', 'Kraft-paper wrap to take a bloom home');
     incG.push('Spare batteries and a care card');
+    incG.push('24-hour rental, starting when you receive the items');
     lines.push([WT.TIERS[t] + ' gathering', BASE[t], s.up === 'none' ? incG : null]);
     if (s.up === 'fd') lines.push(['Fairy Dust', FD[s.holder][t], incG]);
     if (s.up === 'fb') lines.push(['Full Bloom', FB[t], incG, 'Tableware (plates, glasses and cutlery) not included']);

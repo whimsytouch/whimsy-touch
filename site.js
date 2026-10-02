@@ -167,16 +167,29 @@ var WT = (function () {
   // runner availability for the chosen date (from the bookings sheet)
   var AV = null, avDate = '', avBusy = false, avLost = '';
   // delivery (Full Bloom / Fairy Godmother): zone check runs in the bookings sheet
-  var DLV = null, dlvBusy = false, dlvFor = '';
+  var DLV = null, DLVP = null, dlvBusy = false, dlvFor = '';
   function needsDelivery() { return !s.alc && (s.gm || (s.up === 'fb' && (s.tier === 1 || s.tier === 2))); }
   var ZONE_NAME = { buhangin: 'Buhangin', lanang: 'Lanang to Roxas' };
+  // price of ONE trip (drop-off or pickup) for a checked location; null = too far, message us
+  function tripPrice(q) {
+    if (!q) return null;
+    if (q.zone !== 'outside') return s.gm ? 0 : (q.zone === 'buhangin' ? 100 : 200);
+    if (q.km <= 10) return 250;
+    if (q.km <= 20) return 300;
+    return null;
+  }
+  function tripWhere(q) {
+    if (q.zone !== 'outside') return ZONE_NAME[q.zone];
+    return q.km <= 10 ? 'up to 10 km past Lanang to Roxas' : q.km <= 20 ? '10–20 km past Lanang to Roxas' : 'over 20 km past Lanang to Roxas';
+  }
+  function pickupSame() { var c = document.getElementById('qPickSame'); return !c || c.checked; }
+  function pickQ() { return pickupSame() ? DLV : DLVP; }
+  function dlvFar() { return !!(DLV && (tripPrice(DLV) === null || (pickQ() && tripPrice(pickQ()) === null))); }
   function deliveryLine() {
-    if (!needsDelivery() || !DLV) return null;
-    var out = DLV.zone === 'outside', km = DLV.km || 0, extra = out ? 30 * km : 0;
-    if (s.gm) return [out ? 'Delivery: ' + km + ' km outside Lanang to Roxas' : 'Delivery: free within ' + ZONE_NAME[DLV.zone], extra, null, out ? km + ' km × ₱30, with Fairy Godmother Service' : ''];
-    var base = DLV.zone === 'buhangin' ? 200 : 400;
-    return [out ? 'Delivery & pickup: ' + km + ' km outside Lanang to Roxas' : 'Delivery & pickup: ' + ZONE_NAME[DLV.zone], base + extra, null,
-      out ? '₱200 drop-off + ₱200 pickup + ' + km + ' km × ₱30' : '₱' + (base / 2) + ' drop-off + ₱' + (base / 2) + ' pickup'];
+    if (!needsDelivery() || !DLV || !pickQ() || dlvFar()) return null;
+    var a = tripPrice(DLV), b = tripPrice(pickQ());
+    var note = 'Drop-off (' + tripWhere(DLV) + '): ' + (a ? WT.peso(a) : 'free') + ' · Pickup (' + tripWhere(pickQ()) + '): ' + (b ? WT.peso(b) : 'free');
+    return ['Delivery & pickup', a + b, null, note];
   }
   function isBooked(r, n) { return !!(AV && AV['b' + n] && AV['b' + n].indexOf(r.name) >= 0); }
   function niceDate(v) { var p = String(v).split('-'); var mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return p.length === 3 ? mo[+p[1] - 1] + ' ' + (+p[2]) : v; }
@@ -230,12 +243,13 @@ var WT = (function () {
     var dBox = $('qDlv');
     if (dBox) {
       dBox.hidden = !needsDelivery();
+      var pw = $('qPickWrap'); if (pw) pw.hidden = !needsDelivery();
       var dN = $('qDlvNote'), dlNow = deliveryLine();
       dN.classList.remove('warn');
       if (dlvBusy) dN.textContent = 'Checking your location…';
-      else if (DLV === false) { dN.textContent = 'We couldn’t read that link. Please copy the Google Maps link of your exact venue again (Share → Copy link) and paste it above.'; dN.classList.add('warn'); }
-      else if (dlNow) dN.innerHTML = '<b>' + dlNow[0] + (dlNow[1] ? ': ' + WT.peso(dlNow[1]) : '') + '</b>' + (DLV.place ? '<br><small>📍 ' + DLV.place + '</small>' : '') +
-        '<br><small>We’ll double-check your location and let you know if anything changes.</small>';
+      else if (DLV === false || DLVP === false) { dN.textContent = 'We couldn’t read that link. Please copy the Google Maps link again (Share → Copy link) and paste it above.'; dN.classList.add('warn'); }
+      else if (dlvFar()) { dN.innerHTML = '<b>This location is outside our usual delivery area.</b><br><small>Please message us on Instagram or Facebook before booking, and we’ll see what we can do.</small>'; dN.classList.add('warn'); }
+      else if (dlNow) dN.innerHTML = '<b>Delivery & pickup: ' + (dlNow[1] ? WT.peso(dlNow[1]) : 'free') + '</b><br><small>' + dlNow[3] + '</small>' + (DLV.place ? '<br><small>📍 ' + DLV.place + '</small>' : '') + '<br><small>We’ll double-check your location and let you know if anything changes.</small>';
       else dN.textContent = '';
     }
     var avN = $('qAvNote');
@@ -341,7 +355,7 @@ var WT = (function () {
     var gmOk = t < 3 && s.up === 'fb';
     sb.appendChild(opt('I’ll set it up', 'included · with our care card', !s.gm, function () { s.gm = false; render(); }));
     sb.appendChild(opt('Fairy Godmother Service', t < 3 ? 'we set it up for you · +' + WT.peso(GM[t]) : 'not for Ever After', s.gm, function () { s.gm = true; render(); }, !gmOk));
-    $('qSetupNote').textContent = gmOk ? 'Fairy Godmother Service covers Lanang to Roxas. Venues beyond that are ₱30 per km.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
+    $('qSetupNote').textContent = gmOk ? 'Free delivery within Lanang to Roxas. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
     // summary
     var lines = [], total = s.alc ? 0 : BASE[t];
     if (s.alc) lines.push(['À la carte order', 0]);
@@ -383,8 +397,8 @@ var WT = (function () {
     var pending = needsDelivery() && !DLV;
     var info = $('qDlvInfo');
     if (info) info.textContent = !needsDelivery() ? 'So we know where your table is going. Delivery is arranged on the day and paid to the courier directly.' :
-      s.gm ? 'With Fairy Godmother Service, delivery is free within Lanang to Roxas. Venues beyond that are ₱30 per km.' :
-      'Full Bloom is a big setup that doesn’t fit on a motorbike, so we deliver and pick it up by car: ₱100 each way within Buhangin, ₱200 each way within Lanang to Roxas, plus ₱30 per km beyond that.';
+      s.gm ? 'With Fairy Godmother Service, delivery is free within Lanang to Roxas. Farther venues: ₱250 each way up to 10 km past, ₱300 each way up to 20 km past.' :
+      'Full Bloom is a big setup that doesn’t fit on a motorbike, so we deliver and pick it up by car. Each way: ₱100 within Buhangin, ₱200 within Lanang to Roxas, ₱250 up to 10 km past, ₱300 up to 20 km past.';
     var fine = $('qFine');
     if (fine) fine.textContent = s.alc ? 'Includes the refundable security deposit. Pickup or delivery is arranged on the day and paid to the courier directly.' :
       needsDelivery() ? (DLV ? 'Includes delivery and the refundable security deposit.' : 'Includes the refundable security deposit. Check your venue to add your delivery fee.') :
@@ -520,14 +534,21 @@ var WT = (function () {
     };
   }
   var venueIn = document.getElementById('qVenueLink'), venueName = document.getElementById('qVenueName'), dlvBtn = document.getElementById('qDlvBtn');
-  if (venueIn) venueIn.addEventListener('input', function () { if (DLV !== null || dlvFor) { DLV = null; dlvFor = ''; render(); } });
+  if (venueIn) venueIn.addEventListener('input', function () { if (DLV !== null || DLVP !== null || dlvFor) { DLV = null; DLVP = null; dlvFor = ''; render(); } });
+  var pickIn = document.getElementById('qPickLink'), pickSame = document.getElementById('qPickSame');
+  function resetDlv() { if (DLV !== null || DLVP !== null || dlvFor) { DLV = null; DLVP = null; dlvFor = ''; render(); } }
+  if (pickIn) pickIn.addEventListener('input', resetDlv);
+  if (pickSame) pickSame.addEventListener('change', function () { document.getElementById('qPickBox').hidden = pickSame.checked; resetDlv(); });
+  function dlvKey() { return venueIn.value.trim() + '|' + (pickupSame() ? '' : pickIn.value.trim()); }
+  function quote(q) { return fetch(window.WT_SHEETS_URL + '?delivery=' + encodeURIComponent(q)).then(function (r) { return r.json(); }).then(function (j) { return j && j.ok ? j : false; }).catch(function () { return false; }); }
   if (dlvBtn) dlvBtn.addEventListener('click', function () {
-    var q = venueIn.value.trim();
-    if (!isMapsLink(q)) { DLV = false; dlvFor = ''; render(); $('qDlvNote').textContent = 'Please paste the Google Maps link of your exact venue (it starts with https://maps.app.goo.gl/ or https://www.google.com/maps/).'; $('qDlvNote').classList.add('warn'); venueIn.focus(); return; }
-    dlvBusy = true; dlvFor = q; DLV = null; render(); dlvBtn.disabled = true;
-    fetch(window.WT_SHEETS_URL + '?delivery=' + encodeURIComponent(q)).then(function (r) { return r.json(); }).then(function (j) {
-      if (dlvFor !== q) return; DLV = j && j.ok ? j : false;
-    }).catch(function () { if (dlvFor === q) DLV = false; }).then(function () { dlvBusy = false; dlvBtn.disabled = false; render(); });
+    var q = venueIn.value.trim(), pq = pickupSame() ? '' : pickIn.value.trim();
+    var bad = !isMapsLink(q) ? venueIn : (!pickupSame() && !isMapsLink(pq)) ? pickIn : null;
+    if (bad) { DLV = null; DLVP = null; dlvFor = ''; render(); $('qDlvNote').textContent = 'Please paste a Google Maps link (it starts with https://maps.app.goo.gl/ or https://www.google.com/maps/).'; $('qDlvNote').classList.add('warn'); bad.focus(); return; }
+    var key = dlvKey(); dlvBusy = true; dlvFor = key; DLV = null; DLVP = null; render(); dlvBtn.disabled = true;
+    Promise.all([quote(q), pq ? quote(pq) : Promise.resolve(null)]).then(function (r) {
+      if (dlvFor !== key) return; DLV = r[0]; DLVP = r[1];
+    }).then(function () { dlvBusy = false; dlvBtn.disabled = false; render(); });
   });
   function isMapsLink(v) { return /^https?:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|(www\.)?google\.[a-z.]+\/maps|maps\.google\.[a-z.]+)\S*/i.test(String(v || '').trim()); }
   function runnersField() {
@@ -575,9 +596,10 @@ var WT = (function () {
       document.getElementById('qIg').focus(); return;
     }
     document.getElementById('qSocial').value = [ig ? 'IG: ' + ig : '', fb ? 'FB: ' + fb : ''].filter(String).join(' · ');
-    if (needsDelivery() && !(DLV && dlvFor === venueIn.value.trim())) {
-      var er0 = document.getElementById('qErr'); er0.hidden = false; er0.textContent = 'Please tap “Check delivery fee” under your venue first, so your delivery is included in your total.';
-      document.getElementById('qDlv').scrollIntoView({ behavior: 'smooth', block: 'center' }); return;
+    if (needsDelivery() && (dlvFar() || !deliveryLine() || dlvFor !== dlvKey())) {
+      var er0 = document.getElementById('qErr'); er0.hidden = false;
+      er0.textContent = dlvFar() ? 'This location is outside our usual delivery area. Please message us on Instagram or Facebook before booking.' : 'Please tap “Check delivery fee” first, so your delivery is included in your total.';
+      document.getElementById('qVenueStep').scrollIntoView({ behavior: 'smooth', block: 'center' }); return;
     }
     if (!e._checked && !s.alc && fdate) {
       var sendBtn = document.getElementById('qSend'); sendBtn.disabled = true; sendBtn.textContent = 'Checking your date…';
@@ -607,7 +629,7 @@ var WT = (function () {
     var mm = null;
     try { mm = buildMessages(ref, new FormData(form)); sheetBody.set('payment_msg', mm.pay); sheetBody.set('confirm_msg', mm.conf); } catch (err) {}
     var dlx = deliveryLine();
-    if (dlx) { sheetBody.set('delivery_fee', String(dlx[1])); sheetBody.set('delivery_info', WT.peso(dlx[1]) + ' · ' + dlx[0].replace(/^Delivery( & pickup)?: /, '') + (DLV.from ? ' (from ' + DLV.from + ')' : '') + (DLV.place ? ' · ' + DLV.place : '') + ' · checked from: ' + venueIn.value.trim()); }
+    if (dlx) { var pq0 = pickQ(); sheetBody.set('delivery_fee', String(dlx[1])); sheetBody.set('delivery_info', WT.peso(dlx[1]) + ' · ' + dlx[3] + (DLV.km ? ' · venue ' + DLV.km + ' km from ' + (DLV.from || 'edge') : '') + (DLV.place ? ' · ' + DLV.place : '') + (pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + pickIn.value.trim() + (pq0 && pq0.place ? ' (' + pq0.place + ')' : ''))); }
     var toSheet = window.WT_SHEETS_URL
       ? fetch(window.WT_SHEETS_URL, { method: 'POST', mode: 'no-cors', body: sheetBody }).then(function () { return true; })
       : Promise.reject(new Error('no sheet'));

@@ -790,3 +790,6 @@ section{padding:96px 0}
 .q-two input{width:100%;min-width:0;box-sizing:border-box}
 .q-form input:not([type=checkbox]):not([type=file]),.q-form textarea,.q-venue input{width:100%;box-sizing:border-box}
 section.quote.is-details{padding-top:28px}
+.q-pick{display:flex;flex-direction:column;gap:10px}.q-pick[hidden],#qPickBox[hidden]{display:none!important}
+.q-pick label.q-agree{flex-direction:row;align-items:center;gap:10px;text-transform:none;letter-spacing:0;font:400 15px var(--sans);color:var(--body)}
+.q-pick input[type=checkbox]{width:20px;height:20px;accent-color:var(--sage-deep);flex-shrink:0}

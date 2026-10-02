@@ -61,6 +61,10 @@
           <p class="q-note" id="qDlvInfo"></p>
           <label>Venue name <small>(restaurant, hall or home)</small><input id="qVenueName" placeholder="e.g. Rustica Bistro, Lanang branch"></label>
           <label>Google Maps link of your venue <small>(open Google Maps, tap your exact venue, then Share → Copy link)</small><input id="qVenueLink" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/…"></label>
+          <div class="q-pick" id="qPickWrap" hidden>
+            <label class="q-agree"><input type="checkbox" id="qPickSame" checked> <span>Pick up the items from the same place</span></label>
+            <label id="qPickBox" hidden>Google Maps link for pickup <small>(e.g. your home, where we collect everything after)</small><input id="qPickLink" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/…"></label>
+          </div>
           <div class="q-dlv" id="qDlv" hidden><button type="button" class="btn ghost" id="qDlvBtn">Check delivery fee</button><p class="q-note" id="qDlvNote"></p></div>
         </div>
         <div class="q-photo"><img id="qPhoto" src="img/standard-setup.jpg" alt="Standard setup"><figure class="q-inset" id="qInset" hidden><img src="" alt=""><figcaption></figcaption></figure></div>

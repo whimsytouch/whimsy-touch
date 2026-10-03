@@ -151,6 +151,7 @@ var WT = (function () {
   var FD = { tiered: [60, 150, 250], glass: [100, 250, 500] }, FB = [700, 1500, 2500];
   var TAPER = [50, 150, 200, 400], GM = [1000, 1500, 2000], LAYER = [50, 50, 100, 150];
   var ALA = [
+    { id: 'cakestand', name: 'Gold cake stand', set: '25 cm wide × 20 cm tall', price: 100 },
     { id: 'cream', name: 'Cream LED taper candles', set: 'set of 6', price: 150 },
     { id: 'pink', name: 'Pink LED taper candles', set: 'set of 6', price: 180 },
     { id: 'pillar', name: 'LED pillar candles', set: 'set of 6', price: 150 },
@@ -464,7 +465,7 @@ var WT = (function () {
     var closer = s.gm ? 'We can\'t wait to set your table!' : 'We hope you have the loveliest time setting up your table!';
     var pay = 'Hi ' + first + '! Thank you for booking with Whimsy Touch 🌸\n\n' +
       'Here\'s your booking summary (Ref: ' + ref + '):\n\n' + M.lines.join('\n') + '\n' + dateLine + '\n' + venue + '\n\n' +
-      'Total: ' + peso(M.total) + '\nSecurity deposit: ' + peso(M.deposit) + ' (refundable)\n\n' +
+      'Subtotal: ' + peso(M.total) + '\nSecurity deposit: ' + peso(M.deposit) + ' (refundable)\nTotal amount: ' + peso(M.total + M.deposit) + '\n\n' +
       'To lock in your date, please send the 50% downpayment of ' + peso(half) + ' through the QR above.\n\n' +
       'Your total remaining balance of ' + peso(rest + LF + DF + M.deposit) + ' (' + peso(rest) + ' rental balance' + layerBit + ' + ' + peso(M.deposit) + ' refundable security deposit) is due on ' + due + ', one day before your event.\n\n' +
       'Once your downpayment is in, we\'ll send your official invoice. Thank you po! ☺️';
@@ -482,7 +483,7 @@ var WT = (function () {
       var full = M.total + M.deposit;
       pay = 'Hi ' + first + '! Thank you for booking with Whimsy Touch 🌸\n\n' +
         'Here\'s your booking summary (Ref: ' + ref + '):\n\n' + M.lines.join('\n') + '\n' + dateLine + '\n' + venue + '\n\n' +
-        'Total: ' + peso(M.total) + '\nSecurity deposit: ' + peso(M.deposit) + ' (refundable)\n\n' +
+        'Subtotal: ' + peso(M.total) + '\nSecurity deposit: ' + peso(M.deposit) + ' (refundable)\nTotal amount: ' + peso(M.total + M.deposit) + '\n\n' +
         'Since your event is ' + dayWord + ', we\'ll need the full payment settled today to lock in your date and prepare your table on time: ' +
         peso(M.total) + ' rental + ' + peso(M.deposit) + ' refundable security deposit = ' + peso(full) + '. Please send it through the QR above.\n\n' +
         'Once your payment is in, we\'ll send your official invoice. Thank you po! ☺️';

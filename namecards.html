@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261004c">
+<link rel="stylesheet" href="styles.css?v=20261004d">
 <style>
 .nc-card{max-width:900px;margin:34px 0 0;background:var(--blush);border:1px solid var(--blush-line);border-radius:24px;padding:30px 32px 34px}
 .nc-card .q-form{border-top:0;margin-top:0;padding-top:0}
@@ -124,7 +124,7 @@
   </div>
 </footer>
 
-<script src="site.js?v=20261004c"></script>
+<script src="site.js?v=20261004d"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -202,15 +202,26 @@
       var head = '<div class="nc-thead"><b>Table ' + (ti + 1) + '</b>' +
         '<button type="button" class="q-opt" data-shape="long" aria-pressed="' + (t.shape === 'long') + '">Long</button>' +
         '<button type="button" class="q-opt" data-shape="round" aria-pressed="' + (t.shape === 'round') + '">Round</button>' +
-        '<label class="nc-seats-in">Seats <input type="number" min="1" max="' + maxGuests + '" value="' + t.seats + '"></label>' +
+        '<label class="nc-seats-in">Seats <input type="number" min="1" max="' + (maxGuests - (totalSeats() - t.seats)) + '" value="' + t.seats + '"></label>' +
         (tables.length > 1 ? '<button type="button" class="nc-rm">Remove</button>' : '') + '</div>';
       var grid = '<div class="nc-grid">';
       for (var i = 0; i < t.seats; i++) grid += '<label><i>' + (i + 1) + '</i><input data-seat="' + i + '" value="' + esc(t.names[i] || '') + '" placeholder="Guest name"></label>';
       el.innerHTML = head + grid + '</div>';
       el.querySelectorAll('[data-shape]').forEach(function (b) { b.addEventListener('click', function () { t.shape = b.dataset.shape; drawTables(); }); });
-      el.querySelector('.nc-seats-in input').addEventListener('change', function () {
-        var room = maxGuests - (totalSeats() - t.seats);
-        var v = Math.max(1, Math.min(room, parseInt(this.value, 10) || 1)); t.seats = v; t.names.length = Math.min(t.names.length, v); drawTables();
+      var seatIn = el.querySelector('.nc-seats-in input');
+      function seatErr(on, room) {
+        seatIn.style.borderColor = on ? 'var(--rose)' : ''; seatIn.style.color = on ? 'var(--rose)' : '';
+        $('ncSeatCount').style.color = on ? 'var(--rose)' : '';
+        if (on) $('ncSeatCount').textContent = 'Your table is up to ' + maxGuests + ' guests, so this table can only have up to ' + room + (room === 1 ? ' seat.' : ' seats.') + ' Please lower the number.';
+      }
+      seatIn.addEventListener('input', function () {
+        var room = maxGuests - (totalSeats() - t.seats), v = parseInt(this.value, 10) || 0;
+        seatErr(v > room, room);
+      });
+      seatIn.addEventListener('change', function () {
+        var room = maxGuests - (totalSeats() - t.seats), want = parseInt(this.value, 10) || 1;
+        var v = Math.max(1, Math.min(room, want)); t.seats = v; t.names.length = Math.min(t.names.length, v); drawTables();
+        if (want > room) { var ni = $('ncTables').querySelectorAll('.nc-seats-in input')[ti]; if (ni) { ni.style.borderColor = 'var(--rose)'; } $('ncSeatCount').style.color = 'var(--rose)'; $('ncSeatCount').textContent = 'Your table is up to ' + maxGuests + ' guests, so we set this table to ' + v + (v === 1 ? ' seat.' : ' seats.'); }
       });
       var rm = el.querySelector('.nc-rm'); if (rm) rm.addEventListener('click', function () { tables.splice(ti, 1); drawTables(); });
       el.querySelectorAll('[data-seat]').forEach(function (inp) { inp.addEventListener('input', function () { t.names[+inp.dataset.seat] = inp.value; drawChart(); }); });

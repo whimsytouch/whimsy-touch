@@ -243,7 +243,7 @@ var WT = (function () {
     if (s.runner2 != null && (RUN[s.runner2].max < t || s.runner2 === s.runner)) s.runner2 = null;
     var dBox = $('qDlv');
     if (dBox) {
-      dBox.hidden = !needsDelivery();
+      dBox.hidden = !needsDelivery(); dBox.style.display = needsDelivery() ? '' : 'none';
       var pw = $('qPickWrap'); if (pw) pw.hidden = false;
       var dN = $('qDlvNote'), dlNow = deliveryLine();
       dN.classList.remove('warn');
@@ -403,12 +403,12 @@ var WT = (function () {
     var pending = needsDelivery() && !DLV;
     var info = $('qDlvInfo');
     var R24 = ' The rental is for 24 hours from when you receive the items, so plan where everything will be picked up.';
-    var RIDER = 'Delivery and pickup are by our own rider. The fee follows the Maxim rate for your location, paid to the rider on the day (once at drop-off, once at pickup).';
+    var RIDER = 'Delivery and pickup are by our own rider. The fee follows the Maxim rate for your location, paid directly to the rider before each trip (drop-off and pickup), separate from your security deposit.';
     if (info) info.textContent = !needsDelivery() ? RIDER + R24 :
       'With Fairy Godmother Service, delivery is free within Lanang to Roxas. Farther venues: ₱250 each way up to 10 km past, ₱300 each way up to 20 km past.' + R24;
     var fine = $('qFine');
     if (fine) fine.textContent = needsDelivery() ? (DLV ? 'Includes delivery and the refundable security deposit.' : 'Includes the refundable security deposit. Check your venue to add your delivery fee.') :
-      'Includes the refundable security deposit. Delivery is paid to our rider on the day (Maxim rate).';
+      'Includes the refundable security deposit. Delivery is paid directly to our rider before each trip (Maxim rate).';
     if (pending) tot.innerHTML = shown + '<small>+ delivery</small>';
     else if (tot.textContent !== shown) { tot.textContent = shown; tot.classList.remove('pop'); void tot.offsetWidth; tot.classList.add('pop'); }
     var ph = $('qPhoto'), want = (!s.alc && R) ? R.img : 'img/standard-setup.jpg';
@@ -640,7 +640,7 @@ var WT = (function () {
     try { mm = buildMessages(ref, new FormData(form)); sheetBody.set('payment_msg', mm.pay); sheetBody.set('confirm_msg', mm.conf); } catch (err) {}
     var dlx = deliveryLine();
     if (dlx) { var pq0 = pickQ(); sheetBody.set('delivery_fee', String(dlx[1])); sheetBody.set('delivery_info', WT.peso(dlx[1]) + ' · ' + dlx[3] + (DLV.km ? ' · venue ' + DLV.km + ' km from ' + (DLV.from || 'edge') : '') + (DLV.place ? ' · ' + DLV.place : '') + (pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + pickIn.value.trim() + (pq0 && pq0.place ? ' (' + pq0.place + ')' : ''))); }
-    else { sheetBody.set('delivery_fee', '0'); sheetBody.set('delivery_info', 'Our rider · Maxim rate, paid on the day' + (pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + pickIn.value.trim())); }
+    else { sheetBody.set('delivery_fee', '0'); sheetBody.set('delivery_info', 'Our rider · Maxim rate, paid to rider before each trip' + (pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + pickIn.value.trim())); }
     var toSheet = window.WT_SHEETS_URL
       ? fetch(window.WT_SHEETS_URL, { method: 'POST', mode: 'no-cors', body: sheetBody }).then(function () { return true; })
       : Promise.reject(new Error('no sheet'));

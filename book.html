@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261004g">
+<link rel="stylesheet" href="styles.css?v=20261004h">
 </head>
 <body id="top">
 <a class="skip" href="#main">Skip to content</a>
@@ -68,10 +68,12 @@
           <div class="q-dlv" id="qDlv" hidden><button type="button" class="btn ghost" id="qDlvBtn">Check delivery fee</button><p class="q-note" id="qDlvNote"></p></div>
         </div>
         <div class="q-photo"><img id="qPhoto" src="img/standard-setup.jpg" alt="Standard setup"><figure class="q-inset" id="qInset" hidden><img src="" alt=""><figcaption></figcaption></figure></div>
+        <div id="qSumBlock">
         <h3>Your table</h3>
         <ul id="qLines"></ul>
         <div class="q-total"><span>Total</span><strong id="qTotal">₱500</strong></div>
         <p class="q-fine" id="qFine">Includes the refundable security deposit.</p>
+        </div>
         <div class="q-actions">
           <button type="button" class="btn" id="qBookBtn">Book this table</button>
           <button type="button" class="btn ghost" id="qCopy">Copy my picks</button>
@@ -90,7 +92,7 @@
           <div class="q-two"><label>Instagram<input id="qIg" placeholder="@yourname" autocapitalize="off"></label><label>Facebook<input id="qFb" placeholder="Your Facebook name"></label></div>
           <div class="q-two"><label>Event date<input name="date" type="date" required id="qDate"></label><label>Event time<input name="time" type="time" required></label></div>
           <input type="hidden" name="venue" id="qVenue">
-          <label>Anything else? <small>(optional: what you’re celebrating, special requests, or anything we should know)</small><textarea name="notes" rows="2"></textarea></label>
+          <label id="qNotesLbl">Anything else? <small>(optional: what you’re celebrating, special requests, or anything we should know)</small><textarea name="notes" rows="2"></textarea></label>
           <label class="q-agree q-req"><input type="checkbox" name="request_ack" value="yes" required> <span><strong>I understand this is a booking request, not a confirmed booking.</strong> My date is only secured once Whimsy Touch confirms my downpayment.</span></label>
           <div class="q-terms">
             <button type="button" class="q-read" id="qReadTerms"><span class="q-read-ic">✦</span><span><b>Read the Terms &amp; Conditions</b><small>Required before booking: deposit, delivery, damages &amp; cancellation</small></span></button>
@@ -158,7 +160,7 @@
   </div>
 </footer>
 
-<script src="runners-data.js?v=20261004g"></script>
-<script src="site.js?v=20261004g"></script>
+<script src="runners-data.js?v=20261004h"></script>
+<script src="site.js?v=20261004h"></script>
 </body>
 </html>

@@ -794,3 +794,9 @@ section.quote.is-details{padding-top:28px}
 .q-pick label.q-agree{flex-direction:row;align-items:center;gap:10px;text-transform:none;letter-spacing:0;font:400 15px var(--sans);color:var(--body)}
 .q-pick input[type=checkbox]{width:20px;height:20px;accent-color:var(--sage-deep);flex-shrink:0}
 .q-dlv[hidden]{display:none!important}
+
+.q-grid.is-details .q-form{border-top:0;margin-top:0;padding-top:0}
+.q-form .q-venue{margin:14px 0 0;padding:18px 0 18px;border-top:1px dashed rgba(94,87,77,.35);border-bottom:0}
+.q-form #qSumBlock{padding:4px 0 18px;margin-bottom:6px;border-top:1px dashed rgba(94,87,77,.35);border-bottom:1px dashed rgba(94,87,77,.35)}
+.q-form #qSumBlock h3{font-family:var(--script);font-weight:400;font-size:40px;color:var(--rose);margin:12px 0 4px;text-transform:none;letter-spacing:0}
+.q-form #qSumBlock ul{list-style:none;padding:0;margin:0}

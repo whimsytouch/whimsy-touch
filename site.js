@@ -576,6 +576,10 @@ var WT = (function () {
     if (bk) bk.style.display = on ? 'none' : '';
     document.getElementById('qBack').hidden = !on;
     document.getElementById('qVenueStep').hidden = !on;
+    // details page order: your details -> delivery -> total, then notes and send
+    var vs = document.getElementById('qVenueStep'), sb = document.getElementById('qSumBlock'), nl = document.getElementById('qNotesLbl');
+    if (on && nl) { nl.parentNode.insertBefore(vs, nl); nl.parentNode.insertBefore(sb, nl); }
+    else if (!on) { var ph = qs.querySelector('.q-photo'); if (ph) { ph.parentNode.insertBefore(vs, ph); ph.parentNode.insertBefore(sb, ph.nextSibling); } }
     document.getElementById('qCopy').style.display = on ? 'none' : '';
     if (!on) { form.hidden = true; bookBtn.hidden = false; document.getElementById('qErr').hidden = true; }
     window.scrollTo(0, Math.max(0, qs.getBoundingClientRect().top + window.pageYOffset - 90));

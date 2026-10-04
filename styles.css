@@ -800,3 +800,4 @@ section.quote.is-details{padding-top:28px}
 .q-form #qSumBlock{padding:4px 0 18px;margin-bottom:6px;border-top:1px dashed rgba(94,87,77,.35);border-bottom:1px dashed rgba(94,87,77,.35)}
 .q-form #qSumBlock h3{font-family:var(--script);font-weight:400;font-size:40px;color:var(--rose);margin:12px 0 4px;text-transform:none;letter-spacing:0}
 .q-form #qSumBlock ul{list-style:none;padding:0;margin:0}
+#qDlvInfo b{font-weight:600;color:var(--ink)}

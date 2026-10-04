@@ -403,10 +403,10 @@ var WT = (function () {
     var tot = $('qTotal'), newTxt = WT.peso(total), shown = WT.peso(total + depAmt);
     var pending = needsDelivery() && !DLV;
     var info = $('qDlvInfo');
-    var R24 = ' The rental is for 24 hours from when you receive the items, so plan where everything will be picked up.';
-    var RIDER = 'Delivery and pickup are by our own rider. The fee follows the Maxim rate for your location, paid directly to the rider before each trip (drop-off and pickup), separate from your security deposit.';
-    if (info) info.textContent = !needsDelivery() ? RIDER + R24 :
-      'With Fairy Godmother Service, delivery is free within Lanang to Roxas. Farther venues: ₱250 each way up to 10 km past, ₱300 each way up to 20 km past.' + R24;
+    var R24 = ' The rental is for <b>24 hours from when you receive the items</b>, so plan where everything will be picked up.';
+    var RIDER = 'Delivery and pickup are by <b>our own rider</b>. The fee follows the <b>Maxim rate</b> for your location, <b>paid directly to the rider before each trip</b> (drop-off and pickup), <b>separate from your security deposit</b>.';
+    if (info) info.innerHTML = !needsDelivery() ? RIDER + R24 :
+      'With Fairy Godmother Service, delivery is <b>free within Lanang to Roxas</b>. Farther venues: <b>₱250 each way</b> up to 10 km past, <b>₱300 each way</b> up to 20 km past.' + R24;
     var fine = $('qFine');
     if (fine) fine.textContent = needsDelivery() ? (DLV ? 'Includes delivery and the refundable security deposit.' : 'Includes the refundable security deposit. Check your venue to add your delivery fee.') :
       'Includes the refundable security deposit. Delivery is paid directly to our rider before each trip (Maxim rate).';

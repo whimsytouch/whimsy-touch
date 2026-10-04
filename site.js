@@ -398,6 +398,7 @@ var WT = (function () {
     });
     var depAmt = s.alc ? (alaLines.length ? ALA_DEP : 0) : (s.up === 'fb' ? [350, 500, 600, 500] : [300, 300, 500, 500])[t];
     if (depAmt) ul.appendChild(WT.el('li', '', '<span>Security deposit<em class="q-inc-note">Refundable once every piece is back safe and sound</em></span><span>+' + WT.peso(depAmt) + '</span>'));
+    if (!needsDelivery()) ul.appendChild(WT.el('li', '', '<span>Delivery &amp; pickup<em class="q-inc-note">By our own rider at the Maxim rate. Paid directly to the rider before each trip, not deducted from your security deposit</em></span><span>to rider</span>'));
     if (dl) { total += dl[1]; ul.appendChild(WT.el('li', '', '<span>' + dl[0] + (dl[3] ? '<em class="q-inc-note">' + dl[3] + '</em>' : '') + '</span><span>' + (dl[1] ? '+' + WT.peso(dl[1]) : 'free') + '</span>')); }
     var tot = $('qTotal'), newTxt = WT.peso(total), shown = WT.peso(total + depAmt);
     var pending = needsDelivery() && !DLV;
@@ -431,6 +432,7 @@ var WT = (function () {
     if (s.taper) ml.push('Pink LED taper candles, +' + WT.peso(TAPER[t]));
     if (s.gm) ml.push('Setup: Fairy Godmother Service, +' + WT.peso(GM[t]));
     if (dl) ml.push(dl[0] + (dl[1] ? ', +' + WT.peso(dl[1]) : ''));
+    else if (!needsDelivery()) ml.push('Delivery & pickup: by our rider at the Maxim rate, paid directly to the rider before each trip (not deducted from your security deposit)');
     alaLines.forEach(function (l) { ml.push(l[0] + ', ' + (s.alc ? '' : '+') + WT.peso(l[1])); });
     if (s.alc) ml = ['À la carte order:'].concat(alaLines.map(function (l) { return l[0] + ', ' + WT.peso(l[1]); }));
     root._msg = { lines: ml, total: total, deposit: s.alc ? ALA_DEP : depAmt, layer: (!s.alc && s.layer && R2 && !R2.layer) ? LAYER[t] : 0, delivery: dl ? dl[1] : 0 };
@@ -511,6 +513,9 @@ var WT = (function () {
     var restEl = document.getElementById('qPayRest');
     if (restEl) { restEl.hidden = !mm.rest; if (mm.rest) restEl.innerHTML = '<span>Remaining balance' + (mm.restDue ? ', due ' + mm.restDue : '') + '<small>' + ['rental balance', mm.df ? 'delivery' : '', 'refundable security deposit'].filter(String).join(' + ') + '</small></span><b>' + WT.peso(mm.rest) + '</b>'; }
     var fileIn = document.getElementById('qRcpt'), btn = document.getElementById('qRcptSend'), note = document.getElementById('qRcptNote');
+    var pdl = document.getElementById('qPayDlv');
+    if (pdl) pdl.innerHTML = needsDelivery() ? (mm.df ? '<b>Delivery</b> (' + WT.peso(mm.df) + ') is included in your remaining balance.' : '<b>Delivery</b> is free for your venue.') :
+      '<b>Delivery &amp; pickup</b> are not included above. The fee follows the Maxim rate and is paid directly to our rider before each trip. It is never deducted from your security deposit.';
     document.getElementById('qPayCopy').onclick = function () { var b = this; if (navigator.clipboard) navigator.clipboard.writeText('15454836781').then(function () { b.textContent = 'Copied!'; }); };
     btn.onclick = function () {
       var f = fileIn.files && fileIn.files[0];

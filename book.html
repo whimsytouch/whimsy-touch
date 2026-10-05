@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261004i">
+<link rel="stylesheet" href="styles.css?v=20261005a">
 </head>
 <body id="top">
 <a class="skip" href="#main">Skip to content</a>
@@ -110,7 +110,7 @@
             <p class="q-pay-amt"><span id="qPayWhat">50% downpayment</span><strong id="qPayAmt"></strong></p>
             <p class="q-pay-rest" id="qPayRest" hidden></p>
             <p class="q-note" id="qPayDlv"></p>
-            <img src="pay-qr.png" alt="InstaPay QR code for Whimsy Touch" class="q-pay-qr">
+            <img src="pay-qr.png" onerror="if(!this.dataset.t){this.dataset.t=1;this.src='img/pay-qr.png';}" alt="InstaPay QR code for Whimsy Touch" class="q-pay-qr">
             <p class="q-pay-acct">MariBank · <b>Jinnalyn Olbinar</b><br>Account no. <b>1545 4836 781</b> <button type="button" class="q-pay-copy" id="qPayCopy">Copy</button></p>
             <p class="q-note">Scan with any bank or e-wallet app through InstaPay, then upload your receipt below.</p>
             <label class="q-pay-up">Upload your receipt<input type="file" accept="image/*" id="qRcpt"></label>
@@ -160,7 +160,7 @@
   </div>
 </footer>
 
-<script src="runners-data.js?v=20261004i"></script>
-<script src="site.js?v=20261004i"></script>
+<script src="runners-data.js?v=20261005a"></script>
+<script src="site.js?v=20261005a"></script>
 </body>
 </html>

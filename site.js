@@ -194,7 +194,17 @@ var WT = (function () {
   }
   function isBooked(r, n) { return !!(AV && AV['b' + n] && AV['b' + n].indexOf(r.name) >= 0); }
   function niceDate(v) { var p = String(v).split('-'); var mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return p.length === 3 ? mo[+p[1] - 1] + ' ' + (+p[2]) : v; }
+  // Dates we're fully booked (no bookings at all on these days)
+  var BLOCKED = ['2026-11-27', '2026-11-28'], avBlocked = '';
   function checkAvail(v, done) {
+    if (BLOCKED.indexOf(v) >= 0) {
+      avBlocked = v; AV = null; avDate = '';
+      ['qAvDate', 'qDate'].forEach(function (id) { var x = document.getElementById(id); if (x) x.value = ''; });
+      var er = document.getElementById('qErr'), fm = document.getElementById('qForm');
+      if (er && fm && !fm.hidden) { er.hidden = false; er.textContent = 'Sorry, we’re fully booked on ' + niceDate(v) + '. Please pick another date.'; }
+      render(); if (done) done(); return;
+    }
+    avBlocked = '';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(v || '') || !window.WT_SHEETS_URL) { AV = null; avDate = ''; render(); if (done) done(); return; }
     avBusy = true; avDate = v; render();
     fetch(window.WT_SHEETS_URL + '?avail=' + v).then(function (r) { return r.json(); }).then(function (j) {
@@ -255,8 +265,8 @@ var WT = (function () {
     }
     var avN = $('qAvNote');
     if (avN) {
-      avN.classList.toggle('warn', !!avLost);
-      avN.textContent = avBusy ? 'Checking what’s available on ' + niceDate(avDate) + '…' :
+      avN.classList.toggle('warn', !!avLost || !!avBlocked);
+      avN.textContent = avBlocked ? 'Sorry, we’re fully booked on ' + niceDate(avBlocked) + '. Please pick another date.' : avBusy ? 'Checking what’s available on ' + niceDate(avDate) + '…' :
         avLost ? 'Sorry, ' + avLost + ' is already booked on ' + niceDate(avDate) + '. Please pick another color.' :
         AV && RUN.some(function (r) { return r.max >= t && isBooked(r, NRt); }) ? 'Crossed-out colors are booked that day.' :
         AV || avDate ? '' : 'Pick your event date first to see which runners are available.';

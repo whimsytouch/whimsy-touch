@@ -161,9 +161,9 @@ input[type="file"] { font: inherit; font-size: 15px; width: 100%; }
 }
 .tab[aria-selected="true"] { background: var(--cafe-cream); color: var(--cafe); border-color: var(--cafe-cream); }
 .tab:focus-visible { outline: 3px solid #F2C9B9; outline-offset: 2px; }
-.panels { width: calc(100% + 44px); min-width: 0; transition: height 0.25s ease; display: flex; align-items: flex-start; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; margin: 0 -22px; overscroll-behavior-x: contain; }
+.panels { min-width: 0; transition: height 0.2s ease; display: flex; align-items: flex-start; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; margin: 0 -22px; overscroll-behavior-x: contain; touch-action: pan-x pan-y; }
 .panels::-webkit-scrollbar { display: none; }
-.group { flex: 0 0 100%; scroll-snap-align: start; padding: 6px 22px 0; }
+.group { flex: 0 0 100%; width: 100%; scroll-snap-align: start; scroll-snap-stop: always; padding: 6px 22px 0; }
 .swipe { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 14px; opacity: 0.85; margin: 8px 0 4px; }
 .pick { margin: 12px 0 4px; padding: 10px 14px; border-radius: 12px; background: rgba(243, 233, 220, 0.14); font-weight: 600; color: #FFFFFF; }
 .subhead { margin: 26px 0 4px; padding-top: 16px; border-top: 1.5px dashed rgba(243, 233, 220, 0.35); font-size: 15px; font-weight: 600; color: #F2C9B9; }
@@ -468,7 +468,7 @@ function buildMenu() {
   };
   $('menuTabs').addEventListener('click', (e) => {
     const t = e.target.closest('.tab'); if (!t) return;
-    panels.scrollTo({ left: +t.dataset.g * panels.clientWidth });
+    panels.scrollTo({ left: +t.dataset.g * panels.clientWidth, behavior: 'smooth' });
     setActive(+t.dataset.g);
   });
   setActive(0);
@@ -476,9 +476,9 @@ function buildMenu() {
   document.fonts && document.fonts.ready.then(() => setActive(Math.round(panels.scrollLeft / panels.clientWidth)));
   let raf;
   panels.addEventListener('scroll', () => {
-    cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(() => setActive(Math.round(panels.scrollLeft / panels.clientWidth)));
-  });
+    clearTimeout(raf);
+    raf = setTimeout(() => setActive(Math.round(panels.scrollLeft / panels.clientWidth)), 120);
+  }, { passive: true });
   $('menuGroups').addEventListener('change', (e) => {
     if (e.target.name === 'order') {
       document.querySelectorAll('.item').forEach((el) => {

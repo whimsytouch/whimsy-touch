@@ -1,3 +1,5 @@
+@font-face{font-family:'WT Text';src:url(img/wt-text.woff2) format('woff2');font-weight:300 700;font-style:normal;font-display:swap;size-adjust:116%}
+@font-face{font-family:'WT Text';src:url(img/wt-text-italic.woff2) format('woff2');font-weight:300 700;font-style:italic;font-display:swap;size-adjust:116%}
 /* Whimsy Touch — site styles */
 :root{
   --bg:#E4DECF;
@@ -16,6 +18,7 @@
   --pill:#736D63;
   --btn:#4F5536;
   --script:'Pinyon Script',cursive;
+  --logo:'Pinyon Script',cursive;
   --serif:'Cormorant Garamond',Georgia,serif;
   --sans:'Josefin Sans',system-ui,sans-serif;
   --wrap:1180px;
@@ -34,7 +37,7 @@ p{margin:0}
 /* ---------- Nav ---------- */
 .nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(228,222,207,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid rgba(94,87,77,.12)}
 .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
-.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--sage-deep);font-family:var(--script);font-size:28px;line-height:1}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--sage-deep);font-family:var(--logo);font-size:28px;line-height:1}
 .nav-brand img{width:36px;height:36px;border-radius:8px;object-fit:cover}
 .nav-links{display:flex;gap:28px;list-style:none;margin:0;padding:0;font-family:var(--serif);font-size:18px}
 .nav-links a{color:var(--muted);text-decoration:none;padding:6px 0;border-bottom:1px solid transparent}
@@ -176,7 +179,7 @@ section{padding:96px 0}
 @media (max-width:860px){.book .wrap{grid-template-columns:1fr;gap:24px}.book{padding:88px 0}}
 .footer{padding:28px 0;font-size:14px;color:var(--muted)}
 .footer .wrap{display:flex;flex-wrap:wrap;gap:8px 32px;justify-content:space-between;align-items:center}
-.footer .brand{font-family:var(--script);font-size:26px;color:var(--sage-deep)}
+.footer .brand{font-family:var(--logo);font-size:26px;color:var(--sage-deep)}
 
 /* ---------- Runners page ---------- */
 .page-head{padding:80px 0 24px}
@@ -802,16 +805,52 @@ section.quote.is-details{padding-top:28px}
 .q-form #qSumBlock ul{list-style:none;padding:0;margin:0}
 #qDlvInfo b{font-weight:600;color:var(--ink)}
 
-/* ===== Homepage: Halloween workshop feature ===== */
-.hw-feature{padding:56px 0 8px}
-.hw-card{display:grid;grid-template-columns:1.15fr 1fr;align-items:stretch;background:var(--card);border:1px solid var(--gold-line);border-radius:28px;overflow:hidden;text-decoration:none;color:var(--ink);box-shadow:0 18px 40px rgba(46,42,36,.12);transition:transform .2s,box-shadow .2s}
-.hw-card:hover{transform:translateY(-2px);box-shadow:0 24px 50px rgba(46,42,36,.16)}
-.hw-img{display:block;min-height:280px}.hw-img img{width:100%;height:100%;object-fit:cover}
-.hw-text{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:36px 38px}
-.hw-text .eyebrow{color:#B5652B}
-.hw-title{font-family:var(--script);color:var(--rose);font-size:clamp(40px,5vw,56px);line-height:1.05}
-.hw-meta{font-family:var(--serif);font-size:22px;line-height:1.35;color:var(--body)}.hw-meta b{font-weight:600;color:var(--ink)}
-.hw-desc{font-size:15px;color:var(--body)}.hw-desc b{font-weight:500;color:var(--ink)}
-.hw-btn{margin-top:6px;background:#B5652B}.hw-card:hover .hw-btn{background:#974f1f}
-.hw-close{color:var(--muted);font-size:13px;letter-spacing:.04em}
-@media (max-width:760px){.hw-feature{padding:40px 0 0}.hw-card{grid-template-columns:1fr}.hw-img{min-height:0;aspect-ratio:4/3}.hw-text{padding:26px 22px 30px;align-items:center;text-align:center}}
+/* ===== Homepage: Halloween workshop card, beside the intro (both visible on arrival) ===== */
+.about .doily.hw-off{display:none}
+.hw-card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--gold-line);border-radius:22px;overflow:hidden;text-decoration:none;color:var(--ink);box-shadow:0 14px 32px rgba(46,42,36,.12);max-width:460px;width:100%;margin-inline:auto;transition:transform .2s,box-shadow .2s}
+.hw-card:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(46,42,36,.16)}
+.hw-img{display:block;aspect-ratio:16/10}.hw-img img{width:100%;height:100%;object-fit:cover;display:block}
+.hw-text{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:20px 22px 22px;min-width:0}
+.hw-eyebrow{font-size:11.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B5652B}
+.hw-title{font-family:var(--script);color:var(--rose);font-size:34px;line-height:1.1}
+.hw-meta{font-size:14.5px;color:var(--body)}
+.hw-btn{margin-top:8px;background:#B5652B;min-height:44px;padding:0 24px;font-size:14px}.hw-card:hover .hw-btn{background:#974f1f}
+@media (max-width:760px){
+  .hero{min-height:210px!important}.hero-logo{width:min(190px,52vw)!important}
+  section.about{padding-top:28px}
+  .hw-card{flex-direction:row;align-items:stretch;max-width:none;border-radius:18px;margin-top:4px}
+  .hw-img{aspect-ratio:auto;width:104px;flex:0 0 104px}
+  .hw-text{padding:12px 14px;gap:3px;text-align:left}
+  .hw-title{font-size:24px}.hw-meta{font-size:13px}.hw-eyebrow{font-size:10.5px}
+  .hw-btn{min-height:36px;padding:0 16px;font-size:13px;margin-top:6px}
+}
+
+/* pickup timing + table note */
+.q-pickwhen{display:flex;flex-direction:column;gap:8px;margin:6px 0 4px}
+.q-pickwhen .q-sublabel{margin:4px 0 0}
+.q-radio{display:flex;flex-direction:column;gap:8px}
+.q-pickwhen .q-radio label.q-agree{display:flex!important;flex-direction:row!important;align-items:center;gap:12px;margin:0;padding:12px 14px;border:1px solid var(--gold-line);border-radius:14px;background:rgba(255,255,255,.55);text-transform:none;letter-spacing:normal;font-size:15px;cursor:pointer}
+.q-pickwhen .q-radio label.q-agree input{width:20px!important;height:20px!important;min-height:0!important;flex:0 0 20px;margin:0;padding:0;accent-color:var(--sage-deep)}
+.q-pickwhen .q-radio label.q-agree:has(input:checked){border-color:var(--sage-deep);background:#fff}
+.q-pickwhen .q-note b{font-weight:600;color:var(--ink)}
+.g-tables-note{max-width:620px;margin:28px auto 0;color:var(--body);font-size:15px}
+.q-pickwhen .q-radio label.q-agree[hidden],.q-pickwhen label[hidden]{display:none!important}
+
+/* ===== Booking page only: Cormorant text (option A), script headings ===== */
+.quote,.tc-panel,.q-done{--sans:'WT Text','Cormorant Garamond',Georgia,serif}
+.quote{font-family:var(--sans);font-weight:500;font-variant-numeric:lining-nums}
+.quote input,.quote select,.quote textarea,.quote button{font-family:inherit}
+.quote .q-form input,.quote .q-form textarea,.quote .q-venue input,.quote .q-text{font-weight:500}
+.quote .q-form label.q-agree,.quote .q-pick label.q-agree,.quote .q-opt-tag,.quote .from{font-weight:500}
+
+/* Fairy Godmother: what's included */
+.godmother .gm-lead{font-size:16.5px}
+.gm-list{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:0;border-top:1px solid rgba(234,217,184,.35)}
+.gm-list li{display:grid;grid-template-columns:86px 1fr;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid rgba(234,217,184,.25);font-size:16px;color:#F2F0EB}
+.gm-list b{font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#EAD9B8}
+.tc-panel{font-family:var(--sans);font-weight:500}
+@media (min-width:761px){.hero{min-height:min(38vh,320px)}.hero-logo{width:min(230px,40vw)}section.about{padding-top:44px}.about .wrap:first-child{align-items:center}}
+@media (min-width:761px){.hw-img{aspect-ratio:2/1}}
+@media (max-width:760px){.about .wrap:first-child{gap:0}.about .wrap:first-child>div:first-child{display:contents}.about .wrap:first-child .hw-card{order:2;margin:18px 0 6px}.about .wrap:first-child .poem{order:3}.about .wrap:first-child .eyebrow{justify-content:center}}
+@media (max-width:760px){.hero{min-height:168px!important}.hero-logo{width:min(150px,42vw)!important}section.about{padding-top:20px}.about .wrap:first-child .eyebrow{margin-bottom:0}.about .hw-text{padding:10px 12px}.about .hw-btn{min-height:34px;margin-top:4px}}
+@media (max-width:760px){.hero{min-height:140px!important}.hero-logo{width:min(128px,36vw)!important}.about .about-lead{font-size:19px;line-height:1.45}.about h2{margin-top:10px}}

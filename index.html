@@ -12,8 +12,8 @@
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261008a">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20261010m">
 </head>
 <body id="top">
 <a class="skip" href="#main">Skip to content</a>
@@ -46,23 +46,6 @@
   <img class="hero-logo" src="img/logo.webp" alt="Whimsy Touch">
 </div>
 
-<!-- HALLOWEEN WORKSHOP -->
-<section class="hw-feature" id="halloween">
-  <div class="wrap">
-    <a class="hw-card" href="halloween.html">
-      <span class="hw-img"><img src="img/halloween-workshop.jpg" alt="Guests decorating Halloween cookies around a candlelit table" loading="lazy"></span>
-      <span class="hw-text">
-        <span class="eyebrow">Limited seats · Workshop</span>
-        <span class="hw-title">Halloween Cookie Decorating</span>
-        <span class="hw-meta"><b>Saturday, 24 October</b> · 1–3 PM<br>Just Coffee &amp; Sip, Matina</span>
-        <span class="hw-desc">An afternoon of icing, sprinkles and spooky little cookies at a Whimsy Touch table. <b>₱899 per guest</b>, only 15 seats.</span>
-        <span class="btn hw-btn">Reserve your seat</span>
-        <small class="hw-close">Registration closes October 21</small>
-      </span>
-    </a>
-  </div>
-</section>
-
 <!-- ABOUT -->
 <section class="about" id="about">
   <div class="wrap">
@@ -72,7 +55,17 @@
       <p class="about-lead">Whimsy Touch is a <strong>tablescape rental</strong> in Davao City. We lend you the pieces, and you set the table yourself, wherever you’re celebrating.</p>
       <p class="poem">You don’t need a stylist to style your affair,<br>just borrow the pieces and place them with care —<br>we bring the runners, the candlelight, the bloom,<br>you make the magic happen in your own room.</p>
     </div>
-    <div class="doily">
+    <a class="hw-card" id="halloween" href="halloween.html">
+      <span class="hw-img"><img src="img/halloween-workshop.jpg" alt="Guests decorating Halloween cookies around a candlelit table"></span>
+      <span class="hw-text">
+        <span class="hw-eyebrow">Workshop · limited seats</span>
+        <span class="hw-title">Halloween Cookie Decorating</span>
+        <span class="hw-meta">Sat, 24 Oct · 1–3 PM · Just Coffee &amp; Sip · ₱899</span>
+        <span class="btn hw-btn">Reserve a seat</span>
+      </span>
+    </a>
+    <!-- Halloween workshop: delete the card above and remove "hw-off" below after Oct 24 to bring the photo back -->
+    <div class="doily hw-off">
       <img class="frame" src="img/doily.webp" alt="">
       <img class="photo" src="img/hero-table.jpg" alt="A candlelit table dressed with a blush runner, taper candles and flowers">
     </div>
@@ -148,6 +141,6 @@
   </div>
 </footer>
 
-<script src="site.js?v=20261008a"></script>
+<script src="site.js?v=20261010m"></script>
 </body>
 </html>

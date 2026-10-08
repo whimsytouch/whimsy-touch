@@ -183,14 +183,68 @@ var WT = (function () {
     if (q.zone !== 'outside') return ZONE_NAME[q.zone];
     return q.km <= 10 ? 'up to 10 km past Lanang to Roxas' : q.km <= 20 ? '10–20 km past Lanang to Roxas' : 'over 20 km past Lanang to Roxas';
   }
-  function pickupSame() { var c = document.getElementById('qPickSame'); return !c || c.checked; }
+  function fmt12(tm) { if (!/^\d{1,2}:\d{2}/.test(tm || '')) return ''; var h = +tm.split(':')[0]; return (h % 12 || 12) + ':' + tm.split(':')[1] + ' ' + (h < 12 ? 'AM' : 'PM'); }
+  function pickupText() {
+    var w = document.querySelector('input[name="pickup_when"]:checked'), t = document.getElementById('qPickTime'), tt = fmt12(t ? t.value : '');
+    var e = document.getElementById('qEndTime'), et = s.gm && e ? fmt12(e.value) : '', v = w ? w.value : '', how = '';
+    if (s.gm && !s.alc) {
+      how = v.indexOf('Same') === 0 ? 'We pack down at the venue' + (tt ? ', ' + tt : '') + (lateFee() ? ' (late-night pack-down, +' + WT.peso(LATE_FEE) + ')' : '')
+        : v.indexOf('Next') === 0 ? 'Next-day pickup from the venue' + (tt ? ', venue opens / pickup ' + tt : '') + ' (you pack up, boxes left with you)'
+        : 'Next-day pickup from another place' + (tt ? ', ' + tt : '') + ' (you pack up, boxes left with you)';
+      return (et ? 'Event ends ' + et + ' · ' : '') + how;
+    }
+    how = v.indexOf('Same') === 0 ? 'Same day' : 'Next day';
+    return how + (tt ? ', ' + tt : '');
+  }
+  var LATE_FEE = 300;
+  function lateFee() {
+    if (!s.gm || s.alc) return 0;
+    var w = document.querySelector('input[name="pickup_when"]:checked'), t = document.getElementById('qPickTime');
+    if (!w || w.value.indexOf('Same') !== 0 || !t || !/^\d{1,2}:\d{2}/.test(t.value)) return 0;
+    var h = +t.value.split(':')[0];
+    return (h >= 23 || h < 5) ? LATE_FEE : 0;
+  }
+  function syncPick() {
+    var gm = !s.alc && s.gm, eb = document.getElementById('qEndBox'), q = document.getElementById('qPickQ'), lb = document.getElementById('qPickTimeLbl');
+    if (!eb) return;
+    eb.hidden = !gm;
+    var ep = document.getElementById('qElse'), nd = document.getElementById('qNextDay');
+    if (ep) { ep.hidden = !gm; if (!gm && ep.querySelector('input').checked) document.querySelector('input[name="pickup_when"]').checked = true; }
+    var st = document.getElementById('qSameTxt'), nt = document.getElementById('qNextTxt'), et = document.getElementById('qElseTxt');
+    if (st) st.textContent = gm ? 'We pack down at the venue' : 'Same day, after the event';
+    if (nt) nt.textContent = gm ? 'Next day, from the venue' : 'Next day';
+    if (et) et.textContent = 'Next day, from another place';
+    q.textContent = 'Pickup';
+    var w = document.querySelector('input[name="pickup_when"]:checked'), v = w ? w.value : '';
+    var el = gm && v.indexOf('Picked') === 0, nv = gm && v.indexOf('Next') === 0;
+    var pw = document.getElementById('qPickWrap'), ps = document.getElementById('qPickSame'), pb = document.getElementById('qPickBox');
+    if (pw) {
+      pw.style.display = gm && !el ? 'none' : '';
+      ps.parentNode.style.display = el ? 'none' : '';
+      pb.hidden = el ? false : ps.checked;
+    }
+    var rn = document.getElementById('qRentNote'); if (rn) rn.hidden = gm;
+    var pn = document.getElementById('qPackNote');
+    if (pn) {
+      pn.hidden = !gm;
+      pn.innerHTML = !gm ? '' : (!el && !nv)
+        ? 'Included. After <b>11 PM</b>, add ' + WT.peso(LATE_FEE) + '.'
+        : 'You pack the items into our boxes, switch off all candles, and send us photos.' +
+          (nv ? ' Please arrange with the venue to keep them safe overnight.' : '') +
+          ' Free pickup within Lanang to Roxas.';
+    }
+    lb.textContent = el ? 'Pickup time' : nv ? 'Pickup time (when the venue opens)' : gm ? 'Pack-down time' : 'Pickup time';
+  }
+  function selfReturn() { return false; }
+  function elsePick() { var x = document.querySelector('#qElse input'); return !!(s.gm && x && x.checked); }
+  function pickupSame() { if (elsePick()) return false; var c = document.getElementById('qPickSame'); return selfReturn() || !c || c.checked; }
   function pickQ() { return pickupSame() ? DLV : DLVP; }
   function dlvFar() { return !!(DLV && (tripPrice(DLV) === null || (pickQ() && tripPrice(pickQ()) === null))); }
   function deliveryLine() {
     if (!needsDelivery() || !DLV || !pickQ() || dlvFar()) return null;
-    var a = tripPrice(DLV), b = tripPrice(pickQ());
-    var note = 'Drop-off (' + tripWhere(DLV) + '): ' + (a ? WT.peso(a) : 'free') + ' · Pickup (' + tripWhere(pickQ()) + '): ' + (b ? WT.peso(b) : 'free');
-    return ['Delivery & pickup', a + b, null, note];
+    var a = tripPrice(DLV), sr = selfReturn(), b = sr ? 0 : tripPrice(pickQ());
+    var note = 'Drop-off (' + tripWhere(DLV) + '): ' + (a ? WT.peso(a) : 'free') + (sr ? ' · Return: by you' : ' · Pickup (' + tripWhere(pickQ()) + '): ' + (b ? WT.peso(b) : 'free'));
+    return [sr ? 'Delivery' : 'Delivery & pickup', a + b, null, note];
   }
   function isBooked(r, n) { return !!(AV && AV['b' + n] && AV['b' + n].indexOf(r.name) >= 0); }
   function niceDate(v) { var p = String(v).split('-'); var mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return p.length === 3 ? mo[+p[1] - 1] + ' ' + (+p[2]) : v; }
@@ -219,6 +273,7 @@ var WT = (function () {
     return b;
   }
   function render() {
+    try { syncPick(); } catch (e) {}
     var t = s.tier, $ = function (id) { return document.getElementById(id); };
     // 1 tier
     var tierBox = $('qTier'); tierBox.innerHTML = '';
@@ -260,7 +315,7 @@ var WT = (function () {
       if (dlvBusy) dN.textContent = 'Checking your location…';
       else if (DLV === false || DLVP === false) { dN.textContent = 'We couldn’t read that link. Please copy the Google Maps link again (Share → Copy link) and paste it above.'; dN.classList.add('warn'); }
       else if (dlvFar()) { dN.innerHTML = '<b>This location is outside our usual delivery area.</b><br><small>Please message us on Instagram or Facebook before booking, and we’ll see what we can do.</small>'; dN.classList.add('warn'); }
-      else if (dlNow) dN.innerHTML = '<b>Delivery & pickup: ' + (dlNow[1] ? WT.peso(dlNow[1]) : 'free') + '</b><br><small>' + dlNow[3] + '</small>' + (DLV.place ? '<br><small>📍 ' + DLV.place + '</small>' : '') + '<br><small>We’ll double-check your location and let you know if anything changes.</small>';
+      else if (dlNow) dN.innerHTML = '<b>' + dlNow[0] + ': ' + (dlNow[1] ? WT.peso(dlNow[1]) : 'free') + '</b><br><small>' + dlNow[3] + '</small>' + (DLV.place ? '<br><small>📍 ' + DLV.place + '</small>' : '') + '<br><small>We’ll double-check your location and let you know if anything changes.</small>';
       else dN.textContent = '';
     }
     var avN = $('qAvNote');
@@ -369,7 +424,7 @@ var WT = (function () {
     if (gmOffDay) s.gm = false;
     var gmOk = t < 3 && s.up === 'fb' && !gmOffDay;
     sb.appendChild(opt('I’ll set it up', 'included · with our care card', !s.gm, function () { s.gm = false; render(); }));
-    sb.appendChild(opt('Fairy Godmother Service', gmOffDay ? 'not available on ' + niceDate(avDate) : t < 3 ? 'we set it up for you · +' + WT.peso(GM[t]) : 'not for Ever After', s.gm, function () { s.gm = true; render(); }, !gmOk));
+    sb.appendChild(opt('Fairy Godmother Service', gmOffDay ? 'not available on ' + niceDate(avDate) : t < 3 ? 'we set up & pack down · +' + WT.peso(GM[t]) : 'not for Ever After', s.gm, function () { s.gm = true; render(); }, !gmOk));
     $('qSetupNote').textContent = gmOffDay ? 'Fairy Godmother Service isn’t available on ' + niceDate(avDate) + ', but you can still book your table and set it up yourself with our care card.' : gmOk ? 'Free delivery within Lanang to Roxas. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
     // summary
     var lines = [], total = s.alc ? 0 : BASE[t];
@@ -396,6 +451,7 @@ var WT = (function () {
     if (s.layer && R) lines.push([R2 ? 'Layering: ' + R2.name : 'Layering: second color to choose', LAYER[t], null, !(R2 && R2.layer) ? 'Paid with your balance once we confirm your second color' : '']);
     if (s.taper) lines.push(['Pink LED taper candles', TAPER[t]]);
     if (s.gm) lines.push(['Setup: Fairy Godmother Service', GM[t]]);
+    if (lateFee()) lines.push(['Late-night pack-down (after 11 PM)', LATE_FEE]);
     var dl = deliveryLine();
     }
     alaLines.forEach(function (l) { lines.push(l); });
@@ -407,19 +463,19 @@ var WT = (function () {
       ul.appendChild(WT.el('li', (l[2] ? 'has-inc' : '') + (i === 0 && !s.alc && s.up !== 'none' ? ' q-joined' : ''), '<span>' + l[0] + inc + '</span><span>' + (i === 0 ? (s.alc ? '' : WT.peso(l[1])) : l[1] ? (s.alc ? WT.peso(l[1]) : '+' + WT.peso(l[1])) : (s.alc ? '' : 'included')) + '</span>'));
     });
     var depAmt = s.alc ? (alaLines.length ? ALA_DEP : 0) : (s.up === 'fb' ? [350, 500, 600, 500] : [300, 300, 500, 500])[t];
-    if (depAmt) ul.appendChild(WT.el('li', '', '<span>Security deposit<em class="q-inc-note">Refundable once every piece is back safe and sound</em></span><span>+' + WT.peso(depAmt) + '</span>'));
-    if (!needsDelivery()) ul.appendChild(WT.el('li', '', '<span>Delivery &amp; pickup<em class="q-inc-note">By our own rider at the Maxim rate. Paid directly to the rider before each trip, not deducted from your security deposit</em></span><span>to rider</span>'));
+    if (depAmt) ul.appendChild(WT.el('li', '', '<span>Security deposit<em class="q-inc-note">Refundable</em></span><span>+' + WT.peso(depAmt) + '</span>'));
+    if (!needsDelivery()) ul.appendChild(WT.el('li', '', '<span>Delivery &amp; pickup<em class="q-inc-note">Maxim rate, paid to our rider each trip</em></span><span>to rider</span>'));
     if (dl) { total += dl[1]; ul.appendChild(WT.el('li', '', '<span>' + dl[0] + (dl[3] ? '<em class="q-inc-note">' + dl[3] + '</em>' : '') + '</span><span>' + (dl[1] ? '+' + WT.peso(dl[1]) : 'free') + '</span>')); }
     var tot = $('qTotal'), newTxt = WT.peso(total), shown = WT.peso(total + depAmt);
     var pending = needsDelivery() && !DLV;
     var info = $('qDlvInfo');
-    var R24 = ' The rental is for <b>24 hours from when you receive the items</b>, so plan where everything will be picked up.';
-    var RIDER = 'Delivery and pickup are by <b>our own rider</b>. The fee follows the <b>Maxim rate</b> for your location, <b>paid directly to the rider before each trip</b> (drop-off and pickup), <b>separate from your security deposit</b>.';
+    var R24 = '';
+    var RIDER = 'Our rider delivers and picks up. You pay the rider the <b>Maxim rate</b> each trip.';
     if (info) info.innerHTML = !needsDelivery() ? RIDER + R24 :
-      'With Fairy Godmother Service, delivery is <b>free within Lanang to Roxas</b>. Farther venues: <b>₱250 each way</b> up to 10 km past, <b>₱300 each way</b> up to 20 km past.' + R24;
+      'Delivery is <b>free within Lanang to Roxas</b>. Farther venues: ₱250–₱300 each way.' + R24;
     var fine = $('qFine');
-    if (fine) fine.textContent = needsDelivery() ? (DLV ? 'Includes delivery and the refundable security deposit.' : 'Includes the refundable security deposit. Check your venue to add your delivery fee.') :
-      'Includes the refundable security deposit. Delivery is paid directly to our rider before each trip (Maxim rate).';
+    if (fine) fine.textContent = needsDelivery() ? (DLV ? 'Includes delivery and the refundable security deposit.' : 'Includes the refundable security deposit.') :
+      'Includes the refundable security deposit.';
     if (pending) tot.innerHTML = shown + '<small>+ delivery</small>';
     else if (tot.textContent !== shown) { tot.textContent = shown; tot.classList.remove('pop'); void tot.offsetWidth; tot.classList.add('pop'); }
     var ph = $('qPhoto'), want = (!s.alc && R) ? R.img : 'img/standard-setup.jpg';
@@ -441,6 +497,7 @@ var WT = (function () {
     if (s.up === 'fb') ml.push('Full Bloom, ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders, ' + (s.mat === 'gold' ? 'sheer gold' : 'jute') + ' placemats (' + rib + '), +' + WT.peso(FB[t]));
     if (s.taper) ml.push('Pink LED taper candles, +' + WT.peso(TAPER[t]));
     if (s.gm) ml.push('Setup: Fairy Godmother Service, +' + WT.peso(GM[t]));
+    if (lateFee()) ml.push('Late-night pack-down (after 11 PM), +' + WT.peso(LATE_FEE));
     if (dl) ml.push(dl[0] + (dl[1] ? ', +' + WT.peso(dl[1]) : ''));
     else if (!needsDelivery()) ml.push('Delivery & pickup: by our rider at the Maxim rate, paid directly to the rider before each trip (not deducted from your security deposit)');
     alaLines.forEach(function (l) { ml.push(l[0] + ', ' + (s.alc ? '' : '+') + WT.peso(l[1])); });
@@ -471,7 +528,7 @@ var WT = (function () {
     var tm = String(f.get('time') || ''), tt = '';
     if (/^\d{1,2}:\d{2}/.test(tm)) { var h = +tm.split(':')[0], m = tm.split(':')[1]; tt = (h % 12 || 12) + ':' + m + ' ' + (h < 12 ? 'AM' : 'PM'); }
     var dateLine = 'Date: ' + when + (tt ? ', ' + tt : '');
-    var venue = 'Venue: ' + String(f.get('venue') || '').trim();
+    var venue = 'Venue: ' + String(f.get('venue') || '').trim() + (pickupText() ? '\nPickup: ' + pickupText() : '');
     var LF = M.layer || 0, DF = M.delivery || 0, half = Math.round((M.total - LF - DF) / 2), rest = M.total - LF - DF - half;
     var layerBit = (DF ? ' + ' + peso(DF) + ' delivery' : '') + (LF ? ' + ' + peso(LF) + ' layering, once your second color is confirmed' : '');
     var closer = s.gm ? 'We can\'t wait to set your table!' : 'We hope you have the loveliest time setting up your table!';
@@ -559,6 +616,9 @@ var WT = (function () {
   var pickIn = document.getElementById('qPickLink'), pickSame = document.getElementById('qPickSame');
   function resetDlv() { if (DLV !== null || DLVP !== null || dlvFor) { DLV = null; DLVP = null; dlvFor = ''; render(); } }
   if (pickIn) pickIn.addEventListener('input', resetDlv);
+  var lastElse = false;
+  document.querySelectorAll('input[name="pickup_when"]').forEach(function (x) { x.addEventListener('change', function () { var e = elsePick(); if (e !== lastElse) { lastElse = e; resetDlv(); } render(); }); });
+  var ptIn0 = document.getElementById('qPickTime'); if (ptIn0) ptIn0.addEventListener('change', function () { render(); });
   if (pickSame) pickSame.addEventListener('change', function () { document.getElementById('qPickBox').hidden = pickSame.checked; resetDlv(); });
   function dlvKey() { return venueIn.value.trim() + '|' + (pickupSame() ? '' : pickIn.value.trim()); }
   function quote(q) { return fetch(window.WT_SHEETS_URL + '?delivery=' + encodeURIComponent(q)).then(function (r) { return r.json(); }).then(function (j) { return j && j.ok ? j : false; }).catch(function () { return false; }); }
@@ -610,15 +670,25 @@ var WT = (function () {
       var er3 = document.getElementById('qErr'); er3.hidden = false; er3.textContent = 'Please add your venue name at the top.';
       venueName.focus(); return;
     }
-    if (!pickupSame() && !isMapsLink(pickIn.value)) {
-      var er4 = document.getElementById('qErr'); er4.hidden = false; er4.textContent = 'Please paste the Google Maps link for pickup, or tick “Pick up the items from the same place”.';
+    if (!pickupSame() && pickIn.value.trim() && !isMapsLink(pickIn.value)) {
+      var er4 = document.getElementById('qErr'); er4.hidden = false; er4.textContent = 'Please paste a Google Maps link for pickup (it starts with https://maps.app.goo.gl/), or tick “Pick up the items from the same place”.';
       pickIn.focus(); return;
     }
-    if (!isMapsLink(venueIn.value)) {
+    if ((needsDelivery() || venueIn.value.trim()) && !isMapsLink(venueIn.value)) {
       var er1 = document.getElementById('qErr'); er1.hidden = false; er1.textContent = 'Please paste the Google Maps link of your exact venue (open Google Maps, tap your venue, then Share → Copy link).';
       venueIn.focus(); return;
     }
-    document.getElementById('qVenue').value = venueName.value.trim() + ' · ' + venueIn.value.trim();
+    var endIn = document.getElementById('qEndTime');
+    if (needsDelivery() && endIn && !endIn.value) {
+      var er6 = document.getElementById('qErr'); er6.hidden = false; er6.textContent = 'Please add what time your event finishes.';
+      endIn.focus(); return;
+    }
+    var ptIn = document.getElementById('qPickTime');
+    if (ptIn && !ptIn.value) {
+      var er5 = document.getElementById('qErr'); er5.hidden = false; er5.textContent = 'Please add your pickup time.';
+      ptIn.focus(); return;
+    }
+    document.getElementById('qVenue').value = venueName.value.trim() + (venueIn.value.trim() ? ' · ' + venueIn.value.trim() : ' · (Google Maps pin to follow)');
     var ig = document.getElementById('qIg').value.trim(), fb = document.getElementById('qFb').value.trim();
     if (!ig && !fb) {
       var er2 = document.getElementById('qErr'); er2.hidden = false; er2.textContent = 'Please add your Instagram or Facebook (the account you message us from).';
@@ -648,7 +718,7 @@ var WT = (function () {
     err.hidden = true;
     var ref = 'WT-' + Date.now().toString(36).toUpperCase().slice(-6);
     var agreedAt = new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' });
-    document.getElementById('qOrder').value = ref + '\n' + root._summary + '\nUnderstood this is a booking request, not a confirmed booking: yes\nRead the full Terms & Conditions and agreed: ' + agreedAt;
+    document.getElementById('qOrder').value = ref + '\n' + root._summary + '\nPickup: ' + pickupText() + '\nUnderstood this is a booking request, not a confirmed booking: yes\nRead the full Terms & Conditions and agreed: ' + agreedAt;
     document.getElementById('qOrderTotal').value = root._total;
     send.disabled = true; send.textContent = 'Sending…';
     var body = new URLSearchParams(new FormData(form)).toString();
@@ -658,8 +728,8 @@ var WT = (function () {
     var mm = null;
     try { mm = buildMessages(ref, new FormData(form)); sheetBody.set('payment_msg', mm.pay); sheetBody.set('confirm_msg', mm.conf); } catch (err) {}
     var dlx = deliveryLine();
-    if (dlx) { var pq0 = pickQ(); sheetBody.set('delivery_fee', String(dlx[1])); sheetBody.set('delivery_info', WT.peso(dlx[1]) + ' · ' + dlx[3] + (DLV.km ? ' · venue ' + DLV.km + ' km from ' + (DLV.from || 'edge') : '') + (DLV.place ? ' · ' + DLV.place : '') + (pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + pickIn.value.trim() + (pq0 && pq0.place ? ' (' + pq0.place + ')' : ''))); }
-    else { sheetBody.set('delivery_fee', '0'); sheetBody.set('delivery_info', 'Our rider · Maxim rate, paid to rider before each trip' + (pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + pickIn.value.trim())); }
+    if (dlx) { var pq0 = pickQ(); sheetBody.set('delivery_fee', String(dlx[1])); sheetBody.set('delivery_info', WT.peso(dlx[1]) + ' · ' + dlx[3] + (DLV.km ? ' · venue ' + DLV.km + ' km from ' + (DLV.from || 'edge') : '') + (DLV.place ? ' · ' + DLV.place : '') + (selfReturn() ? '' : pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + pickIn.value.trim() + (pq0 && pq0.place ? ' (' + pq0.place + ')' : '')) + ' · pickup time: ' + pickupText()); }
+    else { sheetBody.set('delivery_fee', '0'); sheetBody.set('delivery_info', 'Our rider · Maxim rate, paid to rider before each trip' + (pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + (pickIn.value.trim() || 'pin to follow')) + ' · pickup time: ' + pickupText()); }
     var toSheet = window.WT_SHEETS_URL
       ? fetch(window.WT_SHEETS_URL, { method: 'POST', mode: 'no-cors', body: sheetBody }).then(function () { return true; })
       : Promise.reject(new Error('no sheet'));
@@ -667,7 +737,7 @@ var WT = (function () {
       .then(function (res) { if (!res.some(function (x) { return x.status === 'fulfilled'; })) throw new Error('not sent'); })
       .then(function () {
         var f = new FormData(form);
-        var copy = root._summary + '\n\nName: ' + f.get('name') + '\nMobile: ' + f.get('phone') + '\nInstagram/Facebook: ' + f.get('social') + '\nDate: ' + f.get('date') + ' at ' + f.get('time') + '\nVenue: ' + f.get('venue') + (f.get('notes') ? '\nNotes: ' + f.get('notes') : '');
+        var copy = root._summary + '\n\nName: ' + f.get('name') + '\nMobile: ' + f.get('phone') + '\nInstagram/Facebook: ' + f.get('social') + '\nDate: ' + f.get('date') + ' at ' + f.get('time') + '\nVenue: ' + f.get('venue') + '\nPickup: ' + pickupText() + (f.get('notes') ? '\nNotes: ' + f.get('notes') : '');
         document.getElementById('qRef').textContent = 'Booking reference: ' + ref;
         showPayment(ref, mm);
         document.getElementById('qCopyTxt').textContent = copy;

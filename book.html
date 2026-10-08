@@ -12,8 +12,8 @@
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261008a">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20261010m">
 </head>
 <body id="top">
 <a class="skip" href="#main">Skip to content</a>
@@ -43,12 +43,12 @@
 <section class="quote" id="quote">
   <div class="wrap">
     <div class="eyebrow"><img src="img/icon-treehouse.webp" alt="">Build Your Table</div>
-    <h2 class="script-title">Dream it up, see the price.</h2>
-    <p class="lead">Pick your gathering, your runner and any extras, and watch your table come together.</p>
+    <h2 class="script-title">Book your table</h2>
+    <p class="lead">Pick your options below. Your total updates as you go.</p>
     <div class="q-grid">
       <div class="q-steps">
         <fieldset class="q-step"><legend><span>1</span>Gathering</legend><div class="q-opts" id="qTier"></div></fieldset>
-        <fieldset class="q-step q-pkg"><legend><span>2</span>Runner</legend><div class="q-avail"><label>Your event date<input type="date" id="qAvDate"></label><p class="q-note" id="qAvNote">Pick your event date first to see which runners are available.</p></div><div class="q-runners" id="qRunner"></div><p class="q-note" id="qRunnerNote"></p></fieldset>
+        <fieldset class="q-step q-pkg"><legend><span>2</span>Runner</legend><div class="q-avail"><label>Your event date<input type="date" id="qAvDate"></label><p class="q-note" id="qAvNote">Pick your date to see available runners.</p></div><div class="q-runners" id="qRunner"></div><p class="q-note" id="qRunnerNote"></p></fieldset>
         <fieldset class="q-step q-pkg"><legend><span>3</span>Upgrade</legend><div class="q-opts" id="qUp"></div><div class="q-sub" id="qUpSub"></div></fieldset>
         <fieldset class="q-step q-pkg"><legend><span>4</span>Setup</legend><div class="q-opts" id="qSetup"></div><p class="q-note" id="qSetupNote"></p></fieldset>
         <fieldset class="q-step q-pkg"><legend><span>5</span>Little extras</legend><div class="q-checks" id="qExtras"></div></fieldset>
@@ -57,13 +57,25 @@
       <aside class="q-summary" aria-live="polite">
         <button type="button" class="q-back" id="qBack" hidden>← Back to edit my table</button>
         <div class="q-venue" id="qVenueStep" hidden>
-          <h4>Where’s your celebration?</h4>
+          <h4>Venue &amp; pickup</h4>
           <p class="q-note" id="qDlvInfo"></p>
-          <label>Venue name <small>(restaurant, hall or home)</small><input id="qVenueName" placeholder="e.g. Rustica Bistro, Lanang branch"></label>
-          <label>Google Maps link of your venue <small>(open Google Maps, tap your exact venue, then Share → Copy link)</small><input id="qVenueLink" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/…"></label>
-          <div class="q-pick" id="qPickWrap" hidden>
-            <label class="q-agree"><input type="checkbox" id="qPickSame" checked> <span>Pick up the items from the same place</span></label>
-            <label id="qPickBox" hidden>Google Maps link for pickup <small>(where our rider collects everything within 24 hours of delivery, e.g. your home)</small><input id="qPickLink" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/…"></label>
+          <label>Venue name <input id="qVenueName" placeholder="e.g. Rustica Bistro, Lanang branch"></label>
+          <label>Google Maps link of your venue <small>(Google Maps → Share → Copy link)</small><input id="qVenueLink" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/…"></label>
+          <div class="q-pickwhen" id="qPickWhen">
+            <label id="qEndBox" hidden>What time does your event finish?<input type="time" name="event_end" id="qEndTime"></label>
+            <p class="q-sublabel" id="qPickQ">Pickup</p>
+            <div class="q-radio">
+              <label class="q-agree"><input type="radio" name="pickup_when" value="Same day, after the event" checked> <span id="qSameTxt">Same day, after the event</span></label>
+              <label class="q-agree" id="qNextDay"><input type="radio" name="pickup_when" value="Next day, within 24 hours of receiving the items"> <span id="qNextTxt">Next day, within 24 hours of receiving the items</span></label>
+              <label class="q-agree" id="qElse" hidden><input type="radio" name="pickup_when" value="Picked up somewhere else"> <span id="qElseTxt">Next-day pickup from another place (e.g. your home)</span></label>
+            </div>
+            <p class="q-note" id="qPackNote" hidden>You’ll pack everything up yourself after the event, so <b>we’ll leave the boxes with you</b>.</p>
+            <div class="q-pick" id="qPickWrap" hidden>
+              <label class="q-agree"><input type="checkbox" id="qPickSame" checked> <span>Pick up the items from the same place</span></label>
+              <label id="qPickBox" hidden>Google Maps link for pickup <input id="qPickLink" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/…"></label>
+            </div>
+            <label><span id="qPickTimeLbl">Pickup time</span><input type="time" name="pickup_time" id="qPickTime"></label>
+            <p class="q-note" id="qRentNote">Rental is <b>24 hours</b> from when you receive the items. If they’re booked next, we may ask for an earlier pickup.</p>
           </div>
           <div class="q-dlv" id="qDlv" hidden><button type="button" class="btn ghost" id="qDlvBtn">Check delivery fee</button><p class="q-note" id="qDlvNote"></p></div>
         </div>
@@ -83,20 +95,20 @@
           <p class="q-hp"><label>Leave this empty <input name="bot-field"></label></p>
           <input type="hidden" name="order" id="qOrder">
           <input type="hidden" name="total" id="qOrderTotal">
-          <h4>Almost there — your details</h4>
+          <h4>Your details</h4>
           <label>Your name<input name="name" required autocomplete="name"></label>
           <label>Mobile number<input name="phone" type="tel" required autocomplete="tel" placeholder="09XX XXX XXXX"></label>
           <label>Email<input name="email" type="email" required autocomplete="email" placeholder="you@email.com"></label>
           <input type="hidden" name="social" id="qSocial">
-          <p class="q-sublabel">The account you message us from <small>(fill in at least one)</small></p>
+          <p class="q-sublabel">The account you message us from <small>(at least one)</small></p>
           <div class="q-two"><label>Instagram<input id="qIg" placeholder="@yourname" autocapitalize="off"></label><label>Facebook<input id="qFb" placeholder="Your Facebook name"></label></div>
           <div class="q-two"><label>Event date<input name="date" type="date" required id="qDate"></label><label>Event time<input name="time" type="time" required></label></div>
           <input type="hidden" name="venue" id="qVenue">
-          <label id="qNotesLbl">Anything else? <small>(optional: what you’re celebrating, special requests, or anything we should know)</small><textarea name="notes" rows="2"></textarea></label>
-          <label class="q-agree q-req"><input type="checkbox" name="request_ack" value="yes" required> <span><strong>I understand this is a booking request, not a confirmed booking.</strong> My date is only secured once Whimsy Touch confirms my downpayment.</span></label>
+          <label id="qNotesLbl">Anything else? <small>(optional)</small><textarea name="notes" rows="2"></textarea></label>
+          <label class="q-agree q-req"><input type="checkbox" name="request_ack" value="yes" required> <span>I understand my date is <strong>only secured once my downpayment is confirmed</strong>.</span></label>
           <div class="q-terms">
-            <button type="button" class="q-read" id="qReadTerms"><span class="q-read-ic">✦</span><span><b>Read the Terms &amp; Conditions</b><small>Required before booking: deposit, delivery, damages &amp; cancellation</small></span></button>
-            <label class="q-agree is-locked" id="qAgreeLabel"><input type="checkbox" name="agree" value="yes" required disabled id="qAgree"> <span id="qAgreeText">Open and read the Terms &amp; Conditions first to tick this box.</span></label>
+            <button type="button" class="q-read" id="qReadTerms"><span class="q-read-ic">✦</span><span><b>Read the Terms &amp; Conditions</b><small>Required before booking</small></span></button>
+            <label class="q-agree is-locked" id="qAgreeLabel"><input type="checkbox" name="agree" value="yes" required disabled id="qAgree"> <span id="qAgreeText">I’ve read and agree to the Terms &amp; Conditions.</span></label>
           </div>
           <button type="submit" class="btn" id="qSend">Send my booking</button>
           <p class="q-err" id="qErr" hidden></p>
@@ -160,7 +172,7 @@
   </div>
 </footer>
 
-<script src="runners-data.js?v=20261008a"></script>
-<script src="site.js?v=20261008a"></script>
+<script src="runners-data.js?v=20261010m"></script>
+<script src="site.js?v=20261010m"></script>
 </body>
 </html>

@@ -464,13 +464,13 @@ var WT = (function () {
     });
     var depAmt = s.alc ? (alaLines.length ? ALA_DEP : 0) : (s.up === 'fb' ? [350, 500, 600, 500] : [300, 300, 500, 500])[t];
     if (depAmt) ul.appendChild(WT.el('li', '', '<span>Security deposit<em class="q-inc-note">Refundable</em></span><span>+' + WT.peso(depAmt) + '</span>'));
-    if (!needsDelivery()) ul.appendChild(WT.el('li', '', '<span>Delivery &amp; pickup<em class="q-inc-note">Maxim rate, paid to our rider each trip</em></span><span>to rider</span>'));
+    if (!needsDelivery()) ul.appendChild(WT.el('li', '', '<span>Delivery &amp; pickup<em class="q-inc-note">Maxim rate, paid to the rider (their QR or cash)</em></span><span>to rider</span>'));
     if (dl) { total += dl[1]; ul.appendChild(WT.el('li', '', '<span>' + dl[0] + (dl[3] ? '<em class="q-inc-note">' + dl[3] + '</em>' : '') + '</span><span>' + (dl[1] ? '+' + WT.peso(dl[1]) : 'free') + '</span>')); }
     var tot = $('qTotal'), newTxt = WT.peso(total), shown = WT.peso(total + depAmt);
     var pending = needsDelivery() && !DLV;
     var info = $('qDlvInfo');
     var R24 = '';
-    var RIDER = 'Our rider delivers and picks up. You pay the rider the <b>Maxim rate</b> each trip.';
+    var RIDER = 'Our rider delivers and picks up. Before each trip, pay the rider the <b>Maxim rate</b> through <b>their QR code</b>, or in <b>exact cash</b> on arrival.';
     if (info) info.innerHTML = !needsDelivery() ? RIDER + R24 :
       'Delivery is <b>free within Lanang to Roxas</b>. Farther venues: ₱250–₱300 each way.' + R24;
     var fine = $('qFine');
@@ -499,7 +499,7 @@ var WT = (function () {
     if (s.gm) ml.push('Setup: Fairy Godmother Service, +' + WT.peso(GM[t]));
     if (lateFee()) ml.push('Late-night pack-down (after 11 PM), +' + WT.peso(LATE_FEE));
     if (dl) ml.push(dl[0] + (dl[1] ? ', +' + WT.peso(dl[1]) : ''));
-    else if (!needsDelivery()) ml.push('Delivery & pickup: by our rider at the Maxim rate, paid directly to the rider before each trip (not deducted from your security deposit)');
+    else if (!needsDelivery()) ml.push('Delivery & pickup: by our rider at the Maxim rate, paid directly to the rider before each trip through their QR code or exact cash (not deducted from your security deposit)');
     alaLines.forEach(function (l) { ml.push(l[0] + ', ' + (s.alc ? '' : '+') + WT.peso(l[1])); });
     if (s.alc) ml = ['À la carte order:'].concat(alaLines.map(function (l) { return l[0] + ', ' + WT.peso(l[1]); }));
     root._msg = { lines: ml, total: total, deposit: s.alc ? ALA_DEP : depAmt, layer: (!s.alc && s.layer && R2 && !R2.layer) ? LAYER[t] : 0, delivery: dl ? dl[1] : 0 };
@@ -582,7 +582,7 @@ var WT = (function () {
     var fileIn = document.getElementById('qRcpt'), btn = document.getElementById('qRcptSend'), note = document.getElementById('qRcptNote');
     var pdl = document.getElementById('qPayDlv');
     if (pdl) pdl.innerHTML = needsDelivery() ? (mm.df ? '<b>Delivery</b> (' + WT.peso(mm.df) + ') is included in your remaining balance.' : '<b>Delivery</b> is free for your venue.') :
-      '<b>Delivery &amp; pickup</b> are not included above. The fee follows the Maxim rate and is paid directly to our rider before each trip. It is never deducted from your security deposit.';
+      '<b>Delivery &amp; pickup</b> are not included above. Before each trip, our rider sends you the Maxim fare and <b>their QR code</b>: pay before they head out, or have the <b>exact amount in cash</b> ready. It is never deducted from your security deposit.';
     document.getElementById('qPayCopy').onclick = function () { var b = this; if (navigator.clipboard) navigator.clipboard.writeText('15454836781').then(function () { b.textContent = 'Copied!'; }); };
     btn.onclick = function () {
       var f = fileIn.files && fileIn.files[0];

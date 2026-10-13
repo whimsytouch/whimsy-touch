@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Book a Table — The Whimsy Touch</title>
-<meta name="description" content="Borrow the table of your dreams. Runners, LED candlelight and fresh blooms for gatherings of 2 to 40 guests in Davao City.">
+<meta name="description" content="Borrow the table of your dreams. Runners, LED candlelight and faux florals for gatherings of 2 to 40 guests in Davao City.">
 <meta property="og:title" content="The Whimsy Touch">
 <meta property="og:description" content="The table of your dreams, borrowed, not bought. Table décor rentals in Davao City.">
 <meta property="og:image" content="img/standard-setup.jpg">
@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261010o">
+<link rel="stylesheet" href="styles.css?v=20261013d">
 </head>
 <body id="top">
 <a class="skip" href="#main">Skip to content</a>
@@ -21,7 +21,7 @@
 
 <header class="nav">
   <div class="wrap">
-    <a class="nav-brand" href="index.html"><img src="img/favicon.png" alt="">Whimsy Touch</a>
+    <a class="nav-brand" href="index.html" aria-label="Whimsy Touch home"><img class="nav-logo" src="img/logo-script.webp" alt="Whimsy Touch" width="700" height="187"></a>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
@@ -48,7 +48,7 @@
     <div class="q-grid">
       <div class="q-steps">
         <fieldset class="q-step"><legend><span>1</span>Gathering</legend><div class="q-opts" id="qTier"></div></fieldset>
-        <fieldset class="q-step q-pkg"><legend><span>2</span>Runner</legend><div class="q-avail"><label>Your event date<input type="date" id="qAvDate"></label><p class="q-note" id="qAvNote">Pick your date to see available runners.</p></div><div class="q-runners" id="qRunner"></div><p class="q-note" id="qRunnerNote"></p></fieldset>
+        <fieldset class="q-step q-pkg"><legend><span>2</span>Runner</legend><div class="q-avail"><label>Your event date<input type="date" id="qAvDate"></label><p class="q-note" id="qAvNote">Pick your date to see available runners.</p><p class="q-note q-samenote" id="qSameNote" hidden><b>Same-day booking?</b> You can send a request, and we’ll confirm availability with you before you pay.</p></div><div class="q-runners" id="qRunner"></div><p class="q-note" id="qRunnerNote"></p></fieldset>
         <fieldset class="q-step q-pkg"><legend><span>3</span>Upgrade</legend><div class="q-opts" id="qUp"></div><div class="q-sub" id="qUpSub"></div></fieldset>
         <fieldset class="q-step q-pkg"><legend><span>4</span>Setup</legend><div class="q-opts" id="qSetup"></div><p class="q-note" id="qSetupNote"></p></fieldset>
         <fieldset class="q-step q-pkg"><legend><span>5</span>Little extras</legend><div class="q-checks" id="qExtras"></div></fieldset>
@@ -116,7 +116,11 @@
         <div class="q-done" id="qDone" hidden>
           <h4>Booking request sent!</h4>
           <p class="q-ref" id="qRef"></p>
-          <p><strong>Your date isn’t booked yet.</strong> It’s secured once we confirm your payment.</p>
+          <p id="qDoneNote"><strong>Your date isn’t booked yet.</strong> It’s secured once we confirm your payment.</p>
+          <div class="q-sameday" id="qSameDay" hidden>
+            <p><strong>Your event is today, so please message us to confirm if it’s available.</strong></p>
+            <p>Send us your booking reference on Instagram or Facebook. Once we confirm, we’ll send your payment details.</p>
+          </div>
           <div class="q-pay" id="qPay" hidden>
             <h5>Pay to secure your date</h5>
             <p class="q-pay-amt"><span id="qPayWhat">50% downpayment</span><strong id="qPayAmt"></strong></p>
@@ -134,7 +138,7 @@
             <button type="button" class="btn ghost" id="qCopy2">Copy my booking</button>
           </details>
           <div class="q-notify">
-            <p><strong>Questions?</strong> Message us anytime:</p>
+            <p id="qNotifyTxt"><strong>Questions?</strong> Message us anytime:</p>
             <div class="q-notify-btns">
               <a class="btn" href="https://ig.me/m/thewhimsytouch" target="_blank" rel="noopener" id="qNotifyIg">Message us on Instagram</a>
               <a class="btn ghost" href="https://m.me/61594083157602" target="_blank" rel="noopener">Message us on Facebook</a>
@@ -172,7 +176,7 @@
   </div>
 </footer>
 
-<script src="runners-data.js?v=20261010o"></script>
-<script src="site.js?v=20261010o"></script>
+<script src="runners-data.js?v=20261013d"></script>
+<script src="site.js?v=20261013d"></script>
 </body>
 </html>

@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261010o">
+<link rel="stylesheet" href="styles.css?v=20261013d">
 <style>
 .nc-card{max-width:900px;margin:34px 0 0;background:var(--blush);border:1px solid var(--blush-line);border-radius:24px;padding:30px 32px 34px}
 .nc-card .q-form{border-top:0;margin-top:0;padding-top:0}
@@ -43,6 +43,7 @@
 .nc-status.is-warn{border-color:rgba(176,117,125,.45)}
 .nc-done{text-align:center;padding:30px 10px}
 .nc-done h3{font-family:var(--script);font-weight:400;font-size:44px;color:var(--rose)}
+/* nc-thick */.nc-sec h3,.nc-done h3{-webkit-text-stroke:.022em currentColor}
 .nc-done p{color:var(--body);margin-top:8px}
 @media (max-width:640px){.nc-card{padding:22px 18px 26px}.nc-two{grid-template-columns:1fr}.nc-find{flex-direction:column;align-items:stretch}}
 </style>
@@ -52,7 +53,7 @@
 
 <header class="nav">
   <div class="wrap">
-    <a class="nav-brand" href="index.html"><img src="img/favicon.png" alt="">Whimsy Touch</a>
+    <a class="nav-brand" href="index.html" aria-label="Whimsy Touch home"><img class="nav-logo" src="img/logo-script.webp" alt="Whimsy Touch" width="700" height="187"></a>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
@@ -124,7 +125,7 @@
   </div>
 </footer>
 
-<script src="site.js?v=20261010o"></script>
+<script src="site.js?v=20261013d"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };

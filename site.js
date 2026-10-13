@@ -166,7 +166,7 @@ var WT = (function () {
   if (q) RUN.forEach(function (r, i) { if (r.name === q) s.runner = i; });
   if (new URLSearchParams(location.search).get('alc')) s.alc = true;
   // runner availability for the chosen date (from the bookings sheet)
-  var AV = null, avDate = '', avBusy = false, avLost = '';
+  var AV = null, avDate = '', avBusy = false, avLost = '', avAt = 0;
   // delivery (Full Bloom / Fairy Godmother): zone check runs in the bookings sheet
   var DLV = null, DLVP = null, dlvBusy = false, dlvFor = '';
   function needsDelivery() { return !s.alc && s.gm; }  // only Fairy Godmother has a computed delivery fee; everyone else pays our rider the Maxim rate on the day
@@ -262,17 +262,23 @@ var WT = (function () {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(v || '') || !window.WT_SHEETS_URL) { AV = null; avDate = ''; render(); if (done) done(); return; }
     avBusy = true; avDate = v; render();
     fetch(window.WT_SHEETS_URL + '?avail=' + v).then(function (r) { return r.json(); }).then(function (j) {
-      if (avDate !== v) return; AV = (j && j.b1) ? j : null; avBusy = false; render(); if (done) done();
+      if (avDate !== v) return; AV = (j && j.b1) ? j : null; avAt = Date.now(); avBusy = false; render(); if (done) done();
     }).catch(function () { if (avDate !== v) return; AV = null; avBusy = false; render(); if (done) done(); });
   }
 
+  var FB_PAUSED = true, GM_PAUSED = true;   // Full Bloom (new look) and Fairy Godmother are paused for now
   function opt(label, sub, on, click, disabled) {
     var b = WT.el('button', 'q-opt', label + (sub ? '<small>' + sub + '</small>' : ''));
     b.type = 'button'; b.setAttribute('aria-pressed', on ? 'true' : 'false');
     if (disabled) { b.disabled = true; } else b.addEventListener('click', click);
     return b;
   }
+  function todayStr_() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  function sameDay_() { var di = document.getElementById('qDate'); return !s.alc && !!di && di.value === todayStr_(); }
   function render() {
+    try { var sn = document.getElementById('qSameNote'); if (sn) sn.hidden = !(avDate && avDate === todayStr_()); } catch (e) {}
+    if (FB_PAUSED && s.up === 'fb') s.up = 'none';
+    if (GM_PAUSED) s.gm = false;
     try { syncPick(); } catch (e) {}
     var t = s.tier, $ = function (id) { return document.getElementById(id); };
     // 1 tier
@@ -374,7 +380,7 @@ var WT = (function () {
     var fdFrom = t < 3 ? 'from ' + WT.peso(FD.tiered[t]) : 'not for Ever After';
     ub.appendChild(opt('Just the standard', 'included', s.up === 'none', function () { s.up = 'none'; s.gm = false; render(); }));
     ub.appendChild(opt('Fairy Dust', fdFrom, s.up === 'fd', function () { s.up = 'fd'; s.gm = false; render(); }, t === 3));
-    ub.appendChild(opt('Full Bloom', t < 3 ? WT.peso(FB[t]) : 'not for Ever After', s.up === 'fb', function () { s.up = 'fb'; render(); }, t === 3));
+    ub.appendChild(opt('Full Bloom', FB_PAUSED ? 'coming back soon' : t < 3 ? WT.peso(FB[t]) : 'not for Ever After', s.up === 'fb', function () { s.up = 'fb'; render(); }, FB_PAUSED || t === 3));
     var sub = $('qUpSub'); sub.innerHTML = '';
     if (s.up !== 'none') {
       var row = WT.el('div', 'q-subrow', '<span class="lbl">Candle holder</span>');
@@ -424,8 +430,8 @@ var WT = (function () {
     if (gmOffDay) s.gm = false;
     var gmOk = t < 3 && s.up === 'fb' && !gmOffDay;
     sb.appendChild(opt('I’ll set it up', 'included · with our care card', !s.gm, function () { s.gm = false; render(); }));
-    sb.appendChild(opt('Fairy Godmother Service', gmOffDay ? 'not available on ' + niceDate(avDate) : t < 3 ? 'we set up & pack down · +' + WT.peso(GM[t]) : 'not for Ever After', s.gm, function () { s.gm = true; render(); }, !gmOk));
-    $('qSetupNote').textContent = gmOffDay ? 'Fairy Godmother Service isn’t available on ' + niceDate(avDate) + ', but you can still book your table and set it up yourself with our care card.' : gmOk ? 'Free delivery within Lanang to Roxas. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
+    sb.appendChild(opt('Fairy Godmother Service', GM_PAUSED ? 'paused for now' : gmOffDay ? 'not available on ' + niceDate(avDate) : t < 3 ? 'we set up & pack down · +' + WT.peso(GM[t]) : 'not for Ever After', s.gm, function () { s.gm = true; render(); }, GM_PAUSED || !gmOk));
+    $('qSetupNote').textContent = GM_PAUSED ? 'Fairy Godmother Service is paused for now. Every table comes with our care card to guide your setup.' : gmOffDay ? 'Fairy Godmother Service isn’t available on ' + niceDate(avDate) + ', but you can still book your table and set it up yourself with our care card.' : gmOk ? 'Free delivery within Lanang to Roxas. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
     // summary
     var lines = [], total = s.alc ? 0 : BASE[t];
     if (s.alc) lines.push(['À la carte order', 0]);
@@ -435,7 +441,7 @@ var WT = (function () {
     var holderTxt = NT + ' ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders with ' + ribTxt;
     var incG = [
       NR + (NR > 1 ? ' runners' : ' runner') + (R ? ' in ' + runnerName : ''),
-      NV + (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase')
+      NV + (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase') + ' with faux flowers (white roses, carnations, eucalyptus)'
     ];
     if (s.up === 'fb') incG.push(
       NV + (NV > 1 ? ' fresh flower arrangements, one at every vase' : ' fresh flower arrangement'),
@@ -565,7 +571,7 @@ var WT = (function () {
   // booking form (Netlify Forms)
   var form = document.getElementById('qForm'), bookBtn = document.getElementById('qBookBtn');
   var dateIn = document.getElementById('qDate');
-  if (dateIn) { var d = new Date(); d.setDate(d.getDate() + 1); dateIn.min = d.toISOString().slice(0, 10); }
+  if (dateIn) dateIn.min = todayStr_();   // same-day allowed as a request (we confirm availability first)
   var avIn = document.getElementById('qAvDate');
   if (avIn && dateIn) {
     avIn.min = dateIn.min;
@@ -599,7 +605,7 @@ var WT = (function () {
           body.set('file', c.toDataURL('image/jpeg', 0.85).split(',')[1]);
           fetch(window.WT_SHEETS_URL, { method: 'POST', mode: 'no-cors', body: body }).then(function () {
             btn.textContent = 'Receipt sent ✓'; fileIn.disabled = true;
-            note.textContent = 'Thank you! We’ll check your payment and email your invoice shortly.';
+            note.textContent = 'Thank you! Your runner is now held for your date while we check your payment. We’ll email your invoice shortly.';
           }).catch(function () {
             btn.disabled = false; btn.textContent = 'Send my receipt';
             note.textContent = 'Sorry, that didn’t go through. Please try again, or send your receipt to us on Instagram or Facebook.'; note.classList.add('warn');
@@ -700,7 +706,7 @@ var WT = (function () {
       er0.textContent = dlvFar() ? 'This location is outside our usual delivery area. Please message us on Instagram or Facebook before booking.' : 'Please tap “Check delivery fee” first, so your delivery is included in your total.';
       document.getElementById('qVenueStep').scrollIntoView({ behavior: 'smooth', block: 'center' }); return;
     }
-    if (!e._checked && !s.alc && fdate) {
+    if (!e._checked && !s.alc && fdate && !(avDate === fdate && AV && avAt && Date.now() - avAt < 180000)) {
       var sendBtn = document.getElementById('qSend'); sendBtn.disabled = true; sendBtn.textContent = 'Checking your date…';
       if (avIn) avIn.value = fdate;
       checkAvail(fdate, function () {
@@ -722,24 +728,27 @@ var WT = (function () {
     document.getElementById('qOrderTotal').value = root._total;
     send.disabled = true; send.textContent = 'Sending…';
     var body = new URLSearchParams(new FormData(form)).toString();
-    var toNetlify = fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body })
-      .then(function (r) { if (!r.ok) throw new Error(r.status); return true; });
-    var sheetBody = new URLSearchParams(new FormData(form)); sheetBody.set('ref', ref); sheetBody.set('runners', runnersField());
+    var sheetBody = new URLSearchParams(new FormData(form)); sheetBody.set('ref', ref); if (sameDay_()) sheetBody.set('same_day', 'yes'); sheetBody.set('runners', runnersField());
     var mm = null;
     try { mm = buildMessages(ref, new FormData(form)); sheetBody.set('payment_msg', mm.pay); sheetBody.set('confirm_msg', mm.conf); } catch (err) {}
     var dlx = deliveryLine();
     if (dlx) { var pq0 = pickQ(); sheetBody.set('delivery_fee', String(dlx[1])); sheetBody.set('delivery_info', WT.peso(dlx[1]) + ' · ' + dlx[3] + (DLV.km ? ' · venue ' + DLV.km + ' km from ' + (DLV.from || 'edge') : '') + (DLV.place ? ' · ' + DLV.place : '') + (selfReturn() ? '' : pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + pickIn.value.trim() + (pq0 && pq0.place ? ' (' + pq0.place + ')' : '')) + ' · pickup time: ' + pickupText()); }
     else { sheetBody.set('delivery_fee', '0'); sheetBody.set('delivery_info', 'Our rider · Maxim rate, paid to rider before each trip' + (pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + (pickIn.value.trim() || 'pin to follow')) + ' · pickup time: ' + pickupText()); }
-    var toSheet = window.WT_SHEETS_URL
-      ? fetch(window.WT_SHEETS_URL, { method: 'POST', mode: 'no-cors', body: sheetBody }).then(function () { return true; })
-      : Promise.reject(new Error('no sheet'));
-    Promise.allSettled([toNetlify, toSheet])
-      .then(function (res) { if (!res.some(function (x) { return x.status === 'fulfilled'; })) throw new Error('not sent'); })
+    // Send to the sheet without waiting for Google's reply (the booking is saved on their side either way)
+    var toSheet = !window.WT_SHEETS_URL ? Promise.reject(new Error('no sheet'))
+      : (navigator.sendBeacon && navigator.sendBeacon(window.WT_SHEETS_URL, sheetBody)) ? Promise.resolve(true)
+      : fetch(window.WT_SHEETS_URL, { method: 'POST', mode: 'no-cors', body: sheetBody }).then(function () { return true; });
+    toSheet
       .then(function () {
         var f = new FormData(form);
         var copy = root._summary + '\n\nName: ' + f.get('name') + '\nMobile: ' + f.get('phone') + '\nInstagram/Facebook: ' + f.get('social') + '\nDate: ' + f.get('date') + ' at ' + f.get('time') + '\nVenue: ' + f.get('venue') + '\nPickup: ' + pickupText() + (f.get('notes') ? '\nNotes: ' + f.get('notes') : '');
         document.getElementById('qRef').textContent = 'Booking reference: ' + ref;
-        showPayment(ref, mm);
+        if (sameDay_()) {
+          document.querySelector('#qDone h4').textContent = 'Same-day request sent!';
+          document.getElementById('qDoneNote').hidden = true;
+          document.getElementById('qSameDay').hidden = false;
+          document.getElementById('qNotifyTxt').innerHTML = '<strong>Message us to confirm:</strong>';
+        } else showPayment(ref, mm);
         document.getElementById('qCopyTxt').textContent = copy;
         form.hidden = true; document.querySelector('.q-actions').hidden = true;
         var done = document.getElementById('qDone'), qs = document.getElementById('quote'), wrap = qs.querySelector('.wrap');

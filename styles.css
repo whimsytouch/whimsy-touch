@@ -854,3 +854,20 @@ section.quote.is-details{padding-top:28px}
 @media (max-width:760px){.about .wrap:first-child{gap:0}.about .wrap:first-child>div:first-child{display:contents}.about .wrap:first-child .hw-card{order:2;margin:18px 0 6px}.about .wrap:first-child .poem{order:3}.about .wrap:first-child .eyebrow{justify-content:center}}
 @media (max-width:760px){.hero{min-height:168px!important}.hero-logo{width:min(150px,42vw)!important}section.about{padding-top:20px}.about .wrap:first-child .eyebrow{margin-bottom:0}.about .hw-text{padding:10px 12px}.about .hw-btn{min-height:34px;margin-top:4px}}
 @media (max-width:760px){.hero{min-height:140px!important}.hero-logo{width:min(128px,36vw)!important}.about .about-lead{font-size:19px;line-height:1.45}.about h2{margin-top:10px}}
+
+/* same-day request */
+.q-sameday{background:#FBF1E4;border:1px solid var(--gold-line);border-radius:14px;padding:14px 16px;margin:10px 0 14px}
+.q-sameday p{margin:0 0 6px}.q-sameday p:last-child{margin:0}
+.q-samenote{color:#8C5A2B}
+
+/* paused: Full Bloom + Fairy Godmother */
+.paused-note{margin:10px 0 0;padding:12px 14px;border-radius:12px;background:#FBF1E4;border:1px solid var(--gold-line);color:#5A4E47;font-size:15.5px;font-style:normal}
+.addon.is-paused .addon-photos{opacity:.55;filter:grayscale(.3)}
+.addon.is-paused .addon-list,.addon.is-paused .choices,.addon.is-paused .pm-ref,.addon.is-paused .ptable,.addon.is-paused .addon-note{display:none!important}
+.godmother.is-paused .gm-list,.godmother.is-paused .ptable,.godmother.is-paused .gm-lead{display:none!important}
+.godmother.is-paused .paused-note{background:rgba(255,255,255,.1);color:#F2F0EB;border-color:rgba(234,217,184,.5)}
+
+/* thicker script headings + image logo */
+.script-title,.about h2 em,.about .sign,.gathering h3,.standard .kicker,.upgrade-card .kicker,.godmother .kicker,.book h2,.footer .brand,.fabric-head h2,.addon-body .kicker,.picker-side h2,.q-summary h3,.q-form h4,.q-done h4,.addon-head h3,.gm-kicker span:first-child,.terms-sign,.tc-body .terms-sign,.faq-cat-head h2,.sf-done h3,.cm-title,.ab-col h3,.q-pay h5,.q-done-page h4,.q-venue h4,.q-form #qSumBlock h3,.hw-title{-webkit-text-stroke:.022em currentColor}
+.nav-brand img.nav-logo{width:auto;height:46px;border-radius:0;object-fit:contain}
+@media(max-width:640px){.nav-brand img.nav-logo{height:38px}}

@@ -443,7 +443,7 @@ var WT = (function () {
     var holderTxt = NT + ' ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders with ' + ribTxt;
     var incG = [
       NR + (NR > 1 ? ' runners' : ' runner') + (R ? ' in ' + runnerName : ''),
-      NV + (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase') + ' with faux flowers (white roses, carnations, eucalyptus)'
+      NV + (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase') + (s.up === 'fb' ? '' : ' with faux flowers (white roses, carnations, eucalyptus)')
     ];
     if (s.up === 'fb') incG.push(
       NV + (NV > 1 ? ' fresh flower arrangements, one at every vase' : ' fresh flower arrangement'),

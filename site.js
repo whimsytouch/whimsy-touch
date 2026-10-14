@@ -267,6 +267,8 @@ var WT = (function () {
   }
 
   var FB_PAUSED = true, GM_PAUSED = true;   // Full Bloom (new look) and Fairy Godmother are paused for now
+  var FB_OPEN_DATES = ['2026-10-18'];   // Full Bloom still bookable on these dates (old Full Bloom, fresh flowers)
+  function fbOpen() { return !FB_PAUSED || FB_OPEN_DATES.indexOf(avDate) >= 0; }
   function opt(label, sub, on, click, disabled) {
     var b = WT.el('button', 'q-opt', label + (sub ? '<small>' + sub + '</small>' : ''));
     b.type = 'button'; b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -277,7 +279,7 @@ var WT = (function () {
   function sameDay_() { var di = document.getElementById('qDate'); return !s.alc && !!di && di.value === todayStr_(); }
   function render() {
     try { var sn = document.getElementById('qSameNote'); if (sn) sn.hidden = !(avDate && avDate === todayStr_()); } catch (e) {}
-    if (FB_PAUSED && s.up === 'fb') s.up = 'none';
+    if (!fbOpen() && s.up === 'fb') s.up = 'none';
     if (GM_PAUSED) s.gm = false;
     try { syncPick(); } catch (e) {}
     var t = s.tier, $ = function (id) { return document.getElementById(id); };
@@ -380,7 +382,7 @@ var WT = (function () {
     var fdFrom = t < 3 ? 'from ' + WT.peso(FD.tiered[t]) : 'not for Ever After';
     ub.appendChild(opt('Just the standard', 'included', s.up === 'none', function () { s.up = 'none'; s.gm = false; render(); }));
     ub.appendChild(opt('Fairy Dust', fdFrom, s.up === 'fd', function () { s.up = 'fd'; s.gm = false; render(); }, t === 3));
-    ub.appendChild(opt('Full Bloom', FB_PAUSED ? 'coming back soon' : t < 3 ? WT.peso(FB[t]) : 'not for Ever After', s.up === 'fb', function () { s.up = 'fb'; render(); }, FB_PAUSED || t === 3));
+    ub.appendChild(opt('Full Bloom', !fbOpen() ? 'coming back soon' : t < 3 ? WT.peso(FB[t]) : 'not for Ever After', s.up === 'fb', function () { s.up = 'fb'; render(); }, !fbOpen() || t === 3));
     var sub = $('qUpSub'); sub.innerHTML = '';
     if (s.up !== 'none') {
       var row = WT.el('div', 'q-subrow', '<span class="lbl">Candle holder</span>');

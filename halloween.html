@@ -290,10 +290,6 @@ footer { text-align: center; color: var(--muted); font-size: 14px; padding: 40px
         <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="09XX XXX XXXX" required>
       </div>
       <div class="field">
-        <label for="social">Instagram handle or Facebook name</label>
-        <input type="text" id="social" name="social" autocomplete="off" required>
-      </div>
-      <div class="field">
         <span class="label" id="carLabel">Will you bring a car?</span>
         <p class="hint">Parking at the cafe is limited to 6 cars.</p>
         <div class="choices" role="radiogroup" aria-labelledby="carLabel">
@@ -694,7 +690,7 @@ $('regForm').addEventListener('submit', async (e) => {
     if (!g.age) return showError('Choose the age' + who + '.', document.querySelector('input[name="g' + i + 'age"]'));
     if (g.age === '7-11' && !g.adultName) return showError("Add the supervising adult's name" + who + '.', $('g' + i + 'adult'));
   }
-  for (const n of ['email', 'phone', 'social']) {
+  for (const n of ['email', 'phone']) {
     if (!f[n].value.trim()) return showError('Fill in all the required fields.', f[n]);
   }
   if (!f.email.checkValidity()) return showError('Check your email address.', f.email);
@@ -718,7 +714,7 @@ $('regForm').addEventListener('submit', async (e) => {
   try {
     const payload = {
       guests: Array.from({ length: guestCount }, (_, i) => Object.assign({}, guests[i], { order: picks[i].item, option: picks[i].option || '' })),
-      email: f.email.value.trim(), phone: f.phone.value.trim(), social: f.social.value.trim(),
+      email: f.email.value.trim(), phone: f.phone.value.trim(), social: '',
       car: car.value, allergies: f.allergies.value.trim(), agreed: true,
       receipt: { name: file.name, type: file.type || 'application/octet-stream', data: await fileToBase64(file) }
     };

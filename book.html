@@ -48,11 +48,11 @@
     <div class="q-grid">
       <div class="q-steps">
         <fieldset class="q-step"><legend><span>1</span>Gathering</legend><div class="q-opts" id="qTier"></div></fieldset>
-        <fieldset class="q-step q-pkg"><legend><span>2</span>Runner</legend><div class="q-avail"><label>Your event date<input type="date" id="qAvDate"></label><p class="q-note" id="qAvNote">Pick your date to see available runners.</p><p class="q-note q-samenote" id="qSameNote" hidden><b>Same-day booking?</b> You can send a request, and we’ll confirm availability with you before you pay.</p></div><div class="q-runners" id="qRunner"></div><p class="q-note" id="qRunnerNote"></p></fieldset>
+        <fieldset class="q-step q-pkg"><legend><span>2</span>Runner</legend><div class="q-avail"><label>Your event date<input type="date" id="qAvDate"></label><p class="q-note" id="qAvNote">Pick your date to see available runners.</p><p class="q-note q-samenote" id="qSameNote" hidden><b>Same-day booking?</b> You can send a request, and we’ll confirm availability with you before you pay.</p></div><div class="q-runners" id="qRunner"></div><p class="q-note warn" id="qStockNote" hidden></p><p class="q-note" id="qRunnerNote"></p></fieldset>
         <fieldset class="q-step q-pkg"><legend><span>3</span>Upgrade</legend><div class="q-opts" id="qUp"></div><div class="q-sub" id="qUpSub"></div></fieldset>
         <fieldset class="q-step q-pkg"><legend><span>4</span>Setup</legend><div class="q-opts" id="qSetup"></div><p class="q-note" id="qSetupNote"></p></fieldset>
         <fieldset class="q-step q-pkg"><legend><span>5</span>Little extras</legend><div class="q-checks" id="qExtras"></div></fieldset>
-        <fieldset class="q-step"><legend><span id="qAlaNum">6</span>À la carte <small class="q-opt-tag" id="qAlaTag">optional</small></legend><div class="q-ala" id="qAla"></div></fieldset>
+        <fieldset class="q-step"><legend><span id="qAlaNum">6</span>À la carte <small class="q-opt-tag" id="qAlaTag">optional</small></legend><div class="q-avail" id="qAlaDateBox" hidden><label>Your event date<input type="date" id="qAlaDate"></label><p class="q-note" id="qAlaNote"></p></div><div class="q-ala" id="qAla"></div></fieldset>
       </div>
       <aside class="q-summary" aria-live="polite">
         <button type="button" class="q-back" id="qBack" hidden>← Back to edit my table</button>
@@ -102,7 +102,8 @@
           <input type="hidden" name="social" id="qSocial">
           <p class="q-sublabel">The account you message us from <small>(at least one)</small></p>
           <div class="q-two"><label>Instagram<input id="qIg" placeholder="@yourname" autocapitalize="off"></label><label>Facebook<input id="qFb" placeholder="Your Facebook name"></label></div>
-          <div class="q-two"><label>Event date<input name="date" type="date" required id="qDate"></label><label>Event time<input name="time" type="time" required></label></div>
+          <div class="q-two"><label>Event date<input name="date" type="date" required id="qDate"></label><label>Delivery arrival time<input name="time" type="time" required></label></div>
+          <p class="q-note">This is when your items arrive at the venue, so pick a time that gives you enough time to set up before your event starts.</p>
           <input type="hidden" name="venue" id="qVenue">
           <label id="qNotesLbl">Anything else? <small>(optional)</small><textarea name="notes" rows="2"></textarea></label>
           <label class="q-agree q-req"><input type="checkbox" name="request_ack" value="yes" required> <span>I understand my date is <strong>only secured once my downpayment is confirmed</strong>.</span></label>
@@ -177,6 +178,6 @@
 </footer>
 
 <script src="runners-data.js?v=20261013d"></script>
-<script src="site.js?v=20261014b"></script>
+<script src="site.js?v=20261016a"></script>
 </body>
 </html>

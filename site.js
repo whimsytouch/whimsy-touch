@@ -160,6 +160,36 @@ var WT = (function () {
     { id: 'glass', name: 'Glass candle holders', set: 'set of 6', price: 250 },
     { id: 'vase', name: 'Glass vases', set: 'set of 4', price: 150 }
   ], ALA_DEP = 200;
+  // how many single pieces each à la carte set uses, for the stock check per date
+  var SETS = { cakestand: ['Gold cake stands', 1], cream: ['Cream LED taper candles', 6], pink: ['Pink LED taper candles', 6], pillar: ['LED pillar candles', 6],
+    tiered: ['Tiered gold candle holders', 6], short: ['Gold candle holders', 6], glass: ['Glass candle holders', 6], vase: ['Glass vases', 4] };
+  var NICE = { 'Gold cake stands': 'gold cake stands', 'Cream LED taper candles': 'cream LED taper candles', 'Pink LED taper candles': 'pink LED taper candles',
+    'LED pillar candles': 'LED pillar candles', 'Tiered gold candle holders': 'tiered gold candle holders', 'Gold candle holders': 'short gold candle holders',
+    'Glass candle holders': 'glass candle holders', 'Glass vases': 'glass vases', 'Clear acrylic vases': 'clear acrylic vases' };
+  function needs(extra) {
+    var n = {}, add = function (k, q) { if (q) n[k] = (n[k] || 0) + q; };
+    if (!s.alc) {
+      var t = s.tier, NV = [1, 4, 8, 12][t], NT = [3, 8, 16, 24][t];
+      add('Clear acrylic vases', NV);
+      if (s.up === 'fb') add('LED pillar candles', NV);
+      add(s.taper ? 'Pink LED taper candles' : 'Cream LED taper candles', NT);
+      add(s.up === 'none' ? 'Gold candle holders' : (s.holder === 'glass' ? 'Glass candle holders' : 'Tiered gold candle holders'), NT);
+    }
+    ALA.forEach(function (it) { var q = (s.ala[it.id] || 0) + (extra === it.id ? 1 : 0); if (q) add(SETS[it.id][0], q * SETS[it.id][1]); });
+    return n;
+  }
+  function shortList(extra) {
+    var free = AV && AV.items, out = [];
+    if (!free) return out;
+    var n = needs(extra);
+    Object.keys(n).forEach(function (k) { if (typeof free[k] === 'number' && n[k] > free[k]) out.push([k, Math.max(0, free[k])]); });
+    return out;
+  }
+  function shortMsg() {
+    var sl = shortList(); if (!sl.length) return '';
+    return 'Sorry, we don’t have enough ' + sl.map(function (x) { return NICE[x[0]] || x[0]; }).join(' and ') + ' left on ' + niceDate(avDate) + ' (' +
+      sl.map(function (x) { return x[1] + ' ' + (NICE[x[0]] || x[0]) + ' left'; }).join(', ') + '). Please lower the amount, pick another option, or choose another date.';
+  }
   var RUN = WT.runners();
   var s = { tier: 0, runner: null, vase: 'acrylic', up: 'none', holder: 'tiered', mat: 'gold', layer: false, runner2: null, ribbon: 'match', ribbonColor: '', taper: false, gm: false, alc: false, ala: {} };
   var q = new URLSearchParams(location.search).get('runner');
@@ -301,10 +331,13 @@ var WT = (function () {
       var minus = WT.el('button', '', '−'); minus.type = 'button'; minus.setAttribute('aria-label', 'Remove one ' + it.name); minus.disabled = !q;
       minus.addEventListener('click', function () { s.ala[it.id] = Math.max(0, q - 1); render(); });
       var num = WT.el('b', '', String(q));
-      var plus = WT.el('button', '', '+'); plus.type = 'button'; plus.setAttribute('aria-label', 'Add one ' + it.name); plus.disabled = q >= 10;
+      var full = !!avDate && shortList(it.id).some(function (x) { return x[0] === SETS[it.id][0]; });
+      var plus = WT.el('button', '', '+'); plus.type = 'button'; plus.setAttribute('aria-label', 'Add one ' + it.name); plus.disabled = q >= 10 || (s.alc && !avDate) || full;
+      if (full) row.classList.add('q-ala-full');
       plus.addEventListener('click', function () { s.ala[it.id] = q + 1; render(); });
       st.appendChild(minus); st.appendChild(num); st.appendChild(plus); row.appendChild(st); ab.appendChild(row);
     });
+    try { var ai = $('qAlaDate'); if (ai && avDate && !ai.value) ai.value = avDate; var ad = $('qAlaDateBox'); if (ad) ad.hidden = !s.alc; var an = $('qAlaNote'); if (an) { an.textContent = s.alc ? (!avDate ? 'Pick your event date first to see what’s available.' : avBusy ? 'Checking what’s available on ' + niceDate(avDate) + '…' : shortMsg()) : ''; an.classList.toggle('warn', !!(s.alc && avDate && shortList().length)); } var sn2 = $('qStockNote'); if (sn2) { var m2 = !s.alc && avDate ? shortMsg() : ''; sn2.textContent = m2; sn2.hidden = !m2; } } catch (e) {}
     ab.appendChild(WT.el('p', 'q-note', 'Napkins: ask us what’s available.' + (s.alc ? ' À la carte orders carry a ' + WT.peso(ALA_DEP) + ' refundable security deposit.' : '')));
     var alaLines = ALA.filter(function (it) { return s.ala[it.id]; }).map(function (it) { var q = s.ala[it.id]; return [q + ' × ' + it.name + ' (' + it.set + ')', q * it.price]; });
     // 2 runner
@@ -511,7 +544,7 @@ var WT = (function () {
     alaLines.forEach(function (l) { ml.push(l[0] + ', ' + (s.alc ? '' : '+') + WT.peso(l[1])); });
     if (s.alc) ml = ['À la carte order:'].concat(alaLines.map(function (l) { return l[0] + ', ' + WT.peso(l[1]); }));
     root._msg = { lines: ml, total: total, deposit: s.alc ? ALA_DEP : depAmt, layer: (!s.alc && s.layer && R2 && !R2.layer) ? LAYER[t] : 0, delivery: dl ? dl[1] : 0 };
-    root._total = newTxt; root._hasRunner = s.alc ? alaLines.length > 0 : (!!avDate && !!R && (!s.layer || !!R2));
+    root._total = newTxt; root._hasRunner = (s.alc ? alaLines.length > 0 && !!avDate : (!!avDate && !!R && (!s.layer || !!R2))) && !shortList().length;
     root._summary = 'My Whimsy Touch table:\n' + lines.map(function (l, i) { return '• ' + l[0] + (i === 0 ? ' — ' + WT.peso(l[1]) : l[1] ? ' — +' + WT.peso(l[1]) : '') + (l[2] ? l[2].map(function (x) { return '\n   – ' + x; }).join('') + '\n' : ''); }).join('\n') + (depAmt ? '\n• Security deposit (refundable) — +' + WT.peso(depAmt) : '') + (dl ? '\n• ' + dl[0] + (dl[1] ? ' — +' + WT.peso(dl[1]) : ' — free') : '') + '\nTotal: ' + shown + (depAmt ? ' (' + newTxt + ' rental + ' + WT.peso(depAmt) + ' refundable deposit)' : '');
   }
   document.getElementById('qCopy').addEventListener('click', function () {
@@ -521,7 +554,7 @@ var WT = (function () {
     if (navigator.clipboard) navigator.clipboard.writeText(txt).then(done, function () { window.prompt('Copy your picks:', txt); });
     else window.prompt('Copy your picks:', txt);
   });
-  function R_missing() { if (s.alc) return 'Add at least one à la carte item first.'; if (!avDate) return 'Pick your event date first, then choose your runner.'; return s.runner == null ? 'Pick a runner color first, then book.' : 'Pick your second layering color, or turn layering off.'; }
+  function R_missing() { if (avDate && shortList().length) return shortMsg(); if (s.alc) return !avDate ? 'Pick your event date first, then choose your pieces.' : 'Add at least one à la carte item first.'; if (!avDate) return 'Pick your event date first, then choose your runner.'; return s.runner == null ? 'Pick a runner color first, then book.' : 'Pick your second layering color, or turn layering off.'; }
   // ready-to-send messages for Whimsy Touch (saved in the bookings sheet)
   function buildMessages(ref, f) {
     var M = root._msg, peso = WT.peso;
@@ -535,7 +568,7 @@ var WT = (function () {
     }
     var tm = String(f.get('time') || ''), tt = '';
     if (/^\d{1,2}:\d{2}/.test(tm)) { var h = +tm.split(':')[0], m = tm.split(':')[1]; tt = (h % 12 || 12) + ':' + m + ' ' + (h < 12 ? 'AM' : 'PM'); }
-    var dateLine = 'Date: ' + when + (tt ? ', ' + tt : '');
+    var dateLine = 'Date: ' + when + (tt ? '\nDelivery arrival: ' + tt : '');
     var venue = 'Venue: ' + String(f.get('venue') || '').trim() + (pickupText() ? '\nPickup: ' + pickupText() : '');
     var LF = M.layer || 0, DF = M.delivery || 0, half = Math.round((M.total - LF - DF) / 2), rest = M.total - LF - DF - half;
     var layerBit = (DF ? ' + ' + peso(DF) + ' delivery' : '') + (LF ? ' + ' + peso(LF) + ' layering, once your second color is confirmed' : '');
@@ -575,6 +608,12 @@ var WT = (function () {
   var dateIn = document.getElementById('qDate');
   if (dateIn) dateIn.min = todayStr_();   // same-day allowed as a request (we confirm availability first)
   var avIn = document.getElementById('qAvDate');
+  var alaIn = document.getElementById('qAlaDate');
+  if (alaIn && dateIn) {
+    alaIn.min = dateIn.min;
+    alaIn.addEventListener('change', function () { dateIn.value = alaIn.value; if (avIn) avIn.value = alaIn.value; checkAvail(alaIn.value); });
+    dateIn.addEventListener('change', function () { if (alaIn.value !== dateIn.value) alaIn.value = dateIn.value; });
+  }
   if (avIn && dateIn) {
     avIn.min = dateIn.min;
     avIn.addEventListener('change', function () { dateIn.value = avIn.value; checkAvail(avIn.value); });
@@ -708,12 +747,13 @@ var WT = (function () {
       er0.textContent = dlvFar() ? 'This location is outside our usual delivery area. Please message us on Instagram or Facebook before booking.' : 'Please tap “Check delivery fee” first, so your delivery is included in your total.';
       document.getElementById('qVenueStep').scrollIntoView({ behavior: 'smooth', block: 'center' }); return;
     }
-    if (!e._checked && !s.alc && fdate && !(avDate === fdate && AV && avAt && Date.now() - avAt < 180000)) {
+    if (!e._checked && fdate && !(avDate === fdate && AV && avAt && Date.now() - avAt < 180000)) {
       var sendBtn = document.getElementById('qSend'); sendBtn.disabled = true; sendBtn.textContent = 'Checking your date…';
       if (avIn) avIn.value = fdate;
       checkAvail(fdate, function () {
         sendBtn.disabled = false; sendBtn.textContent = 'Send my booking';
         if (!root._hasRunner) {
+          if (shortList().length || s.alc) { var e3 = document.getElementById('qErr'); e3.hidden = false; e3.textContent = R_missing(); document.getElementById(s.alc ? 'qAla' : 'qRunner').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
           var n = document.getElementById('qRunnerNote'); n.textContent = (avLost || 'That color') + ' was just booked for ' + niceDate(fdate) + '. Please pick another runner, then send again.'; n.classList.add('warn');
           document.getElementById('qRunner').scrollIntoView({ behavior: 'smooth', block: 'center' }); return;
         }
@@ -743,7 +783,7 @@ var WT = (function () {
     toSheet
       .then(function () {
         var f = new FormData(form);
-        var copy = root._summary + '\n\nName: ' + f.get('name') + '\nMobile: ' + f.get('phone') + '\nInstagram/Facebook: ' + f.get('social') + '\nDate: ' + f.get('date') + ' at ' + f.get('time') + '\nVenue: ' + f.get('venue') + '\nPickup: ' + pickupText() + (f.get('notes') ? '\nNotes: ' + f.get('notes') : '');
+        var copy = root._summary + '\n\nName: ' + f.get('name') + '\nMobile: ' + f.get('phone') + '\nInstagram/Facebook: ' + f.get('social') + '\nDate: ' + f.get('date') + '\nDelivery arrival: ' + f.get('time') + '\nVenue: ' + f.get('venue') + '\nPickup: ' + pickupText() + (f.get('notes') ? '\nNotes: ' + f.get('notes') : '');
         document.getElementById('qRef').textContent = 'Booking reference: ' + ref;
         if (sameDay_()) {
           document.querySelector('#qDone h4').textContent = 'Same-day request sent!';

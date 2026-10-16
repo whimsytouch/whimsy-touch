@@ -160,26 +160,40 @@ var WT = (function () {
   var TAPER = [50, 150, 200, 400], GM = [1000, 1500, 2000], LAYER = [50, 50, 100, 150];
   var ALA = [
     { id: 'cakestand', name: 'Gold cake stand', set: '25 cm wide × 20 cm tall', price: 100 },
-    { id: 'napbow', name: 'Pink bow paper napkins', set: 'pack of 10', price: 30 },
-    { id: 'napflo', name: 'Floral paper napkins', set: 'pack of 10', price: 30 }
+    { id: 'napbow', name: 'Pink bow disposable napkins', set: 'pack of 10', price: 30 },
+    { id: 'napflo', name: 'Floral disposable napkins', set: 'pack of 10', price: 30 }
   ], ALA_DEP = 200;
   // how many single pieces each à la carte set uses, for the stock check per date
-  var SETS = { cakestand: ['Gold cake stands', 1], napbow: ['Pink bow paper napkins', 10], napflo: ['Floral paper napkins', 10], cream: ['Cream LED taper candles', 6], pink: ['Pink LED taper candles', 6], pillar: ['LED pillar candles', 6],
+  var SETS = { cakestand: ['Gold cake stands', 1], napbow: ['Pink bow disposable napkins', 10], napflo: ['Floral disposable napkins', 10], cream: ['Cream LED taper candles', 6], pink: ['Pink LED taper candles', 6], pillar: ['LED pillar candles', 6],
     tiered: ['Tiered gold candle holders', 6], short: ['Gold candle holders', 6], glass: ['Glass candle holders', 6], vase: ['Glass vases', 4] };
-  var NICE = { 'Gold cake stands': 'gold cake stands', 'Pink bow paper napkins': 'pink bow napkins', 'Floral paper napkins': 'floral napkins', 'Cream LED taper candles': 'cream LED taper candles', 'Pink LED taper candles': 'pink LED taper candles',
+  var NICE = { 'Gold cake stands': 'gold cake stands', 'Pink bow disposable napkins': 'pink bow napkins', 'Floral disposable napkins': 'floral napkins', 'Ivory roses': 'faux roses', 'Eucalyptus stems': 'faux eucalyptus', 'Ivory carnations': 'faux carnations', 'Sheer gold placemats': 'sheer gold placemats', 'Jute placemats': 'jute placemats', 'Cloth napkins': 'cloth napkins', 'Napkin rings': 'napkin rings', 'Name card holders': 'name card holders', 'Cream LED taper candles': 'cream LED taper candles', 'Pink LED taper candles': 'pink LED taper candles',
     'LED pillar candles': 'LED pillar candles', 'Tiered gold candle holders': 'tiered gold candle holders', 'Gold candle holders': 'short gold candle holders',
     'Glass candle holders': 'glass candle holders', 'Glass vases': 'glass vases', 'Clear acrylic vases': 'clear acrylic vases' };
-  function needs(extra) {
+  var MAXG = [2, 15, 30, 40];
+  // pieces a table uses, for a given setup c = { t, up, holder, taper, mat, ala }
+  function needFor(c, extra) {
     var n = {}, add = function (k, q) { if (q) n[k] = (n[k] || 0) + q; };
-    if (!s.alc) {
-      var t = s.tier, NV = [1, 4, 8, 12][t], NT = [3, 8, 16, 24][t];
-      add('Clear acrylic vases', NV);
-      if (s.up === 'fb') add('LED pillar candles', NV);
-      add(s.taper ? 'Pink LED taper candles' : 'Cream LED taper candles', NT);
-      add(s.up === 'none' ? 'Gold candle holders' : (s.holder === 'glass' ? 'Glass candle holders' : 'Tiered gold candle holders'), NT);
+    var t = c.t, NV = [1, 4, 8, 12][t], NT = [3, 8, 16, 24][t], G = MAXG[t];
+    add('Clear acrylic vases', NV);
+    if (c.up !== 'fb') { add('Ivory roses', 2 * NV); add('Eucalyptus stems', 2 * NV); add('Ivory carnations', 2 * NV); }
+    if (c.up === 'fb') {
+      add('LED pillar candles', NV); add(c.mat === 'jute' ? 'Jute placemats' : 'Sheer gold placemats', G);
+      add('Cloth napkins', G); add('Napkin rings', G); add('Name card holders', G);
     }
-    ALA.forEach(function (it) { var q = (s.ala[it.id] || 0) + (extra === it.id ? 1 : 0); if (q) add(SETS[it.id][0], q * SETS[it.id][1]); });
+    add(c.taper ? 'Pink LED taper candles' : 'Cream LED taper candles', NT);
+    add(c.up === 'none' ? 'Gold candle holders' : (c.holder === 'glass' ? 'Glass candle holders' : 'Tiered gold candle holders'), NT);
+    if (c.ala) ALA.forEach(function (it) { var q = (s.ala[it.id] || 0) + (extra === it.id ? 1 : 0); if (q) add(SETS[it.id][0], q * SETS[it.id][1]); });
     return n;
+  }
+  function cur() { return { t: s.tier, up: s.up, holder: s.holder, taper: s.taper, mat: s.mat, ala: true }; }
+  function needs(extra) { return needFor(cur(), extra); }
+  function freeOf(k) { var f = AV && AV.items; return f && typeof f[k] === 'number' ? f[k] : Infinity; }
+  function fits(c) { var n = needFor(c); return Object.keys(n).every(function (k) { return n[k] <= freeOf(k); }); }
+  // can this gathering be set at all on the chosen date, with any candle and holder option?
+  function tierOk(t) {
+    if (!AV || !AV.items) return true;
+    var ups = t < 3 ? ['none', 'fd'] : ['none'];
+    return ups.some(function (up) { return ['tiered', 'glass'].some(function (h) { return [false, true].some(function (tp) { return fits({ t: t, up: up, holder: h, taper: tp, mat: 'gold', ala: false }); }); }); });
   }
   function shortList(extra) {
     var free = AV && AV.items, out = [];
@@ -190,9 +204,13 @@ var WT = (function () {
   }
   function shortMsg() {
     var sl = shortList(); if (!sl.length) return '';
-    return 'Sorry, we don’t have enough ' + sl.map(function (x) { return NICE[x[0]] || x[0]; }).join(' and ') + ' left on ' + niceDate(avDate) + ' (' +
-      sl.map(function (x) { return x[1] + ' ' + (NICE[x[0]] || x[0]) + ' left'; }).join(', ') + '). Please lower the amount, pick another option, or choose another date.';
+    var extraNames = ALA.map(function (it) { return SETS[it.id][0]; });
+    var tableShort = sl.filter(function (x) { return extraNames.indexOf(x[0]) < 0; });
+    var nm = function (x) { return NICE[x[0]] || x[0]; };
+    if (tableShort.length) return 'Sorry, ' + WT.TIERS[s.tier] + ' is fully booked on ' + niceDate(avDate) + ' (not enough ' + tableShort.map(nm).join(' and ') + ' left). Please pick a smaller gathering or another date.';
+    return 'Sorry, we only have ' + sl.map(function (x) { return x[1] + ' ' + nm(x); }).join(' and ') + ' left on ' + niceDate(avDate) + '. Please lower the amount.';
   }
+
   var RUN = WT.runners();
   var s = { tier: 0, runner: null, vase: 'acrylic', up: 'none', holder: 'tiered', mat: 'gold', layer: false, runner2: null, ribbon: 'match', ribbonColor: '', taper: false, gm: false, alc: false, ala: {} };
   var q = new URLSearchParams(location.search).get('runner');
@@ -318,7 +336,8 @@ var WT = (function () {
     // 1 tier
     var tierBox = $('qTier'); tierBox.innerHTML = '';
     WT.TIERS.forEach(function (n, i) {
-      tierBox.appendChild(opt(n, WT.peso(BASE[i]) + ' · ' + GUESTS[i], !s.alc && t === i, function () { s.tier = i; s.alc = false; render(); }));
+      var tOk = !avDate || tierOk(i);
+      tierBox.appendChild(opt(n, tOk ? WT.peso(BASE[i]) + ' · ' + GUESTS[i] : 'fully booked on ' + niceDate(avDate), !s.alc && t === i, function () { s.tier = i; s.alc = false; render(); }, !tOk && t !== i));
     });
     document.querySelectorAll('.q-pkg').forEach(function (f) { f.hidden = s.alc; });
     // à la carte picker
@@ -337,7 +356,7 @@ var WT = (function () {
       st.appendChild(minus); st.appendChild(num); st.appendChild(plus); row.appendChild(st); ab.appendChild(row);
     });
     try { var ai = $('qAlaDate'); if (ai && avDate && !ai.value) ai.value = avDate; var ad = $('qAlaDateBox'); if (ad) ad.hidden = !s.alc; var an = $('qAlaNote'); if (an) { an.textContent = s.alc ? (!avDate ? 'Pick your event date first to see what’s available.' : avBusy ? 'Checking what’s available on ' + niceDate(avDate) + '…' : shortMsg()) : ''; an.classList.toggle('warn', !!(s.alc && avDate && shortList().length)); } var sn2 = $('qStockNote'); if (sn2) { var m2 = !s.alc && avDate ? shortMsg() : ''; sn2.textContent = m2; sn2.hidden = !m2; } } catch (e) {}
-    ab.appendChild(WT.el('p', 'q-note', 'Paper napkins are disposable and yours to keep.'));
+    ab.appendChild(WT.el('p', 'q-note', 'Disposable napkins are yours to keep.'));
     var alaLines = ALA.filter(function (it) { return s.ala[it.id]; }).map(function (it) { var q = s.ala[it.id]; return [q + ' × ' + it.name + ' (' + it.set + ')', q * it.price]; });
     // 2 runner
     var NRt = [1, 1, 2, 3][t];
@@ -410,16 +429,26 @@ var WT = (function () {
     s.vase = 'acrylic';
     // 3 upgrade
     if (t === 3) { s.up = 'none'; s.gm = false; }
+    var NTt = [3, 8, 16, 24][t], NVt = [1, 4, 8, 12][t], stockOn = !!(avDate && AV && AV.items);
+    var shortGoldOut = stockOn && freeOf('Gold candle holders') < NTt, tieredOut = stockOn && freeOf('Tiered gold candle holders') < NTt, glassOut = stockOn && freeOf('Glass candle holders') < NTt;
+    var fbItemsOut = stockOn && ['LED pillar candles', 'Cloth napkins', 'Napkin rings', 'Name card holders'].some(function (k) { return freeOf(k) < (k === 'LED pillar candles' ? NVt : MAXG[t]); });
+    var goldMatOut = stockOn && freeOf('Sheer gold placemats') < MAXG[t], juteOut = stockOn && freeOf('Jute placemats') < MAXG[t];
+    if (goldMatOut && juteOut) fbItemsOut = true;
+    if (s.up === 'fb' && fbItemsOut) s.up = 'none';
+    if (shortGoldOut && t < 3 && s.up === 'none' && !(tieredOut && glassOut)) s.up = 'fd';
+    if (s.up !== 'none') { if (s.holder === 'tiered' && tieredOut && !glassOut) s.holder = 'glass'; if (s.holder === 'glass' && glassOut && !tieredOut) s.holder = 'tiered'; }
+    if (s.up === 'fb') { if (s.mat === 'gold' && goldMatOut) s.mat = 'jute'; if (s.mat === 'jute' && juteOut) s.mat = 'gold'; }
     var ub = $('qUp'); ub.innerHTML = '';
     var fdFrom = t < 3 ? 'from ' + WT.peso(FD.tiered[t]) : 'not for Ever After';
-    ub.appendChild(opt('Just the standard', 'included', s.up === 'none', function () { s.up = 'none'; s.gm = false; render(); }));
+    ub.appendChild(opt('Just the standard', shortGoldOut ? 'gold holders booked that day' : 'included', s.up === 'none', function () { s.up = 'none'; s.gm = false; render(); }, shortGoldOut && s.up !== 'none'));
     ub.appendChild(opt('Fairy Dust', fdFrom, s.up === 'fd', function () { s.up = 'fd'; s.gm = false; render(); }, t === 3));
-    ub.appendChild(opt('Full Bloom', !fbOpen() ? 'coming back soon' : t < 3 ? WT.peso(FB[t]) : 'not for Ever After', s.up === 'fb', function () { s.up = 'fb'; render(); }, !fbOpen() || t === 3));
+    ub.appendChild(opt('Full Bloom', !fbOpen() ? 'coming back soon' : fbItemsOut ? 'booked that day' : t < 3 ? WT.peso(FB[t]) : 'not for Ever After', s.up === 'fb', function () { s.up = 'fb'; render(); }, !fbOpen() || t === 3 || fbItemsOut));
+    if (shortGoldOut && t < 3 && !(tieredOut && glassOut)) ub.appendChild(WT.el('p', 'q-note warn', 'Our short gold candle holders are fully booked on ' + niceDate(avDate) + ', so your table comes with Fairy Dust holders (tiered gold or glass).'));
     var sub = $('qUpSub'); sub.innerHTML = '';
     if (s.up !== 'none') {
       var row = WT.el('div', 'q-subrow', '<span class="lbl">Candle holder</span>');
-      row.appendChild(opt('<img class="pm-thumb hd-thumb" src="img/holder-tiered.jpg" alt="">Tiered gold', s.up === 'fd' ? WT.peso(FD.tiered[t]) : '', s.holder === 'tiered', function () { s.holder = 'tiered'; render(); }));
-      row.appendChild(opt('<img class="pm-thumb hd-thumb" src="img/holder-glass.jpg" alt="">Glass', s.up === 'fd' ? WT.peso(FD.glass[t]) : '', s.holder === 'glass', function () { s.holder = 'glass'; render(); }));
+      row.appendChild(opt('<img class="pm-thumb hd-thumb" src="img/holder-tiered.jpg" alt="">Tiered gold', tieredOut ? 'booked that day' : s.up === 'fd' ? WT.peso(FD.tiered[t]) : '', s.holder === 'tiered', function () { s.holder = 'tiered'; render(); }, tieredOut && s.holder !== 'tiered'));
+      row.appendChild(opt('<img class="pm-thumb hd-thumb" src="img/holder-glass.jpg" alt="">Glass', glassOut ? 'booked that day' : s.up === 'fd' ? WT.peso(FD.glass[t]) : '', s.holder === 'glass', function () { s.holder = 'glass'; render(); }, glassOut && s.holder !== 'glass'));
       sub.appendChild(row);
       {
         var rr = WT.el('div', 'q-subrow', '<span class="lbl">Ribbon</span>');
@@ -437,25 +466,27 @@ var WT = (function () {
       }
       if (s.up === 'fb') {
         var row2 = WT.el('div', 'q-subrow', '<span class="lbl">Placemat</span>');
-        row2.appendChild(opt('<img class="pm-thumb" src="img/placemat-gold.jpg" alt="">Sheer Gold', '', s.mat === 'gold', function () { s.mat = 'gold'; render(); }));
-        row2.appendChild(opt('<img class="pm-thumb" src="img/placemat-jute.jpg" alt="">Jute', '', s.mat === 'jute', function () { s.mat = 'jute'; render(); }));
+        row2.appendChild(opt('<img class="pm-thumb" src="img/placemat-gold.jpg" alt="">Sheer Gold', goldMatOut ? 'booked that day' : '', s.mat === 'gold', function () { s.mat = 'gold'; render(); }, goldMatOut && s.mat !== 'gold'));
+        row2.appendChild(opt('<img class="pm-thumb" src="img/placemat-jute.jpg" alt="">Jute', juteOut ? 'booked that day' : '', s.mat === 'jute', function () { s.mat = 'jute'; render(); }, juteOut && s.mat !== 'jute'));
         sub.appendChild(row2);
       }
     }
     // 4 extras
     var eb = $('qExtras'); eb.innerHTML = '';
-    var pinkOk = true;
+    var creamOut = stockOn && freeOf('Cream LED taper candles') < NTt, pinkOut = stockOn && freeOf('Pink LED taper candles') < NTt;
+    var pinkOk = !pinkOut, pinkForced = creamOut && !pinkOut;
+    if (pinkForced) s.taper = true;
     if (!pinkOk) s.taper = false;
     if (s.up !== 'fb') s.gm = false;
-    function check(label, price, on, ok, why, set) {
+    function check(label, price, on, ok, why, set, locked) {
       var l = WT.el('label', 'q-check' + (ok ? '' : ' off'));
-      var c = document.createElement('input'); c.type = 'checkbox'; c.checked = on; c.disabled = !ok;
+      var c = document.createElement('input'); c.type = 'checkbox'; c.checked = on; c.disabled = !ok || !!locked;
       c.addEventListener('change', function () { set(c.checked); render(); });
       l.appendChild(c);
-      l.appendChild(WT.el('span', '', label + ' <b>+' + WT.peso(price) + '</b>' + (ok ? '' : '<small>' + why + '</small>')));
+      l.appendChild(WT.el('span', '', label + ' <b>+' + WT.peso(price) + '</b>' + (ok && !locked ? '' : '<small>' + why + '</small>')));
       eb.appendChild(l);
     }
-    check('Pink LED taper candles', TAPER[t], s.taper, pinkOk, 'Pick a Pink or Pink + White runner', function (v) { s.taper = v; });
+    check('Pink LED taper candles', TAPER[t], s.taper, pinkOk, pinkForced ? 'Our cream candles are fully booked on ' + niceDate(avDate) + ', so your table comes with pink LED taper candles.' : 'Pink candles are fully booked on ' + niceDate(avDate) + '.', function (v) { s.taper = v; }, pinkForced);
     // 4 setup
     var sb = $('qSetup'); sb.innerHTML = '';
     // Dates when Fairy Godmother Service is not available (edit this list anytime: ['start', 'end'])
@@ -475,7 +506,7 @@ var WT = (function () {
     var holderTxt = NT + ' ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders with ' + ribTxt;
     var incG = [
       NR + (NR > 1 ? ' runners' : ' runner') + (R ? ' in ' + runnerName : ''),
-      NV + (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase') + (s.up === 'fb' ? '' : ' with faux flowers (2 ivory roses, 2 green eucalyptus, 2 ivory eucalyptus each)')
+      NV + (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase') + (s.up === 'fb' ? '' : ' with faux flowers (2 ivory roses, 2 eucalyptus, 2 ivory carnations each)')
     ];
     if (s.up === 'fb') incG.push(
       NV + (NV > 1 ? ' fresh flower arrangements, one at every vase' : ' fresh flower arrangement'),

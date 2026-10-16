@@ -32,6 +32,8 @@
 .nc-grid label{flex-direction:row;align-items:center;gap:8px}
 .nc-grid label i{font-style:normal;min-width:26px;color:var(--sage-deep)}
 .nc-grid input{flex:1;min-width:0;padding:9px 12px}
+.nc-grid .nc-rm{flex:none;width:30px;height:30px;padding:0;font-size:18px;line-height:1;letter-spacing:0}
+#ncAddName{margin-top:10px}
 .nc-add{align-self:flex-start;background:none;border:1px dashed var(--sage-deep);color:var(--sage-deep);border-radius:999px;padding:10px 18px;font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
 .nc-chart{margin-top:16px;background:var(--card);border:1px solid rgba(94,87,77,.16);border-radius:18px;padding:10px;overflow-x:auto}
 .nc-chart svg{display:block;width:100%;height:auto;min-width:480px}
@@ -89,8 +91,9 @@
         <!-- names only -->
         <div class="nc-sec" id="ncList">
           <h3>Guest names</h3>
-          <p class="nc-note">One guest per box, just as you’d like it written on their card.</p>
+          <p class="nc-note">One guest per box, just as you’d like it written on their card. <b id="ncListMaxNote"></b></p>
           <div class="nc-grid" id="ncNames"></div>
+          <button type="button" class="nc-add" id="ncAddName">+ Add another name</button>
           <p class="nc-count"><span id="ncListCount"></span><span id="ncListMax" hidden></span></p>
         </div>
 
@@ -179,20 +182,45 @@
   function listNames() { return Array.prototype.map.call($('ncNames').querySelectorAll('input'), function (i) { return i.value.trim(); }).filter(Boolean); }
   function countNames() {
     var n = listNames().length, el = $('ncListCount');
-    el.textContent = n + ' of ' + maxGuests + ' names' + (gatheringName ? ' for your ' + gatheringName + ' table' : '') + (n >= maxGuests ? ' (all set)' : '');
+    el.textContent = n + ' of ' + maxGuests + ' names added' + (n >= maxGuests ? ' (that’s the max for your table)' : '');
   }
+  var nameRows = 1;
   function drawNameBoxes() {
-    var box = $('ncNames'), keep = listNames(), html = '';
-    for (var i = 0; i < maxGuests; i++) html += '<label><i>' + (i + 1) + '</i><input data-name="' + i + '" value="' + esc(keep[i] || '') + '" placeholder="Guest name" autocomplete="off"></label>';
+    var box = $('ncNames'), keep = Array.prototype.map.call(box.querySelectorAll('input'), function (i) { return i.value; }), html = '';
+    nameRows = Math.max(1, Math.min(maxGuests, Math.max(nameRows, keep.length)));
+    for (var i = 0; i < nameRows; i++) html += '<label><i>' + (i + 1) + '</i><input data-name="' + i + '" value="' + esc(keep[i] || '') + '" placeholder="Guest name" autocomplete="off">' +
+      (nameRows > 1 ? '<button type="button" class="nc-rm" data-rm="' + i + '" aria-label="Remove name ' + (i + 1) + '">×</button>' : '') + '</label>';
     box.innerHTML = html;
     box.querySelectorAll('input').forEach(function (inp) {
       inp.addEventListener('input', countNames);
       inp.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') { e.preventDefault(); var nx = box.querySelector('[data-name="' + (+inp.dataset.name + 1) + '"]'); if (nx) nx.focus(); }
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        var nx = box.querySelector('[data-name="' + (+inp.dataset.name + 1) + '"]');
+        if (nx) nx.focus(); else if (inp.value.trim() && nameRows < maxGuests) addNameRow();
       });
     });
+    box.querySelectorAll('[data-rm]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var vals = Array.prototype.map.call(box.querySelectorAll('input'), function (i) { return i.value; });
+        vals.splice(+b.dataset.rm, 1); nameRows = Math.max(1, nameRows - 1);
+        box.innerHTML = ''; vals.forEach(function (v, k) { var t = document.createElement('input'); t.value = v; box.appendChild(t); });
+        drawNameBoxes();
+      });
+    });
+    $('ncAddName').hidden = nameRows >= maxGuests;
+    $('ncListMaxNote').textContent = 'You can add up to ' + maxGuests + (maxGuests === 1 ? ' name' : ' names') + (gatheringName ? ' for your ' + gatheringName + ' table.' : '.');
     countNames();
   }
+  function addNameRow() {
+    var box = $('ncNames'), last = box.querySelector('[data-name="' + (nameRows - 1) + '"]');
+    if (last && !last.value.trim()) { last.focus(); return; }   // fill the empty box first
+    if (nameRows >= maxGuests) return;
+    nameRows++; drawNameBoxes();
+    var nx = box.querySelector('[data-name="' + (nameRows - 1) + '"]'); if (nx) nx.focus();
+  }
+  $('ncAddName').addEventListener('click', addNameRow);
+
 
   // ---------- seating tables ----------
   function totalSeats() { return tables.reduce(function (a, t) { return a + t.seats; }, 0); }

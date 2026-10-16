@@ -15,7 +15,8 @@ window.RUNNER_GROUPS = [
     { name: "Coffee Brown", fabric: "Cheesecloth", hex: "#4A2618", max: 1, img: "img/runner-coffee-brown.jpg" },
     { name: "Rust Brown",   fabric: "Cheesecloth", hex: "#6B2014", max: 1, img: "img/runner-rust-brown.jpg" },
     { name: "Cherry Red",   fabric: "Cheesecloth", hex: "#B3121F", max: 1, img: "img/runner-red-cheesecloth.jpg" },
-    { name: "Midnight Black", fabric: "Cheesecloth", hex: "#111111", max: 2, img: "img/runner-black-cheesecloth.jpg" }
+    { name: "Midnight Black", fabric: "Cheesecloth", hex: "#111111", max: 2, img: "img/runner-black-cheesecloth.jpg" },
+    { name: "Purple",       fabric: "Cheesecloth", hex: "#B497C6", max: 1, img: "img/runner-purple.jpg" }
   ]},
   { title: "Bold & Dramatic", desc: "Deep, rich color with more body. Made for evenings that want a little drama.", items: [
     { name: "Ruby Red", fabric: "Organza", hex: "#960A14", max: 2, img: "img/runner-red-organza.jpg" },

@@ -81,7 +81,15 @@ var WT = (function () {
   function peso(n) { return '₱' + n.toLocaleString('en-US'); }
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   function fabricLabel(g) { var f = {}; g.items.forEach(function (r) { f[r.fabric] = 1; }); return Object.keys(f).join(' & '); }
-  return { fabricLabel: fabricLabel, TIERS: TIERS, LABEL: LABEL, runners: runners, peso: peso, el: el };
+  // write a color name in its own runner color, with a soft dark outline on light colors so it stays readable
+  function ink(node, hex, script) {
+    var c = String(hex || '').replace('#', ''); if (c.length !== 6) return;
+    var v = [0, 2, 4].map(function (i) { var x = parseInt(c.substr(i, 2), 16) / 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+    var lum = 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2], light = lum > 0.3;
+    node.style.color = '#' + c;
+    node.style.textShadow = light ? '1px 0 0 rgba(84,66,52,.8), -1px 0 0 rgba(84,66,52,.8), 0 1px 0 rgba(84,66,52,.8), 0 -1px 0 rgba(84,66,52,.8), 0 2px 4px rgba(0,0,0,.18)' : '';
+  }
+  return { fabricLabel: fabricLabel, TIERS: TIERS, LABEL: LABEL, runners: runners, peso: peso, el: el, ink: ink };
 })();
 
 // ---------- Runner color picker (runners page) ----------
@@ -115,7 +123,7 @@ var WT = (function () {
     if (i === cur) return;
     var r = list[i]; cur = i;
     btns.forEach(function (b, j) { b.setAttribute('aria-checked', j === i ? 'true' : 'false'); });
-    nameEl.textContent = r.name;
+    nameEl.textContent = r.name; WT.ink(nameEl, r.hex, true);
     fabEl.textContent = r.fabric;
     tierEl.textContent = WT.LABEL[r.max];
     quote.href = 'book.html?runner=' + encodeURIComponent(r.name);
@@ -152,18 +160,13 @@ var WT = (function () {
   var TAPER = [50, 150, 200, 400], GM = [1000, 1500, 2000], LAYER = [50, 50, 100, 150];
   var ALA = [
     { id: 'cakestand', name: 'Gold cake stand', set: '25 cm wide × 20 cm tall', price: 100 },
-    { id: 'cream', name: 'Cream LED taper candles', set: 'set of 6', price: 150 },
-    { id: 'pink', name: 'Pink LED taper candles', set: 'set of 6', price: 180 },
-    { id: 'pillar', name: 'LED pillar candles', set: 'set of 6', price: 150 },
-    { id: 'tiered', name: 'Gold candle holders, tiered', set: 'set of 6', price: 150 },
-    { id: 'short', name: 'Gold candle holders, short', set: 'set of 6', price: 100 },
-    { id: 'glass', name: 'Glass candle holders', set: 'set of 6', price: 250 },
-    { id: 'vase', name: 'Glass vases', set: 'set of 4', price: 150 }
+    { id: 'napbow', name: 'Pink bow paper napkins', set: 'pack of 10', price: 30 },
+    { id: 'napflo', name: 'Floral paper napkins', set: 'pack of 10', price: 30 }
   ], ALA_DEP = 200;
   // how many single pieces each à la carte set uses, for the stock check per date
-  var SETS = { cakestand: ['Gold cake stands', 1], cream: ['Cream LED taper candles', 6], pink: ['Pink LED taper candles', 6], pillar: ['LED pillar candles', 6],
+  var SETS = { cakestand: ['Gold cake stands', 1], napbow: ['Pink bow paper napkins', 10], napflo: ['Floral paper napkins', 10], cream: ['Cream LED taper candles', 6], pink: ['Pink LED taper candles', 6], pillar: ['LED pillar candles', 6],
     tiered: ['Tiered gold candle holders', 6], short: ['Gold candle holders', 6], glass: ['Glass candle holders', 6], vase: ['Glass vases', 4] };
-  var NICE = { 'Gold cake stands': 'gold cake stands', 'Cream LED taper candles': 'cream LED taper candles', 'Pink LED taper candles': 'pink LED taper candles',
+  var NICE = { 'Gold cake stands': 'gold cake stands', 'Pink bow paper napkins': 'pink bow napkins', 'Floral paper napkins': 'floral napkins', 'Cream LED taper candles': 'cream LED taper candles', 'Pink LED taper candles': 'pink LED taper candles',
     'LED pillar candles': 'LED pillar candles', 'Tiered gold candle holders': 'tiered gold candle holders', 'Gold candle holders': 'short gold candle holders',
     'Glass candle holders': 'glass candle holders', 'Glass vases': 'glass vases', 'Clear acrylic vases': 'clear acrylic vases' };
   function needs(extra) {
@@ -194,7 +197,6 @@ var WT = (function () {
   var s = { tier: 0, runner: null, vase: 'acrylic', up: 'none', holder: 'tiered', mat: 'gold', layer: false, runner2: null, ribbon: 'match', ribbonColor: '', taper: false, gm: false, alc: false, ala: {} };
   var q = new URLSearchParams(location.search).get('runner');
   if (q) RUN.forEach(function (r, i) { if (r.name === q) s.runner = i; });
-  if (new URLSearchParams(location.search).get('alc')) s.alc = true;
   // runner availability for the chosen date (from the bookings sheet)
   var AV = null, avDate = '', avBusy = false, avLost = '', avAt = 0;
   // delivery (Full Bloom / Fairy Godmother): zone check runs in the bookings sheet
@@ -318,10 +320,7 @@ var WT = (function () {
     WT.TIERS.forEach(function (n, i) {
       tierBox.appendChild(opt(n, WT.peso(BASE[i]) + ' · ' + GUESTS[i], !s.alc && t === i, function () { s.tier = i; s.alc = false; render(); }));
     });
-    tierBox.appendChild(opt('À la carte only', 'just a few pieces', s.alc, function () { s.alc = true; render(); }));
     document.querySelectorAll('.q-pkg').forEach(function (f) { f.hidden = s.alc; });
-    $('qAlaNum').textContent = s.alc ? '2' : '6';
-    $('qAlaTag').textContent = s.alc ? 'pick your pieces' : 'optional';
     // à la carte picker
     var ab = $('qAla'); ab.innerHTML = '';
     ALA.forEach(function (it) {
@@ -338,7 +337,7 @@ var WT = (function () {
       st.appendChild(minus); st.appendChild(num); st.appendChild(plus); row.appendChild(st); ab.appendChild(row);
     });
     try { var ai = $('qAlaDate'); if (ai && avDate && !ai.value) ai.value = avDate; var ad = $('qAlaDateBox'); if (ad) ad.hidden = !s.alc; var an = $('qAlaNote'); if (an) { an.textContent = s.alc ? (!avDate ? 'Pick your event date first to see what’s available.' : avBusy ? 'Checking what’s available on ' + niceDate(avDate) + '…' : shortMsg()) : ''; an.classList.toggle('warn', !!(s.alc && avDate && shortList().length)); } var sn2 = $('qStockNote'); if (sn2) { var m2 = !s.alc && avDate ? shortMsg() : ''; sn2.textContent = m2; sn2.hidden = !m2; } } catch (e) {}
-    ab.appendChild(WT.el('p', 'q-note', 'Napkins: ask us what’s available.' + (s.alc ? ' À la carte orders carry a ' + WT.peso(ALA_DEP) + ' refundable security deposit.' : '')));
+    ab.appendChild(WT.el('p', 'q-note', 'Paper napkins are disposable and yours to keep.'));
     var alaLines = ALA.filter(function (it) { return s.ala[it.id]; }).map(function (it) { var q = s.ala[it.id]; return [q + ' × ' + it.name + ' (' + it.set + ')', q * it.price]; });
     // 2 runner
     var NRt = [1, 1, 2, 3][t];
@@ -476,7 +475,7 @@ var WT = (function () {
     var holderTxt = NT + ' ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders with ' + ribTxt;
     var incG = [
       NR + (NR > 1 ? ' runners' : ' runner') + (R ? ' in ' + runnerName : ''),
-      NV + (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase') + (s.up === 'fb' ? '' : ' with faux flowers (white roses, carnations, eucalyptus)')
+      NV + (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase') + (s.up === 'fb' ? '' : ' with faux flowers (2 ivory roses, 2 green eucalyptus, 2 ivory eucalyptus each)')
     ];
     if (s.up === 'fb') incG.push(
       NV + (NV > 1 ? ' fresh flower arrangements, one at every vase' : ' fresh flower arrangement'),

@@ -47,7 +47,7 @@ window.WT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwBF9dTUUOXc9hJa
         : '<div class="ph empty">Photo coming soon</div>';
       html += '<article class="runner" data-max="' + r.max + '">' + ph +
         '<div class="meta"><div class="sw" style="background:' + esc(r.hex) + '"></div><div><div class="name">' + esc(r.name) + '</div><div class="fab">' + esc(r.fabric) + '</div></div></div>' +
-        '<div class="tags"><span class="pill">' + LABEL[r.max] + '</span>' + '' + '</div></article>';
+        '<div class="tags"><span class="pill">' + LABEL[r.max] + (r.soon ? ' · ' + TIERS[r.soon.max] + ' from ' + ['January','February','March','April','May','June','July','August','September','October','November','December'][+r.soon.from.slice(5, 7) - 1] : '') + '</span>' + '' + '</div></article>';
     });
     html += '</div></section>';
   });
@@ -85,11 +85,16 @@ var WT = (function () {
   function ink(node, hex, script) {
     var c = String(hex || '').replace('#', ''); if (c.length !== 6) return;
     var v = [0, 2, 4].map(function (i) { var x = parseInt(c.substr(i, 2), 16) / 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
-    var lum = 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2], light = lum > 0.3;
+    var lum = 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2], light = lum > 0.42;   // only colors that fade into the cream background
     node.style.color = '#' + c;
-    node.style.textShadow = light ? '1px 0 0 rgba(84,66,52,.8), -1px 0 0 rgba(84,66,52,.8), 0 1px 0 rgba(84,66,52,.8), 0 -1px 0 rgba(84,66,52,.8), 0 2px 4px rgba(0,0,0,.18)' : '';
+    node.style.textShadow = lum > 0.7 ? '0 1px 1px rgba(60,45,35,.55), 0 0 3px rgba(60,45,35,.45), 0 0 10px rgba(60,45,35,.3)' : light ? '0 1px 2px rgba(60,45,35,.45), 0 0 6px rgba(60,45,35,.28)' : '';
   }
-  return { fabricLabel: fabricLabel, TIERS: TIERS, LABEL: LABEL, runners: runners, peso: peso, el: el, ink: ink };
+  // runners a gathering uses: 5-meter runners (long) need fewer
+  function nr(r, t) { return (r && r.long ? [1, 1, 2, 3] : [1, 1, 3, 4])[t]; }
+  // highest gathering a runner can do on a date (more pieces arriving later)
+  function maxOn(r, date) { return r.soon && date && date >= r.soon.from ? r.soon.max : r.max; }
+  function label(r) { return LABEL[r.max] + (r.soon ? ' · ' + TIERS[r.soon.max] + ' from ' + ['January','February','March','April','May','June','July','August','September','October','November','December'][+r.soon.from.slice(5, 7) - 1] : ''); }
+  return { fabricLabel: fabricLabel, TIERS: TIERS, LABEL: LABEL, runners: runners, peso: peso, el: el, ink: ink, nr: nr, maxOn: maxOn, label: label };
 })();
 
 // ---------- Runner color picker (runners page) ----------
@@ -124,8 +129,8 @@ var WT = (function () {
     var r = list[i]; cur = i;
     btns.forEach(function (b, j) { b.setAttribute('aria-checked', j === i ? 'true' : 'false'); });
     nameEl.textContent = r.name; WT.ink(nameEl, r.hex, true);
-    fabEl.textContent = r.fabric;
-    tierEl.textContent = WT.LABEL[r.max];
+    fabEl.textContent = r.fabric + (r.m ? ' · ' + r.m + ' meters' : '');
+    tierEl.textContent = WT.label(r);
     quote.href = 'book.html?runner=' + encodeURIComponent(r.name);
     if (!animate) { img.src = r.img; img.alt = r.name + ' ' + r.fabric + ' runner on the table'; return; }
     img2.src = r.img;
@@ -359,12 +364,13 @@ var WT = (function () {
     ab.appendChild(WT.el('p', 'q-note', 'Disposable napkins are yours to keep.'));
     var alaLines = ALA.filter(function (it) { return s.ala[it.id]; }).map(function (it) { var q = s.ala[it.id]; return [q + ' × ' + it.name + ' (' + it.set + ')', q * it.price]; });
     // 2 runner
-    var NRt = [1, 1, 2, 3][t];
+    var mx = function (r) { return WT.maxOn(r, avDate); }, need = function (r) { return WT.nr(r, t); };
     avLost = '';
-    if (s.runner != null && isBooked(RUN[s.runner], NRt)) { avLost = RUN[s.runner].name; s.runner = null; }
-    if (s.runner2 != null && isBooked(RUN[s.runner2], NRt)) { avLost = RUN[s.runner2].name; s.runner2 = null; }
-    if (s.runner != null && RUN[s.runner].max < t) s.runner = null;
-    if (s.runner2 != null && (RUN[s.runner2].max < t || s.runner2 === s.runner)) s.runner2 = null;
+    if (s.runner != null && isBooked(RUN[s.runner], need(RUN[s.runner]))) { avLost = RUN[s.runner].name; s.runner = null; }
+    var nMain = s.runner != null ? need(RUN[s.runner]) : [1, 1, 3, 4][t];
+    if (s.runner2 != null && isBooked(RUN[s.runner2], nMain)) { avLost = RUN[s.runner2].name; s.runner2 = null; }
+    if (s.runner != null && mx(RUN[s.runner]) < t) s.runner = null;
+    if (s.runner2 != null && (mx(RUN[s.runner2]) < t || s.runner2 === s.runner)) s.runner2 = null;
     var dBox = $('qDlv');
     if (dBox) {
       dBox.hidden = !needsDelivery(); dBox.style.display = needsDelivery() ? '' : 'none';
@@ -382,7 +388,7 @@ var WT = (function () {
       avN.classList.toggle('warn', !!avLost || !!avBlocked);
       avN.textContent = avBlocked ? 'Sorry, we’re fully booked on ' + niceDate(avBlocked) + '. Please pick another date.' : avBusy ? 'Checking what’s available on ' + niceDate(avDate) + '…' :
         avLost ? 'Sorry, ' + avLost + ' is already booked on ' + niceDate(avDate) + '. Please pick another color.' :
-        AV && RUN.some(function (r) { return r.max >= t && isBooked(r, NRt); }) ? 'Crossed-out colors are booked that day.' :
+        AV && RUN.some(function (r) { return mx(r) >= t && isBooked(r, need(r)); }) ? 'Crossed-out colors are booked that day.' :
         AV || avDate ? '' : 'Pick your event date first to see which runners are available.';
     }
     var rb = $('qRunner'); rb.innerHTML = '';
@@ -396,10 +402,10 @@ var WT = (function () {
         var row = WT.el('div', 'q-rgroup', '<span class="q-rlabel">' + (g.label || WT.fabricLabel(g)) + '</span>');
         var box = WT.el('div', 'q-rrow');
         g.items.forEach(function (r) {
-          var i = RUN.indexOf(r), booked = r.max >= t && isBooked(r, NRt), ok = r.max >= t && i !== exclude && !booked && !!avDate;
+          var i = RUN.indexOf(r), cnt = layerPick ? nMain : need(r), booked = mx(r) >= t && isBooked(r, cnt), ok = mx(r) >= t && i !== exclude && !booked && !!avDate;
           var b = WT.el('button', 'q-chip' + (booked ? ' is-booked' : ''), '<i style="background:' + r.hex + '"></i>' + r.name);
           b.type = 'button'; b.title = r.name + ' · ' + r.fabric + (booked ? ' · booked on ' + niceDate(avDate) : '');
-          b.setAttribute('aria-label', r.name + ' ' + r.fabric + (booked ? ' (booked on this date)' : r.max >= t ? '' : ' (not available for ' + WT.TIERS[t] + ')'));
+          b.setAttribute('aria-label', r.name + ' ' + r.fabric + (booked ? ' (booked on this date)' : mx(r) >= t ? '' : ' (not available for ' + WT.TIERS[t] + ')'));
           b.setAttribute('aria-pressed', sel === i ? 'true' : 'false');
           if (!ok) b.disabled = true; else b.addEventListener('click', function () { pickFn(i); render(); });
           box.appendChild(b);
@@ -411,7 +417,7 @@ var WT = (function () {
     rb.appendChild(chips(s.runner, -1, function (i) { s.runner = i; }));
     var R = s.runner != null ? RUN[s.runner] : null;
     var R2 = s.layer && s.runner2 != null ? RUN[s.runner2] : null;
-    var canLayer = R && RUN.some(function (r, i) { return i !== s.runner && r.max >= t && !isBooked(r, NRt); });
+    var canLayer = R && RUN.some(function (r, i) { return i !== s.runner && mx(r) >= t && !isBooked(r, nMain); });
     if (R && !canLayer) { s.layer = false; s.runner2 = null; }
     if (R && canLayer) {
       var lr = WT.el('div', 'q-layer');
@@ -501,7 +507,7 @@ var WT = (function () {
     var lines = [], total = s.alc ? 0 : BASE[t];
     if (s.alc) lines.push(['À la carte order', 0]);
     else {
-    var NV = [1, 4, 8, 12][t], NT = [3, 8, 16, 24][t], NR = [1, 1, 2, 3][t];
+    var NV = [1, 4, 8, 12][t], NT = [3, 8, 16, 24][t], NR = R ? WT.nr(R, t) : WT.nr(null, t);
     var ribTxt = s.ribbon === 'custom' ? (s.ribbonColor.trim() ? s.ribbonColor.trim() + ' ribbon' : 'ribbon, color to confirm') : 'ribbon matched to your runner';
     var holderTxt = NT + ' ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders with ' + ribTxt;
     var incG = [
@@ -711,7 +717,7 @@ var WT = (function () {
   function isMapsLink(v) { return /^https?:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|(www\.)?google\.[a-z.]+\/maps|maps\.google\.[a-z.]+)\S*/i.test(String(v || '').trim()); }
   function runnersField() {
     if (s.alc || s.runner == null) return '';
-    var n = [1, 1, 2, 3][s.tier], out = [RUN[s.runner].name + ' x' + n];
+    var n = WT.nr(RUN[s.runner], s.tier), out = [RUN[s.runner].name + ' x' + n];
     if (s.layer && s.runner2 != null) out.push(RUN[s.runner2].name + ' x' + n + (RUN[s.runner2].layer ? '' : ' (layer)'));
     return out.join(', ');
   }

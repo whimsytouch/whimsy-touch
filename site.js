@@ -87,7 +87,7 @@ var WT = (function () {
     var v = [0, 2, 4].map(function (i) { var x = parseInt(c.substr(i, 2), 16) / 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
     var lum = 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2], light = lum > 0.42;   // only colors that fade into the cream background
     node.style.color = '#' + c;
-    node.style.textShadow = lum > 0.7 ? '0 1px 1px rgba(60,45,35,.55), 0 0 3px rgba(60,45,35,.45), 0 0 10px rgba(60,45,35,.3)' : light ? '0 1px 2px rgba(60,45,35,.45), 0 0 6px rgba(60,45,35,.28)' : '';
+    node.style.textShadow = lum > 0.85 ? '0 1px 1px rgba(60,45,35,.55), 0 0 3px rgba(60,45,35,.45), 0 0 10px rgba(60,45,35,.3)' : '';   // only White needs a shadow
   }
   // runners a gathering uses: 5-meter runners (long) need fewer
   function nr(r, t) { return (r && r.long ? [1, 1, 2, 3] : [1, 1, 3, 4])[t]; }

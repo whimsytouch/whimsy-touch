@@ -226,18 +226,18 @@ var WT = (function () {
   // delivery (Full Bloom / Fairy Godmother): zone check runs in the bookings sheet
   var DLV = null, DLVP = null, dlvBusy = false, dlvFor = '';
   function needsDelivery() { return !s.alc && s.gm; }  // only Fairy Godmother has a computed delivery fee; everyone else pays our rider the Maxim rate on the day
-  var ZONE_NAME = { buhangin: 'Buhangin', lanang: 'Lanang to Roxas' };
+  var ZONE_NAME = { buhangin: 'Buhangin', lanang: 'Roxas–Lanang–Indangan' };
+  var DLV_PER_KM = 25, DLV_MAX_KM = 20;   // venues outside Roxas–Lanang–Indangan: per km past it, each way; farther = message us
   // price of ONE trip (drop-off or pickup) for a checked location; null = too far, message us
   function tripPrice(q) {
     if (!q) return null;
     if (q.zone !== 'outside') return s.gm ? 0 : (q.zone === 'buhangin' ? 100 : 200);
-    if (q.km <= 10) return 250;
-    if (q.km <= 20) return 300;
+    if (q.km <= DLV_MAX_KM) return DLV_PER_KM * q.km;   // per km past Roxas–Lanang–Indangan, each way
     return null;
   }
   function tripWhere(q) {
     if (q.zone !== 'outside') return ZONE_NAME[q.zone];
-    return q.km <= 10 ? 'up to 10 km past Lanang to Roxas' : q.km <= 20 ? '10–20 km past Lanang to Roxas' : 'over 20 km past Lanang to Roxas';
+    return q.km <= DLV_MAX_KM ? q.km + ' km past Roxas–Lanang–Indangan, ' + WT.peso(DLV_PER_KM) + '/km' : 'over ' + DLV_MAX_KM + ' km past Roxas–Lanang–Indangan';
   }
   function fmt12(tm) { if (!/^\d{1,2}:\d{2}/.test(tm || '')) return ''; var h = +tm.split(':')[0]; return (h % 12 || 12) + ':' + tm.split(':')[1] + ' ' + (h < 12 ? 'AM' : 'PM'); }
   function pickupText() {
@@ -257,8 +257,18 @@ var WT = (function () {
     if (!s.gm || s.alc) return 0;
     var w = document.querySelector('input[name="pickup_when"]:checked'), t = document.getElementById('qPickTime');
     if (!w || w.value.indexOf('Same') !== 0 || !t || !/^\d{1,2}:\d{2}/.test(t.value)) return 0;
-    var h = +t.value.split(':')[0];
-    return (h >= 23 || h < 5) ? LATE_FEE : 0;
+    var mm = toMin_(t.value);
+    return (mm >= 23 * 60 || mm <= 90) ? LATE_FEE : 0;   // 11:00 PM to 1:30 AM
+  }
+  function toMin_(v) { var p = String(v || '').split(':'); return (+p[0]) * 60 + (+p[1] || 0); }
+  // pickup time problems: same-day pack-down only until 1:30 AM; next-day pickup from 8:00 AM
+  function pickTimeError() {
+    var w = document.querySelector('input[name="pickup_when"]:checked'), t = document.getElementById('qPickTime');
+    if (s.alc || !w || !t || !/^\d{1,2}:\d{2}/.test(t.value)) return '';
+    var mm = toMin_(t.value), same = w.value.indexOf('Same') === 0;
+    if (same && s.gm && mm > 90 && mm < 8 * 60) return 'We pack down at the venue until 1:30 AM at the latest. If your event ends later, please choose next-day pickup: pack the items into our boxes, keep them safe overnight, and we’ll pick them up the next day from 8:00 AM.';
+    if (!same && mm < 8 * 60) return 'Next-day pickup starts at 8:00 AM. Please choose a time from 8:00 AM.';
+    return '';
   }
   function syncPick() {
     var gm = !s.alc && s.gm, eb = document.getElementById('qEndBox'), q = document.getElementById('qPickQ'), lb = document.getElementById('qPickTimeLbl');
@@ -284,10 +294,10 @@ var WT = (function () {
     if (pn) {
       pn.hidden = !gm;
       pn.innerHTML = !gm ? '' : (!el && !nv)
-        ? 'Included. After <b>11 PM</b>, add ' + WT.peso(LATE_FEE) + '.'
+        ? 'Included until <b>11 PM</b>. From 11 PM to <b>1:30 AM</b>, add ' + WT.peso(LATE_FEE) + '. Ending later than 1:30 AM? Please choose next-day pickup.'
         : 'You pack the items into our boxes, switch off all candles, and send us photos.' +
-          (nv ? ' Please arrange with the venue to keep them safe overnight.' : '') +
-          ' Free pickup within Lanang to Roxas.';
+          (nv ? ' Please arrange with the venue to keep them safe overnight.' : '') + ' Pickup from 8:00 AM.' +
+          ' Free pickup within Roxas–Lanang–Indangan.';
     }
     lb.textContent = el ? 'Pickup time' : nv ? 'Pickup time (when the venue opens)' : gm ? 'Pack-down time' : 'Pickup time';
   }
@@ -511,7 +521,7 @@ var WT = (function () {
     var gmOk = t < 3 && s.up === 'fb' && !gmOffDay;
     sb.appendChild(opt('I’ll set it up', 'included · with our care card', !s.gm, function () { s.gm = false; render(); }));
     sb.appendChild(opt('Fairy Godmother Service', GM_PAUSED ? 'paused for now' : gmOffDay ? 'not available on ' + niceDate(avDate) : t < 3 ? 'we set up & pack down · +' + WT.peso(GM[t]) : 'not for Ever After', s.gm, function () { s.gm = true; render(); }, GM_PAUSED || !gmOk));
-    $('qSetupNote').textContent = GM_PAUSED ? 'Fairy Godmother Service is paused for now. Every table comes with our care card to guide your setup.' : gmOffDay ? 'Fairy Godmother Service isn’t available on ' + niceDate(avDate) + ', but you can still book your table and set it up yourself with our care card.' : gmOk ? 'Free delivery within Lanang to Roxas. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
+    $('qSetupNote').textContent = GM_PAUSED ? 'Fairy Godmother Service is paused for now. Every table comes with our care card to guide your setup.' : gmOffDay ? 'Fairy Godmother Service isn’t available on ' + niceDate(avDate) + ', but you can still book your table and set it up yourself with our care card.' : gmOk ? 'Free delivery within Roxas–Lanang–Indangan. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
     // summary
     var lines = [], total = s.alc ? 0 : BASE[t];
     if (s.alc) lines.push(['À la carte order', 0]);
@@ -558,7 +568,7 @@ var WT = (function () {
     var R24 = '';
     var RIDER = 'Our rider delivers and picks up. Before each trip, pay the rider the <b>Maxim rate</b> through <b>their QR code</b>, or in <b>exact cash</b> on arrival.';
     if (info) info.innerHTML = !needsDelivery() ? RIDER + R24 :
-      'Delivery is <b>free within Lanang to Roxas</b>. Farther venues: ₱250–₱300 each way.' + R24;
+      'Delivery is <b>free within Roxas–Lanang–Indangan</b>. Farther venues: ' + WT.peso(DLV_PER_KM) + ' per km past it, each way.' + R24;
     var fine = $('qFine');
     if (fine) fine.textContent = needsDelivery() ? (DLV ? 'Includes delivery and the refundable security deposit.' : 'Includes the refundable security deposit.') :
       'Includes the refundable security deposit.';
@@ -710,7 +720,14 @@ var WT = (function () {
   if (pickIn) pickIn.addEventListener('input', resetDlv);
   var lastElse = false;
   document.querySelectorAll('input[name="pickup_when"]').forEach(function (x) { x.addEventListener('change', function () { var e = elsePick(); if (e !== lastElse) { lastElse = e; resetDlv(); } render(); }); });
-  var ptIn0 = document.getElementById('qPickTime'); if (ptIn0) ptIn0.addEventListener('change', function () { render(); });
+  var ptIn0 = document.getElementById('qPickTime');
+  function pickWarn() {
+    var w = document.getElementById('qPickWarn'), m = pickTimeError();
+    if (!w && ptIn0) { w = document.createElement('p'); w.id = 'qPickWarn'; w.className = 'q-note'; w.style.color = '#9B3B3B'; ptIn0.parentNode.insertAdjacentElement('afterend', w); }
+    if (w) { w.textContent = m; w.hidden = !m; }
+  }
+  if (ptIn0) ptIn0.addEventListener('change', function () { render(); pickWarn(); });
+  document.querySelectorAll('input[name="pickup_when"]').forEach(function (r) { r.addEventListener('change', function () { setTimeout(pickWarn, 0); }); });
   if (pickSame) pickSame.addEventListener('change', function () { document.getElementById('qPickBox').hidden = pickSame.checked; resetDlv(); });
   function dlvKey() { return venueIn.value.trim() + '|' + (pickupSame() ? '' : pickIn.value.trim()); }
   function quote(q) { return fetch(window.WT_SHEETS_URL + '?delivery=' + encodeURIComponent(q)).then(function (r) { return r.json(); }).then(function (j) { return j && j.ok ? j : false; }).catch(function () { return false; }); }
@@ -778,6 +795,10 @@ var WT = (function () {
     var ptIn = document.getElementById('qPickTime');
     if (ptIn && !ptIn.value) {
       var er5 = document.getElementById('qErr'); er5.hidden = false; er5.textContent = 'Please add your pickup time.';
+      ptIn.focus(); return;
+    }
+    if (pickTimeError()) {
+      var er7 = document.getElementById('qErr'); er7.hidden = false; er7.textContent = pickTimeError();
       ptIn.focus(); return;
     }
     document.getElementById('qVenue').value = venueName.value.trim() + (venueIn.value.trim() ? ' · ' + venueIn.value.trim() : ' · (Google Maps pin to follow)');

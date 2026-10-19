@@ -14,6 +14,28 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=20261013d">
+<style>
+/* Fairy Godmother card: centered title, price tiles, included + good to know */
+.godmother.gmx{display:block}
+.gmx-head{text-align:center}
+.gmx .gm-kicker{justify-content:center}
+.gmx .gm-lead{max-width:620px;margin-left:auto;margin-right:auto}
+.gmx .gmx-dates{display:inline-block;margin:8px 0 0;font:600 11.5px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#EAD9B8;border:1px solid rgba(234,217,184,.5);border-radius:999px;padding:6px 12px}
+.gmx-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:640px;margin:24px auto 0}
+.gmx-tiles div{background:#FBF7EF;border-radius:16px;padding:16px 10px;text-align:center}
+.gmx-tiles span{display:block;font:600 11.5px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#8C6E3F}
+.gmx-tiles b{display:block;font:500 30px var(--serif);color:#4F5536;margin-top:4px}
+.gmx-tiles i{display:block;font:italic 15px var(--serif);color:#5E574D;margin-top:2px}
+.gmx-box{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:26px;background:rgba(0,0,0,.12);border-radius:18px;padding:22px 26px}
+.gmx h4{font:600 12px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#EAD9B8;margin:0 0 10px}
+.gmx ul{list-style:none;margin:0;padding:0}
+.gmx .gmx-inc li{position:relative;padding:7px 0 7px 26px;color:#F2F0EB;font-size:16px;border-bottom:1px solid rgba(234,217,184,.18)}
+.gmx .gmx-inc li:before{content:"✓";position:absolute;left:0;top:7px;color:#EAD9B8;font-weight:600}
+.gmx .gmx-good li{display:grid;grid-template-columns:74px 1fr;gap:10px;padding:7px 0;color:#F2F0EB;font-size:16px;border-bottom:1px solid rgba(234,217,184,.18)}
+.gmx .gmx-good b{font:700 13px var(--sans);letter-spacing:.08em;color:#EAD9B8;padding-top:2px}
+@media (max-width:760px){.gmx-box{grid-template-columns:1fr;gap:18px;padding:18px}}
+@media (max-width:560px){.gmx-tiles{grid-template-columns:1fr;gap:8px}.gmx-tiles div{display:grid;grid-template-columns:1fr auto;align-items:center;text-align:left;padding:12px 16px;column-gap:10px}.gmx-tiles span{grid-column:1}.gmx-tiles i{grid-column:1;margin:0}.gmx-tiles b{grid-column:2;grid-row:1 / span 2;margin:0;font-size:26px}}
+</style>
 </head>
 <body id="top">
 <a class="skip" href="#main">Skip to content</a>
@@ -171,28 +193,18 @@
 
     <p class="addon-foot"><strong>Pink LED Taper Candles</strong> (optional, with any runner color, with or without an upgrade): +₱50 Sweetheart · +₱150 Storybook · +₱200 Once Upon · +₱400 Ever After</p>
 
-    <article class="godmother">
-      <div>
-        <div class="gm-kicker"><span>✦ The finishing touch</span><span class="gm-pill">Not available Oct 29 – Nov 5</span></div>
+    <article class="godmother gmx">
+      <div class="gmx-head">
+        <div class="gm-kicker"><span>✦ The finishing touch</span></div>
         <h3>Fairy Godmother Service</h3>
+        <p class="gmx-dates">Not available Oct 29 – Nov 5</p>
         <p class="gm-lead">A rate for our time and labor: we set up your table, then pack it away after. It doesn’t add any pieces to your booking. <strong>Requires Full Bloom.</strong></p>
-        <ul class="gm-list">
-          <li><b>Included</b><span>Styling and setting up your table at the venue</span></li>
-          <li><b>Included</b><span>Packing everything away after your event</span></li>
-          <li><b>Included</b><span>Delivery and pickup within Lanang to Roxas</span></li>
-          <li><b>+₱300</b><span>Late-night pack-down, after 11 PM</span></li>
-          <li><b>Free</b><span>Next-day pickup within Lanang to Roxas, if you pack the items yourself</span></li>
-          <li><b>Extra</b><span>Venues outside Lanang to Roxas: ₱250–₱300 each way</span></li>
-        </ul>
       </div>
-      <table class="ptable">
-        <thead><tr><th>Gathering</th><th class="num">Price</th></tr></thead>
-        <tbody>
-          <tr><td>Sweetheart</td><td class="num">₱1,000</td></tr>
-          <tr><td>Storybook</td><td class="num">₱1,500</td></tr>
-          <tr><td>Once Upon</td><td class="num">₱2,000</td></tr>
-        </tbody>
-      </table>
+      <div class="gmx-tiles"><div><span>Sweetheart</span><b>₱1,000</b><i>2 guests</i></div><div><span>Storybook</span><b>₱1,500</b><i>10–15 guests</i></div><div><span>Once Upon</span><b>₱2,000</b><i>15–30 guests</i></div></div>
+      <div class="gmx-box">
+        <div><h4>Included</h4><ul class="gmx-inc"><li>Styling and setting up your table at the venue</li><li>Packing everything away after your event</li><li>Delivery and pickup within Roxas–Lanang–Indangan</li></ul></div>
+        <div><h4>Good to know</h4><ul class="gmx-good"><li><b>+₱300</b><span>Late-night pack-down, 11 PM to 1:30 AM</span></li><li><b>Free</b><span>Next-day pickup from 8 AM if your event ends after 1:30 AM (you pack the items)</span></li><li><b>₱25/km</b><span>Venues outside Roxas–Lanang–Indangan, each way</span></li></ul></div>
+      </div>
     </article>
   </div>
 </section>

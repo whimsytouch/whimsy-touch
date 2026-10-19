@@ -321,9 +321,9 @@ var WT = (function () {
     }).catch(function () { if (avDate !== v) return; AV = null; avBusy = false; render(); if (done) done(); });
   }
 
-  var FB_PAUSED = true, GM_PAUSED = true;   // Full Bloom (new look) and Fairy Godmother are paused for now
-  var FB_OPEN_DATES = ['2026-10-18'];   // Full Bloom still bookable on these dates (old Full Bloom, fresh flowers)
-  function fbOpen() { return !FB_PAUSED || FB_OPEN_DATES.indexOf(avDate) >= 0; }
+  var GM_PAUSED = false;   // Fairy Godmother: same dates as Full Bloom
+  var FB_CLOSED = [['2026-10-29', '2026-11-05']];   // Full Bloom (fresh flowers) not bookable on these dates (from, to)
+  function fbOpen() { return !avDate || !FB_CLOSED.some(function (r) { return avDate >= r[0] && avDate <= r[1]; }); }
   function opt(label, sub, on, click, disabled) {
     var b = WT.el('button', 'q-opt', label + (sub ? '<small>' + sub + '</small>' : ''));
     b.type = 'button'; b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -448,7 +448,7 @@ var WT = (function () {
     var fdFrom = t < 3 ? 'from ' + WT.peso(FD.tiered[t]) : 'not for Ever After';
     ub.appendChild(opt('Just the standard', shortGoldOut ? 'gold holders booked that day' : 'included', s.up === 'none', function () { s.up = 'none'; s.gm = false; render(); }, shortGoldOut && s.up !== 'none'));
     ub.appendChild(opt('Fairy Dust', fdFrom, s.up === 'fd', function () { s.up = 'fd'; s.gm = false; render(); }, t === 3));
-    ub.appendChild(opt('Full Bloom', !fbOpen() ? 'coming back soon' : fbItemsOut ? 'booked that day' : t < 3 ? WT.peso(FB[t]) : 'not for Ever After', s.up === 'fb', function () { s.up = 'fb'; render(); }, !fbOpen() || t === 3 || fbItemsOut));
+    ub.appendChild(opt('Full Bloom', !fbOpen() ? 'not available on ' + niceDate(avDate) : fbItemsOut ? 'booked that day' : t < 3 ? WT.peso(FB[t]) : 'not for Ever After', s.up === 'fb', function () { s.up = 'fb'; render(); }, !fbOpen() || t === 3 || fbItemsOut));
     if (shortGoldOut && t < 3 && !(tieredOut && glassOut)) ub.appendChild(WT.el('p', 'q-note warn', 'Our short gold candle holders are fully booked on ' + niceDate(avDate) + ', so your table comes with Fairy Dust holders (tiered gold or glass).'));
     var sub = $('qUpSub'); sub.innerHTML = '';
     if (s.up !== 'none') {
@@ -496,7 +496,7 @@ var WT = (function () {
     // 4 setup
     var sb = $('qSetup'); sb.innerHTML = '';
     // Dates when Fairy Godmother Service is not available (edit this list anytime: ['start', 'end'])
-    var GM_OFF = [['2026-10-30', '2026-11-06'], ['2026-11-27', '2026-11-29']];
+    var GM_OFF = FB_CLOSED;
     var gmOffDay = !!avDate && GM_OFF.some(function (r) { return avDate >= r[0] && avDate <= r[1]; });
     if (gmOffDay) s.gm = false;
     var gmOk = t < 3 && s.up === 'fb' && !gmOffDay;

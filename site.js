@@ -171,7 +171,7 @@ var WT = (function () {
   // how many single pieces each à la carte set uses, for the stock check per date
   var SETS = { cakestand: ['Gold cake stands', 1], napbow: ['Pink bow disposable napkins', 10], napflo: ['Floral disposable napkins', 10], cream: ['Cream LED taper candles', 6], pink: ['Pink LED taper candles', 6], pillar: ['LED pillar candles', 6],
     tiered: ['Tiered gold candle holders', 6], short: ['Gold candle holders', 6], glass: ['Glass candle holders', 6], vase: ['Glass vases', 4] };
-  var NICE = { 'Gold cake stands': 'gold cake stands', 'Pink bow disposable napkins': 'pink bow napkins', 'Floral disposable napkins': 'floral napkins', 'Ivory roses': 'faux roses', 'Eucalyptus stems': 'faux eucalyptus', 'Ivory carnations': 'faux carnations', 'Sheer gold placemats': 'sheer gold placemats', 'Jute placemats': 'jute placemats', 'Cloth napkins': 'cloth napkins', 'Napkin rings': 'napkin rings', 'Name card holders': 'name card holders', 'Cream LED taper candles': 'cream LED taper candles', 'Pink LED taper candles': 'pink LED taper candles',
+  var NICE = { 'Gold cake stands': 'gold cake stands', 'Pink bow disposable napkins': 'pink bow napkins', 'Floral disposable napkins': 'floral napkins', 'Ivory roses': 'faux roses', 'Eucalyptus stems': 'faux eucalyptus', 'Ivory carnations': 'faux carnations', 'Sheer gold placemats': 'sheer gold placemats', 'Jute placemats': 'jute placemats', 'White cloth napkins': 'white cloth napkins', 'Leaf napkin rings': 'leaf napkin rings', 'Red satin napkins': 'red satin napkins', 'Gold napkin rings': 'gold napkin rings', 'Napkin rings': 'napkin rings', 'Name card holders': 'name card holders', 'Cream LED taper candles': 'cream LED taper candles', 'Pink LED taper candles': 'pink LED taper candles',
     'LED pillar candles': 'LED pillar candles', 'Tiered gold candle holders': 'tiered gold candle holders', 'Gold candle holders': 'short gold candle holders',
     'Glass candle holders': 'glass candle holders', 'Glass vases': 'glass vases', 'Clear acrylic vases': 'clear acrylic vases' };
   var MAXG = [2, 15, 30, 40];
@@ -183,14 +183,15 @@ var WT = (function () {
     if (c.up !== 'fb') { add('Ivory roses', 2 * NV); add('Eucalyptus stems', 2 * NV); add('Ivory carnations', 2 * NV); }
     if (c.up === 'fb') {
       add('LED pillar candles', NV); add(c.mat === 'jute' ? 'Jute placemats' : 'Sheer gold placemats', G);
-      add('Cloth napkins', G); add('Napkin rings', G); add('Name card holders', G);
+      if (c.nap === 'red') { add('Red satin napkins', G); add('Gold napkin rings', G); } else { add('White cloth napkins', G); add('Leaf napkin rings', G); }
+      add('Name card holders', G);
     }
     add(c.taper ? 'Pink LED taper candles' : 'Cream LED taper candles', NT);
     add(c.up === 'none' ? 'Gold candle holders' : (c.holder === 'glass' ? 'Glass candle holders' : 'Tiered gold candle holders'), NT);
     if (c.ala) ALA.forEach(function (it) { var q = (s.ala[it.id] || 0) + (extra === it.id ? 1 : 0); if (q) add(SETS[it.id][0], q * SETS[it.id][1]); });
     return n;
   }
-  function cur() { return { t: s.tier, up: s.up, holder: s.holder, taper: s.taper, mat: s.mat, ala: true }; }
+  function cur() { return { t: s.tier, up: s.up, holder: s.holder, taper: s.taper, mat: s.mat, nap: s.nap, ala: true }; }
   function needs(extra) { return needFor(cur(), extra); }
   function freeOf(k) { var f = AV && AV.items; return f && typeof f[k] === 'number' ? f[k] : Infinity; }
   function fits(c) { var n = needFor(c); return Object.keys(n).every(function (k) { return n[k] <= freeOf(k); }); }
@@ -217,7 +218,7 @@ var WT = (function () {
   }
 
   var RUN = WT.runners();
-  var s = { tier: 0, runner: null, vase: 'acrylic', up: 'none', holder: 'tiered', mat: 'gold', layer: false, runner2: null, ribbon: 'match', ribbonColor: '', taper: false, gm: false, alc: false, ala: {} };
+  var s = { tier: 0, runner: null, vase: 'acrylic', up: 'none', holder: 'tiered', mat: 'gold', nap: 'white', layer: false, runner2: null, ribbon: 'match', ribbonColor: '', taper: false, gm: false, alc: false, ala: {} };
   var q = new URLSearchParams(location.search).get('runner');
   if (q) RUN.forEach(function (r, i) { if (r.name === q) s.runner = i; });
   // runner availability for the chosen date (from the bookings sheet)
@@ -437,13 +438,17 @@ var WT = (function () {
     if (t === 3) { s.up = 'none'; s.gm = false; }
     var NTt = [3, 8, 16, 24][t], NVt = [1, 4, 8, 12][t], stockOn = !!(avDate && AV && AV.items);
     var shortGoldOut = stockOn && freeOf('Gold candle holders') < NTt, tieredOut = stockOn && freeOf('Tiered gold candle holders') < NTt, glassOut = stockOn && freeOf('Glass candle holders') < NTt;
-    var fbItemsOut = stockOn && ['LED pillar candles', 'Cloth napkins', 'Napkin rings', 'Name card holders'].some(function (k) { return freeOf(k) < (k === 'LED pillar candles' ? NVt : MAXG[t]); });
+    var fbItemsOut = stockOn && ['LED pillar candles', 'Name card holders'].some(function (k) { return freeOf(k) < (k === 'LED pillar candles' ? NVt : MAXG[t]); });
+    var RED_NAP_MAX = 1;   // red satin napkins (24 pcs): Sweetheart and Storybook only
+    var whiteNapOut = stockOn && (freeOf('White cloth napkins') < MAXG[t] || freeOf('Leaf napkin rings') < MAXG[t]);
+    var redNapOff = t > RED_NAP_MAX, redNapOut = !redNapOff && stockOn && (freeOf('Red satin napkins') < MAXG[t] || freeOf('Gold napkin rings') < MAXG[t]);
+    if (whiteNapOut && (redNapOff || redNapOut)) fbItemsOut = true;
     var goldMatOut = stockOn && freeOf('Sheer gold placemats') < MAXG[t], juteOut = stockOn && freeOf('Jute placemats') < MAXG[t];
     if (goldMatOut && juteOut) fbItemsOut = true;
     if (s.up === 'fb' && fbItemsOut) s.up = 'none';
     if (shortGoldOut && t < 3 && s.up === 'none' && !(tieredOut && glassOut)) s.up = 'fd';
     if (s.up !== 'none') { if (s.holder === 'tiered' && tieredOut && !glassOut) s.holder = 'glass'; if (s.holder === 'glass' && glassOut && !tieredOut) s.holder = 'tiered'; }
-    if (s.up === 'fb') { if (s.mat === 'gold' && goldMatOut) s.mat = 'jute'; if (s.mat === 'jute' && juteOut) s.mat = 'gold'; }
+    if (s.up === 'fb') { if (s.mat === 'gold' && goldMatOut) s.mat = 'jute'; if (s.mat === 'jute' && juteOut) s.mat = 'gold'; if (s.nap === 'red' && (redNapOff || redNapOut)) s.nap = 'white'; if (s.nap === 'white' && whiteNapOut) s.nap = 'red'; }
     var ub = $('qUp'); ub.innerHTML = '';
     var fdFrom = t < 3 ? 'from ' + WT.peso(FD.tiered[t]) : 'not for Ever After';
     ub.appendChild(opt('Just the standard', shortGoldOut ? 'gold holders booked that day' : 'included', s.up === 'none', function () { s.up = 'none'; s.gm = false; render(); }, shortGoldOut && s.up !== 'none'));
@@ -475,6 +480,10 @@ var WT = (function () {
         row2.appendChild(opt('<img class="pm-thumb" src="img/placemat-gold.jpg" alt="">Sheer Gold', goldMatOut ? 'booked that day' : '', s.mat === 'gold', function () { s.mat = 'gold'; render(); }, goldMatOut && s.mat !== 'gold'));
         row2.appendChild(opt('<img class="pm-thumb" src="img/placemat-jute.jpg" alt="">Jute', juteOut ? 'booked that day' : '', s.mat === 'jute', function () { s.mat = 'jute'; render(); }, juteOut && s.mat !== 'jute'));
         sub.appendChild(row2);
+        var row3 = WT.el('div', 'q-subrow', '<span class="lbl">Napkin</span>');
+        row3.appendChild(opt('<img class="pm-thumb" src="img/napkin-white.jpg" alt="">White', whiteNapOut ? 'booked that day' : 'leaf ring', s.nap === 'white', function () { s.nap = 'white'; render(); }, whiteNapOut && s.nap !== 'white'));
+        row3.appendChild(opt('<img class="pm-thumb" src="img/napkin-red.jpg" alt="">Red satin', redNapOff ? 'up to Storybook only' : redNapOut ? 'booked that day' : 'gold ring', s.nap === 'red', function () { s.nap = 'red'; render(); }, (redNapOff || redNapOut) && s.nap !== 'red'));
+        sub.appendChild(row3);
       }
     }
     // 4 extras
@@ -519,7 +528,7 @@ var WT = (function () {
       NV + (NV > 1 ? ' LED pillar candles, one at every vase' : ' LED pillar candle'));
     incG.push(NT + ' ' + (s.taper ? 'pink' : 'cream') + ' LED taper candles');
     incG.push(s.up === 'none' ? NT + ' gold candle holders' : holderTxt);
-    if (s.up === 'fb') incG.push((s.mat === 'gold' ? 'Sheer gold' : 'Jute') + ' placemats', 'Cloth napkins with rings', 'Name cards', 'Kraft-paper wrap to take a bloom home');
+    if (s.up === 'fb') incG.push((s.mat === 'gold' ? 'Sheer gold' : 'Jute') + ' placemats', s.nap === 'red' ? 'Red satin napkins with gold rings' : 'White cloth napkins with leaf rings', 'Name cards', 'Kraft-paper wrap to take a bloom home');
     incG.push('Spare batteries and a care card');
     incG.push('24-hour rental, starting when you receive the items');
     lines.push([WT.TIERS[t] + ' gathering', BASE[t], s.up === 'none' ? incG : null]);
@@ -571,7 +580,7 @@ var WT = (function () {
     ml.push(first);
     if (R2) ml.push('Layered ' + R.name + ' + ' + R2.name + ' runner, +' + WT.peso(LAYER[t]) + (R2.layer ? '' : ' (second color confirmed one day before, paid with your balance)'));
     if (s.up === 'fd') ml.push('Fairy Dust, ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders (' + rib + '), +' + WT.peso(FD[s.holder][t]));
-    if (s.up === 'fb') ml.push('Full Bloom, ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders, ' + (s.mat === 'gold' ? 'sheer gold' : 'jute') + ' placemats (' + rib + '), +' + WT.peso(FB[t]));
+    if (s.up === 'fb') ml.push('Full Bloom, ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders, ' + (s.mat === 'gold' ? 'sheer gold' : 'jute') + ' placemats, ' + (s.nap === 'red' ? 'red satin napkins' : 'white napkins') + ' (' + rib + '), +' + WT.peso(FB[t]));
     if (s.taper) ml.push('Pink LED taper candles, +' + WT.peso(TAPER[t]));
     if (s.gm) ml.push('Setup: Fairy Godmother Service, +' + WT.peso(GM[t]));
     if (lateFee()) ml.push('Late-night pack-down (after 11 PM), +' + WT.peso(LATE_FEE));

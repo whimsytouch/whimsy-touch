@@ -218,7 +218,7 @@ var WT = (function () {
   }
 
   var RUN = WT.runners();
-  var s = { tier: 0, runner: null, vase: 'acrylic', up: 'none', holder: 'tiered', mat: 'gold', nap: 'white', layer: false, runner2: null, ribbon: 'match', ribbonColor: '', taper: false, gm: false, alc: false, ala: {} };
+  var s = { tier: 1, runner: null, vase: 'acrylic', up: 'none', holder: 'tiered', mat: 'gold', nap: 'white', layer: false, runner2: null, ribbon: 'match', ribbonColor: '', taper: false, gm: false, alc: false, ala: {} };
   var q = new URLSearchParams(location.search).get('runner');
   if (q) RUN.forEach(function (r, i) { if (r.name === q) s.runner = i; });
   // runner availability for the chosen date (from the bookings sheet)
@@ -352,6 +352,7 @@ var WT = (function () {
     // 1 tier
     var tierBox = $('qTier'); tierBox.innerHTML = '';
     WT.TIERS.forEach(function (n, i) {
+      if (i === 0) return;   // Sweetheart is no longer offered
       var tOk = !avDate || tierOk(i);
       tierBox.appendChild(opt(n, tOk ? WT.peso(BASE[i]) + ' · ' + GUESTS[i] : 'fully booked on ' + niceDate(avDate), !s.alc && t === i, function () { s.tier = i; s.alc = false; render(); }, !tOk && t !== i));
     });
@@ -449,7 +450,7 @@ var WT = (function () {
     var NTt = [3, 8, 16, 24][t], NVt = [1, 4, 8, 12][t], stockOn = !!(avDate && AV && AV.items);
     var shortGoldOut = stockOn && freeOf('Gold candle holders') < NTt, tieredOut = stockOn && freeOf('Tiered gold candle holders') < NTt, glassOut = stockOn && freeOf('Glass candle holders') < NTt;
     var fbItemsOut = stockOn && ['LED pillar candles', 'Name card holders'].some(function (k) { return freeOf(k) < (k === 'LED pillar candles' ? NVt : MAXG[t]); });
-    var RED_NAP_MAX = 1;   // red satin napkins (24 pcs): Sweetheart and Storybook only
+    var RED_NAP_MAX = 1;   // red satin napkins (24 pcs): Storybook only
     var whiteNapOut = stockOn && (freeOf('White cloth napkins') < MAXG[t] || freeOf('Leaf napkin rings') < MAXG[t]);
     var redNapOff = t > RED_NAP_MAX, redNapOut = !redNapOff && stockOn && (freeOf('Red satin napkins') < MAXG[t] || freeOf('Gold napkin rings') < MAXG[t]);
     if (whiteNapOut && (redNapOff || redNapOut)) fbItemsOut = true;

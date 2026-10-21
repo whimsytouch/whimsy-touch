@@ -267,7 +267,7 @@ footer { text-align: center; color: var(--muted); font-size: 14px; padding: 40px
 <main class="wrap">
   <div class="intro">
     <p>Each seat comes with 6 sugar cookies by Emmi Bakes to decorate and take home, all the icing and toppings, one drink or food from Just Coffee &amp; Sip, and a Halloween table styled by Whimsy Touch.</p>
-    <p><strong>Remaining seats are open to guests 18 and up.</strong> Booking for a group? Add everyone in one form. <strong class="deadline">Registration closes Wednesday, 21 October</strong>, or once seats are full.</p>
+    <p>Booking for a group? Add everyone in one form. Kids aged 7 to 11 are welcome with a supervising adult. <strong class="deadline">Registration closes Wednesday, 21 October</strong>, or once seats are full.</p>
   </div>
 
   <div class="status" id="status" role="status">Checking seats…</div>
@@ -344,7 +344,7 @@ footer { text-align: center; color: var(--muted); font-size: 14px; padding: 40px
       <ul class="policy">
         <li>Your seat is confirmed once we check your payment. We'll email your confirmation and receipt within 24 hours.</li>
         <li>Payments are non-refundable, but you can give your seat to someone else. Message us their name before 21 October.</li>
-        <li><strong>Remaining seats are for guests 18 and up.</strong> Seats are for registered guests only.</li>
+        <li>Seats are for registered guests only. Kids under 12 need a supervising adult.</li>
         <li>Event photos and video will be taken and may be shared on our pages.</li>
       </ul>
       <label class="check"><input type="checkbox" id="agree" name="agree" required><span>I've read and agree to the above.</span></label>
@@ -404,7 +404,7 @@ const MENU = [
     { name: 'Soda Pop with Popping Boba', tag: 'Caffeine-free', desc: '22 oz', flavors: ['Strawberry', 'Blueberry', 'Green Apple', 'Passion Fruit', 'Lychee'] },
     { name: 'Fresh Lemon', tag: 'Caffeine-free', desc: '22 oz', flavors: ['Just Lemon', 'Strawberry', 'Blueberry', 'Green Apple', 'Passion Fruit', 'Lychee'] },
     { name: 'Fruit Tea with White Nata', desc: '22 oz', flavors: ['Passion Fruit', 'Lychee'] } ] },
-  { group: 'Non-coffee', note: 'All caffeine-free', items: [
+  { group: 'For the kids', note: 'All caffeine-free', items: [
     { name: 'Chocoberry' },
     { name: 'Choco Cloud', desc: 'Iced chocolate with marshmallows on top' },
     { name: 'Fruit Milk', desc: '22 oz', flavors: ['Strawberry', 'Blueberry', 'Mango', 'Avocado', 'Melon'] },
@@ -534,7 +534,7 @@ function guestHTML(i) {
     '<div class="field"><label for="g' + i + 'nick">Nickname for the name card</label>' +
     '<input type="text" id="g' + i + 'nick" maxlength="20" placeholder="What should we call them?" value="' + esc(g.nickname || '') + '"></div>' +
     '<div class="field"><span class="label" id="g' + i + 'ageL">Age</span><div class="choices" role="radiogroup" aria-labelledby="g' + i + 'ageL">' +
-    ['18+'].map((v) => '<label class="choice"><input type="radio" name="g' + i + 'age" value="' + v + '"' + (g.age === v || v === '18+' ? ' checked' : '') + '><span>' +
+    ['7-11', '12-17', '18+'].map((v) => '<label class="choice"><input type="radio" name="g' + i + 'age" value="' + v + '"' + (g.age === v ? ' checked' : '') + '><span>' +
       ({ '7-11': '7 to 11', '12-17': '12 to 17', '18+': '18 and up' }[v]) + '</span></label>').join('') + '</div></div>' +
     '<div class="adult" id="g' + i + 'adultBox"' + (g.age === '7-11' ? '' : ' hidden') + '><p>Kids under 12 need one adult to stay and supervise. The adult doesn\'t need a ticket and doesn\'t take a decorating seat, but they\'re welcome to order from the cafe.</p>' +
     '<div class="field"><label for="g' + i + 'adult">Supervising adult\'s name</label><input type="text" id="g' + i + 'adult" autocomplete="off" value="' + esc(g.adultName || '') + '"></div></div>' +

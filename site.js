@@ -228,7 +228,7 @@ var WT = (function () {
   var AV = null, avDate = '', avBusy = false, avLost = '', avAt = 0;
   // delivery (Full Bloom / Fairy Godmother): zone check runs in the bookings sheet
   var DLV = null, DLVP = null, dlvBusy = false, dlvFor = '';
-  function needsDelivery() { return !s.alc && s.gm; }  // only Fairy Godmother has a computed delivery fee; everyone else pays our rider the Maxim rate on the day
+  function needsDelivery() { return !s.alc && s.gm; }  // only Fairy Godmother has a computed delivery fee; everyone else pays our rider the Grab rate on the day
   var ZONE_NAME = { buhangin: 'Buhangin', lanang: 'Roxas–Lanang–Indangan' };
   var DLV_PER_KM = 25, DLV_MAX_KM = 20;   // venues outside Roxas–Lanang–Indangan: per km past it, each way; farther = message us
   // price of ONE trip (drop-off or pickup) for a checked location; null = too far, message us
@@ -564,13 +564,13 @@ var WT = (function () {
     });
     var depAmt = s.alc ? (alaLines.length ? ALA_DEP : 0) : (s.up === 'fb' ? [350, 500, 600, 500] : [300, 300, 500, 500])[t];
     if (depAmt) ul.appendChild(WT.el('li', '', '<span>Security deposit<em class="q-inc-note">Refundable</em></span><span>+' + WT.peso(depAmt) + '</span>'));
-    if (!needsDelivery()) ul.appendChild(WT.el('li', '', '<span>Delivery &amp; pickup<em class="q-inc-note">Maxim rate, paid to the rider (their QR or cash)</em></span><span>to rider</span>'));
+    if (!needsDelivery()) ul.appendChild(WT.el('li', '', '<span>Delivery &amp; pickup<em class="q-inc-note">Grab rate, paid to the rider (their QR or cash)</em></span><span>to rider</span>'));
     if (dl) { total += dl[1]; ul.appendChild(WT.el('li', '', '<span>' + dl[0] + (dl[3] ? '<em class="q-inc-note">' + dl[3] + '</em>' : '') + '</span><span>' + (dl[1] ? '+' + WT.peso(dl[1]) : 'free') + '</span>')); }
     var tot = $('qTotal'), newTxt = WT.peso(total), shown = WT.peso(total + depAmt);
     var pending = needsDelivery() && !DLV;
     var info = $('qDlvInfo');
     var R24 = '';
-    var RIDER = 'Our rider delivers and picks up. Before each trip, pay the rider the <b>Maxim rate</b> through <b>their QR code</b>, or in <b>exact cash</b> on arrival.';
+    var RIDER = 'Our rider delivers and picks up. Before each trip, pay the rider the <b>Grab rate</b> through <b>their QR code</b>, or in <b>exact cash</b> on arrival.';
     if (info) info.innerHTML = !needsDelivery() ? RIDER + R24 :
       'Delivery is <b>free within Roxas–Lanang–Indangan</b>. Farther venues: ' + WT.peso(DLV_PER_KM) + ' per km past it, each way.' + R24;
     var fine = $('qFine');
@@ -599,7 +599,7 @@ var WT = (function () {
     if (s.gm) ml.push('Setup: Fairy Godmother Service, +' + WT.peso(GM[t]));
     if (lateFee()) ml.push('Late-night pack-down (after 11 PM), +' + WT.peso(LATE_FEE));
     if (dl) ml.push(dl[0] + (dl[1] ? ', +' + WT.peso(dl[1]) : ''));
-    else if (!needsDelivery()) ml.push('Delivery & pickup: by our rider at the Maxim rate, paid directly to the rider before each trip through their QR code or exact cash (not deducted from your security deposit)');
+    else if (!needsDelivery()) ml.push('Delivery & pickup: by our rider at the Grab rate, paid directly to the rider before each trip through their QR code or exact cash (not deducted from your security deposit)');
     alaLines.forEach(function (l) { ml.push(l[0] + ', ' + (s.alc ? '' : '+') + WT.peso(l[1])); });
     if (s.alc) ml = ['À la carte order:'].concat(alaLines.map(function (l) { return l[0] + ', ' + WT.peso(l[1]); }));
     root._msg = { lines: ml, total: total, deposit: s.alc ? ALA_DEP : depAmt, layer: (!s.alc && s.layer && R2 && !R2.layer) ? layerFee(t) : 0, delivery: dl ? dl[1] : 0 };
@@ -688,7 +688,7 @@ var WT = (function () {
     var fileIn = document.getElementById('qRcpt'), btn = document.getElementById('qRcptSend'), note = document.getElementById('qRcptNote');
     var pdl = document.getElementById('qPayDlv');
     if (pdl) pdl.innerHTML = needsDelivery() ? (mm.df ? '<b>Delivery</b> (' + WT.peso(mm.df) + ') is included in your remaining balance.' : '<b>Delivery</b> is free for your venue.') :
-      '<b>Delivery &amp; pickup</b> are not included above. Before each trip, our rider sends you the Maxim fare and <b>their QR code</b>: pay before they head out, or have the <b>exact amount in cash</b> ready. It is never deducted from your security deposit.';
+      '<b>Delivery &amp; pickup</b> are not included above. Before each trip, our rider sends you the Grab fare and <b>their QR code</b>: pay before they head out, or have the <b>exact amount in cash</b> ready. It is never deducted from your security deposit.';
     document.getElementById('qPayCopy').onclick = function () { var b = this; if (navigator.clipboard) navigator.clipboard.writeText('15454836781').then(function () { b.textContent = 'Copied!'; }); };
     btn.onclick = function () {
       var f = fileIn.files && fileIn.files[0];
@@ -845,7 +845,7 @@ var WT = (function () {
     try { mm = buildMessages(ref, new FormData(form)); sheetBody.set('payment_msg', mm.pay); sheetBody.set('confirm_msg', mm.conf); } catch (err) {}
     var dlx = deliveryLine();
     if (dlx) { var pq0 = pickQ(); sheetBody.set('delivery_fee', String(dlx[1])); sheetBody.set('delivery_info', WT.peso(dlx[1]) + ' · ' + dlx[3] + (DLV.km ? ' · venue ' + DLV.km + ' km from ' + (DLV.from || 'edge') : '') + (DLV.place ? ' · ' + DLV.place : '') + (selfReturn() ? '' : pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + pickIn.value.trim() + (pq0 && pq0.place ? ' (' + pq0.place + ')' : '')) + ' · pickup time: ' + pickupText()); }
-    else { sheetBody.set('delivery_fee', '0'); sheetBody.set('delivery_info', 'Our rider · Maxim rate, paid to rider before each trip' + (pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + (pickIn.value.trim() || 'pin to follow')) + ' · pickup time: ' + pickupText()); }
+    else { sheetBody.set('delivery_fee', '0'); sheetBody.set('delivery_info', 'Our rider · Grab rate, paid to rider before each trip' + (pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + (pickIn.value.trim() || 'pin to follow')) + ' · pickup time: ' + pickupText()); }
     // Send to the sheet without waiting for Google's reply (the booking is saved on their side either way)
     var toSheet = !window.WT_SHEETS_URL ? Promise.reject(new Error('no sheet'))
       : (navigator.sendBeacon && navigator.sendBeacon(window.WT_SHEETS_URL, sheetBody)) ? Promise.resolve(true)

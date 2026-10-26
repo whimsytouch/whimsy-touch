@@ -231,6 +231,7 @@
       var head = '<div class="nc-thead"><b>Table ' + (ti + 1) + '</b>' +
         '<button type="button" class="q-opt" data-shape="long" aria-pressed="' + (t.shape === 'long') + '">Long</button>' +
         '<button type="button" class="q-opt" data-shape="round" aria-pressed="' + (t.shape === 'round') + '">Round</button>' +
+        (t.shape === 'long' ? '<button type="button" class="q-opt" data-ends aria-pressed="' + !!t.ends + '">' + (t.ends ? '✓ ' : '') + 'Seats at the ends</button>' : '') +
         (tables.length > 1 ? '<button type="button" class="nc-rm">Remove</button>' : '') + '</div>';
       var grid = '<div class="nc-grid">';
       for (var i = 0; i < t.seats; i++) grid += '<label><i>' + (i + 1) + '</i><input data-seat="' + i + '" value="' + esc(t.names[i] || '') + '" placeholder="Guest name">' + (t.seats > 1 ? '<button type="button" class="nc-rm" data-del="' + i + '" aria-label="Remove seat ' + (i + 1) + '">×</button>' : '') + '</label>';
@@ -243,6 +244,7 @@
       });
       el.querySelectorAll('[data-del]').forEach(function (b) { b.addEventListener('click', function () { var k = +b.dataset.del; t.names.splice(k, 1); t.seats = Math.max(1, t.seats - 1); drawTables(); }); });
       el.querySelectorAll('[data-shape]').forEach(function (b) { b.addEventListener('click', function () { t.shape = b.dataset.shape; drawTables(); }); });
+      var eb = el.querySelector('[data-ends]'); if (eb) eb.addEventListener('click', function () { t.ends = !t.ends; drawTables(); });
       var rm = el.querySelector('.nc-thead .nc-rm'); if (rm) rm.addEventListener('click', function () { tables.splice(ti, 1); drawTables(); });
       el.querySelectorAll('[data-seat]').forEach(function (inp) { inp.addEventListener('input', function () { t.names[+inp.dataset.seat] = inp.value; drawChart(); }); });
       box.appendChild(el);
@@ -279,13 +281,16 @@
       h = 40 + 2 * R + 130;
     } else {
       // seats around a long table: seat 1 at the left end, then along the top, the right end, and back along the bottom
-      var n = t.seats, ends = n >= 3 ? 2 : n, sides = n - ends, topN = Math.ceil(sides / 2), botN = sides - topN;
+      var n = t.seats, ends = t.ends ? (n >= 3 ? 2 : n) : 0, sides = n - ends, topN = Math.ceil(sides / 2), botN = sides - topN;
       var perSide = Math.max(topN, botN, 1), gap = Math.min(78, (W - 220) / perSide);
       var len = gap * perSide, x0 = (W - len) / 2, ty = y0 + 120;
       out += '<text x="' + (W / 2) + '" y="' + (y0 + 26) + '" class="tl">' + label + '</text>';
       out += '<rect x="' + x0 + '" y="' + ty + '" width="' + len + '" height="54" rx="8" class="tb"/>';
       var pos = [];
-      if (n === 1) pos.push(['L']); else if (n === 2) { pos.push(['L']); pos.push(['R']); }
+      if (!t.ends) {
+        for (var a0 = 0; a0 < topN; a0++) pos.push(['T', a0]);
+        for (var b0 = botN - 1; b0 >= 0; b0--) pos.push(['B', b0]);
+      } else if (n === 1) pos.push(['L']); else if (n === 2) { pos.push(['L']); pos.push(['R']); }
       else {
         pos.push(['L']);
         for (var a1 = 0; a1 < topN; a1++) pos.push(['T', a1]);
@@ -353,7 +358,7 @@
       lines = ns.map(function (n, i) { return (i + 1) + '. ' + n; });
     } else {
       tables.forEach(function (t, ti) {
-        lines.push('Table ' + (ti + 1) + ' (' + (t.shape === 'round' ? 'round' : 'long') + ', ' + t.seats + ' seats)');
+        lines.push('Table ' + (ti + 1) + ' (' + (t.shape === 'round' ? 'round' : 'long' + (t.ends ? ', with seats at the ends' : '')) + ', ' + t.seats + ' seats)');
         for (var i = 0; i < t.seats; i++) { var n = String(t.names[i] || '').trim(); if (n) guests++; lines.push('   Seat ' + (i + 1) + ': ' + (n || '(empty)')); }
       });
       if (!guests) return fail('Please type at least one guest name at a seat.');

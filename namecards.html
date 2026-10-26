@@ -32,6 +32,7 @@
 .nc-grid label{flex-direction:row;align-items:center;gap:8px}
 .nc-grid label i{font-style:normal;min-width:26px;color:var(--sage-deep)}
 .nc-grid input{flex:1;min-width:0;padding:9px 12px}
+.nc-addseat{margin-top:10px}
 .nc-grid .nc-rm{flex:none;width:30px;height:30px;padding:0;font-size:18px;line-height:1;letter-spacing:0}
 #ncAddName{margin-top:10px}
 .nc-add{align-self:flex-start;background:none;border:1px dashed var(--sage-deep);color:var(--sage-deep);border-radius:999px;padding:10px 18px;font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
@@ -133,7 +134,7 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var mode = 'list', maxGuests = 30, verifiedRef = '';
-  var tables = [{ shape: 'long', seats: 10, names: [] }];
+  var tables = [{ shape: 'long', seats: 1, names: [] }];
   var q = new URLSearchParams(location.search);
   if (q.get('ref')) $('ncRef').value = q.get('ref').toUpperCase();
 
@@ -160,7 +161,6 @@
       var CAP = { 'sweetheart': 2, 'storybook': 15, 'once upon': 30, 'ever after': 40 };
       verifiedRef = ref; maxGuests = CAP[String(b.gathering || '').toLowerCase()] || b.maxGuests || 30;
       gatheringName = b.gathering || ''; drawNameBoxes();
-      if (tables.length === 1 && !tables[0].names.length) tables[0].seats = Math.min(maxGuests, 10);
       if (b.first && !$('ncName').value) $('ncName').value = b.first;
       if (b.fairyGodmother) {
         status('Hi ' + esc(b.first) + '! Your <b>' + esc(b.gathering) + '</b> table has Full Bloom with <b>Fairy Godmother Service</b>, so we’ll set each card at its seat. Please fill in your seating plan below.');
@@ -231,40 +231,31 @@
       var head = '<div class="nc-thead"><b>Table ' + (ti + 1) + '</b>' +
         '<button type="button" class="q-opt" data-shape="long" aria-pressed="' + (t.shape === 'long') + '">Long</button>' +
         '<button type="button" class="q-opt" data-shape="round" aria-pressed="' + (t.shape === 'round') + '">Round</button>' +
-        '<label class="nc-seats-in">Seats <input type="number" min="1" max="' + (maxGuests - (totalSeats() - t.seats)) + '" value="' + t.seats + '"></label>' +
         (tables.length > 1 ? '<button type="button" class="nc-rm">Remove</button>' : '') + '</div>';
       var grid = '<div class="nc-grid">';
-      for (var i = 0; i < t.seats; i++) grid += '<label><i>' + (i + 1) + '</i><input data-seat="' + i + '" value="' + esc(t.names[i] || '') + '" placeholder="Guest name"></label>';
-      el.innerHTML = head + grid + '</div>';
+      for (var i = 0; i < t.seats; i++) grid += '<label><i>' + (i + 1) + '</i><input data-seat="' + i + '" value="' + esc(t.names[i] || '') + '" placeholder="Guest name">' + (t.seats > 1 ? '<button type="button" class="nc-rm" data-del="' + i + '" aria-label="Remove seat ' + (i + 1) + '">×</button>' : '') + '</label>';
+      var full = totalSeats() >= maxGuests;
+      el.innerHTML = head + grid + '</div>' + '<button type="button" class="nc-add nc-addseat"' + (full ? ' disabled style="opacity:.5;cursor:default"' : '') + '>+ Add a guest</button>';
+      el.querySelector('.nc-addseat').addEventListener('click', function () {
+        if (totalSeats() >= maxGuests) { $('ncSeatCount').style.color = 'var(--rose)'; $('ncSeatCount').textContent = 'You’ve reached ' + maxGuests + ' seats, the limit for your table.'; return; }
+        t.seats++; drawTables();
+        var ins = $('ncTables').querySelectorAll('.nc-table')[ti].querySelectorAll('[data-seat]'); if (ins.length) ins[ins.length - 1].focus();
+      });
+      el.querySelectorAll('[data-del]').forEach(function (b) { b.addEventListener('click', function () { var k = +b.dataset.del; t.names.splice(k, 1); t.seats = Math.max(1, t.seats - 1); drawTables(); }); });
       el.querySelectorAll('[data-shape]').forEach(function (b) { b.addEventListener('click', function () { t.shape = b.dataset.shape; drawTables(); }); });
-      var seatIn = el.querySelector('.nc-seats-in input');
-      function seatErr(on, room) {
-        seatIn.style.borderColor = on ? 'var(--rose)' : ''; seatIn.style.color = on ? 'var(--rose)' : '';
-        $('ncSeatCount').style.color = on ? 'var(--rose)' : '';
-        if (on) $('ncSeatCount').textContent = 'Your table is up to ' + maxGuests + ' guests, so this table can only have up to ' + room + (room === 1 ? ' seat.' : ' seats.') + ' Please lower the number.';
-      }
-      seatIn.addEventListener('input', function () {
-        var room = maxGuests - (totalSeats() - t.seats), v = parseInt(this.value, 10) || 0;
-        seatErr(v > room, room);
-      });
-      seatIn.addEventListener('change', function () {
-        var room = maxGuests - (totalSeats() - t.seats), want = parseInt(this.value, 10) || 1;
-        var v = Math.max(1, Math.min(room, want)); t.seats = v; t.names.length = Math.min(t.names.length, v); drawTables();
-        if (want > room) { var ni = $('ncTables').querySelectorAll('.nc-seats-in input')[ti]; if (ni) { ni.style.borderColor = 'var(--rose)'; } $('ncSeatCount').style.color = 'var(--rose)'; $('ncSeatCount').textContent = 'Your table is up to ' + maxGuests + ' guests, so we set this table to ' + v + (v === 1 ? ' seat.' : ' seats.'); }
-      });
-      var rm = el.querySelector('.nc-rm'); if (rm) rm.addEventListener('click', function () { tables.splice(ti, 1); drawTables(); });
+      var rm = el.querySelector('.nc-thead .nc-rm'); if (rm) rm.addEventListener('click', function () { tables.splice(ti, 1); drawTables(); });
       el.querySelectorAll('[data-seat]').forEach(function (inp) { inp.addEventListener('input', function () { t.names[+inp.dataset.seat] = inp.value; drawChart(); }); });
       box.appendChild(el);
     });
     var n = totalSeats();
     $('ncSeatCount').style.color = '';
-    $('ncSeatCount').textContent = n + (n === 1 ? ' seat' : ' seats') + ' in total · up to ' + maxGuests + ' guests for your table' + (n > maxGuests ? ' (too many seats, please remove some)' : '');
+    $('ncSeatCount').textContent = n + (n === 1 ? ' guest' : ' guests') + ' added · up to ' + maxGuests + ' guests for your table';
     drawChart();
   }
   $('ncAdd').addEventListener('click', function () {
     var room = maxGuests - totalSeats();
-    if (room < 1) { $('ncSeatCount').textContent = 'You’ve reached ' + maxGuests + ' seats, the limit for your table. Lower the seats on a table to add another.'; $('ncSeatCount').style.color = 'var(--rose)'; return; }
-    tables.push({ shape: 'round', seats: Math.min(6, room), names: [] }); drawTables();
+    if (room < 1) { $('ncSeatCount').textContent = 'You’ve reached ' + maxGuests + ' seats, the limit for your table. Remove a seat to add another table.'; $('ncSeatCount').style.color = 'var(--rose)'; return; }
+    tables.push({ shape: 'round', seats: 1, names: [] }); drawTables();
   });
 
   // ---------- chart (SVG, also saved as an image) ----------
@@ -287,17 +278,32 @@
       }
       h = 40 + 2 * R + 130;
     } else {
-      var perSide = Math.ceil(t.seats / 2), gap = Math.min(78, (W - 120) / Math.max(perSide, 1));
+      // seats around a long table: seat 1 at the left end, then along the top, the right end, and back along the bottom
+      var n = t.seats, ends = n >= 3 ? 2 : n, sides = n - ends, topN = Math.ceil(sides / 2), botN = sides - topN;
+      var perSide = Math.max(topN, botN, 1), gap = Math.min(78, (W - 220) / perSide);
       var len = gap * perSide, x0 = (W - len) / 2, ty = y0 + 120;
       out += '<text x="' + (W / 2) + '" y="' + (y0 + 26) + '" class="tl">' + label + '</text>';
       out += '<rect x="' + x0 + '" y="' + ty + '" width="' + len + '" height="54" rx="8" class="tb"/>';
-      for (var k = 0; k < t.seats; k++) {
-        var top = k < perSide, col = top ? k : (t.seats - 1 - k);
-        var sx2 = x0 + gap * col + gap / 2, sy2 = top ? ty - 22 : ty + 76;
-        out += '<circle cx="' + sx2.toFixed(1) + '" cy="' + sy2 + '" r="' + seatR + '" class="st"/><text x="' + sx2.toFixed(1) + '" y="' + (sy2 + 4) + '" class="sn">' + (k + 1) + '</text>';
-        var ny2 = top ? sy2 - 26 : sy2 + 34;
-        out += '<text x="' + sx2.toFixed(1) + '" y="' + ny2 + '" class="nm" text-anchor="middle" transform="rotate(' + (top ? -28 : 28) + ' ' + sx2.toFixed(1) + ' ' + ny2 + ')">' + esc(short(t.names[k], 14)) + '</text>';
+      var pos = [];
+      if (n === 1) pos.push(['L']); else if (n === 2) { pos.push(['L']); pos.push(['R']); }
+      else {
+        pos.push(['L']);
+        for (var a1 = 0; a1 < topN; a1++) pos.push(['T', a1]);
+        pos.push(['R']);
+        for (var b1 = botN - 1; b1 >= 0; b1--) pos.push(['B', b1]);
       }
+      pos.forEach(function (p, k) {
+        var sx2, sy2, nx2, ny2, rot = 0, anchor = 'middle';
+        if (p[0] === 'L') { sx2 = x0 - 24; sy2 = ty + 27; nx2 = sx2 - 22; ny2 = sy2 + 5; anchor = 'end'; }
+        else if (p[0] === 'R') { sx2 = x0 + len + 24; sy2 = ty + 27; nx2 = sx2 + 22; ny2 = sy2 + 5; anchor = 'start'; }
+        else {
+          var cnt = p[0] === 'T' ? topN : botN, g2 = len / cnt;
+          sx2 = x0 + g2 * p[1] + g2 / 2; sy2 = p[0] === 'T' ? ty - 22 : ty + 76;
+          nx2 = sx2; ny2 = p[0] === 'T' ? sy2 - 26 : sy2 + 34; rot = p[0] === 'T' ? -28 : 28;
+        }
+        out += '<circle cx="' + sx2.toFixed(1) + '" cy="' + sy2 + '" r="' + seatR + '" class="st"/><text x="' + sx2.toFixed(1) + '" y="' + (sy2 + 4) + '" class="sn">' + (k + 1) + '</text>';
+        out += '<text x="' + nx2.toFixed(1) + '" y="' + ny2 + '" class="nm" text-anchor="' + anchor + '"' + (rot ? ' transform="rotate(' + rot + ' ' + nx2.toFixed(1) + ' ' + ny2 + ')"' : '') + '>' + esc(short(t.names[k], 14)) + '</text>';
+      });
       h = 290;
     }
     return { svg: out, h: h };

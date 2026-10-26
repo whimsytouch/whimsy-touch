@@ -409,10 +409,7 @@ var WT = (function () {
     var rb = $('qRunner'); rb.innerHTML = '';
     function chips(sel, exclude, pickFn, layerPick) {
       var wrap = WT.el('div', 'q-runners');
-      var groups = layerPick ? [
-        { label: 'Always available', items: RUN.filter(function (r) { return r.layer; }) },
-        { label: 'Subject to availability', items: RUN.filter(function (r) { return !r.layer; }) }
-      ] : window.RUNNER_GROUPS;
+      var groups = window.RUNNER_GROUPS;
       groups.forEach(function (g) {
         var row = WT.el('div', 'q-rgroup', '<span class="q-rlabel">' + (g.label || WT.fabricLabel(g)) + '</span>');
         var box = WT.el('div', 'q-rrow');
@@ -441,7 +438,7 @@ var WT = (function () {
       if (s.layer) {
         rb.appendChild(WT.el('p', 'q-sublabel', 'Second color'));
         rb.appendChild(chips(s.runner2, s.runner, function (i) { s.runner2 = i; }, true));
-        rb.appendChild(WT.el('p', 'q-note', 'With Blush Pink or Pearl White, the +' + WT.peso(layerFee(t)) + ' is part of your downpayment. Other colors are subject to availability, so we’ll confirm them one day before your event and add the +' + WT.peso(layerFee(t)) + ' to your balance then.'));
+        rb.appendChild(WT.el('p', 'q-note', 'Both colors are reserved for your date as soon as you book. The +' + WT.peso(layerFee(t)) + ' is part of your downpayment.'));
       }
     } else if (!R) { s.layer = false; s.runner2 = null; }
     var runnerName = R ? (R2 ? R.name + ' + ' + R2.name + ' (layered)' : R.name + (s.layer ? ' + second color to choose' : '')) : '';
@@ -548,7 +545,7 @@ var WT = (function () {
     lines.push([WT.TIERS[t] + ' gathering', BASE[t], s.up === 'none' ? incG : null]);
     if (s.up === 'fd') lines.push(['Fairy Dust', FD[s.holder][t], incG]);
     if (s.up === 'fb') lines.push(['Full Bloom', FB[t], incG, 'Tableware (plates, glasses and cutlery) not included']);
-    if (s.layer && R) lines.push([R2 ? 'Layering: ' + R2.name : 'Layering: second color to choose', layerFee(t), null, !(R2 && R2.layer) ? 'Paid with your balance once we confirm your second color' : '']);
+    if (s.layer && R) lines.push([R2 ? 'Layering: ' + R2.name : 'Layering: second color to choose', layerFee(t)]);
     if (s.taper) lines.push(['Pink LED taper candles', TAPER[t]]);
     if (s.gm) lines.push(['Setup: Fairy Godmother Service', GM[t]]);
     if (lateFee()) lines.push(['Late-night pack-down (after 11 PM)', LATE_FEE]);
@@ -592,7 +589,7 @@ var WT = (function () {
     var first = WT.TIERS[t] + ' gathering (' + (t === 0 ? '2 pax' : 'up to ' + PAX[t] + ' pax') + ')';
     if (R && !R2) first += ', ' + R.name + ' runner';
     ml.push(first);
-    if (R2) ml.push('Layered ' + R.name + ' + ' + R2.name + ' runner, +' + WT.peso(layerFee(t)) + (R2.layer ? '' : ' (second color confirmed one day before, paid with your balance)'));
+    if (R2) ml.push('Layered ' + R.name + ' + ' + R2.name + ' runner, +' + WT.peso(layerFee(t)));
     if (s.up === 'fd') ml.push('Fairy Dust, ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders (' + rib + '), +' + WT.peso(FD[s.holder][t]));
     if (s.up === 'fb') ml.push('Full Bloom, ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders, ' + (s.mat === 'gold' ? 'sheer gold' : 'jute') + ' placemats, ' + (s.nap === 'red' ? 'red satin napkins' : 'white napkins') + ' (' + rib + '), +' + WT.peso(FB[t]));
     if (s.taper) ml.push('Pink LED taper candles, +' + WT.peso(TAPER[t]));
@@ -602,7 +599,7 @@ var WT = (function () {
     else if (!needsDelivery()) ml.push('Delivery & pickup: by our rider at the Grab rate, paid directly to the rider before each trip through their QR code or exact cash (not deducted from your security deposit)');
     alaLines.forEach(function (l) { ml.push(l[0] + ', ' + (s.alc ? '' : '+') + WT.peso(l[1])); });
     if (s.alc) ml = ['À la carte order:'].concat(alaLines.map(function (l) { return l[0] + ', ' + WT.peso(l[1]); }));
-    root._msg = { lines: ml, total: total, deposit: s.alc ? ALA_DEP : depAmt, layer: (!s.alc && s.layer && R2 && !R2.layer) ? layerFee(t) : 0, delivery: dl ? dl[1] : 0 };
+    root._msg = { lines: ml, total: total, deposit: s.alc ? ALA_DEP : depAmt, layer: 0, delivery: dl ? dl[1] : 0 };
     root._total = newTxt; root._hasRunner = (s.alc ? alaLines.length > 0 && !!avDate : (!!avDate && !!R && (!s.layer || !!R2))) && !shortList().length;
     root._summary = 'My Whimsy Touch table:\n' + lines.map(function (l, i) { return '• ' + l[0] + (i === 0 ? ' — ' + WT.peso(l[1]) : l[1] ? ' — +' + WT.peso(l[1]) : '') + (l[2] ? l[2].map(function (x) { return '\n   – ' + x; }).join('') + '\n' : ''); }).join('\n') + (depAmt ? '\n• Security deposit (refundable) — +' + WT.peso(depAmt) : '') + (dl ? '\n• ' + dl[0] + (dl[1] ? ' — +' + WT.peso(dl[1]) : ' — free') : '') + '\nTotal: ' + shown + (depAmt ? ' (' + newTxt + ' rental + ' + WT.peso(depAmt) + ' refundable deposit)' : '');
   }
@@ -748,7 +745,7 @@ var WT = (function () {
   function runnersField() {
     if (s.alc || s.runner == null) return '';
     var n = WT.nr(RUN[s.runner], s.tier), out = [RUN[s.runner].name + ' x' + n];
-    if (s.layer && s.runner2 != null) out.push(RUN[s.runner2].name + ' x' + n + (RUN[s.runner2].layer ? '' : ' (layer)'));
+    if (s.layer && s.runner2 != null) out.push(RUN[s.runner2].name + ' x' + n);
     return out.join(', ');
   }
   function detailsMode(on) {

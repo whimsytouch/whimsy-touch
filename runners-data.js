@@ -3,7 +3,7 @@
    m: length in meters
    long: 5-meter runners, so Once Upon uses 2 and Ever After 3 (others: 3 and 4)
    soon: a higher max from a date, e.g. when more pieces arrive
-   layer: shown as "Always available" when picking a layering color (the rest are subject to availability) */
+   layer: (no longer used on the booking page) */
 window.RUNNER_GROUPS = [
   { title: "Sheer & Airy", desc: "Airy, soft and dreamy. Light that filters through.", items: [
     { name: "Sage Green",     fabric: "Tulle", m: 3, hex: "#8FB29C", max: 1, img: "img/runner-green.jpg" },

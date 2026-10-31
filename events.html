@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Events — The Whimsy Touch</title>
+<meta name="description" content="Workshops and events by Whimsy Touch in Davao City: connect with new people, have fun, and experience a Whimsy Touch table.">
+<meta property="og:title" content="The Whimsy Touch">
+<meta property="og:description" content="The table of your dreams, borrowed, not bought. Table décor rentals in Davao City.">
+<meta property="og:image" content="img/standard-setup.jpg">
+<link rel="icon" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20261013d">
+</head>
+<body id="top">
+<a class="skip" href="#main">Skip to content</a>
+
+
+<header class="nav">
+  <div class="wrap">
+    <a class="nav-brand" href="index.html" aria-label="Whimsy Touch home"><img class="nav-logo" src="img/logo-script.webp" alt="Whimsy Touch" width="700" height="187"></a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <ul class="nav-links" id="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="gatherings.html">Gatherings</a></li>
+      <li><a href="runners.html">Runners</a></li>
+      <li><a href="upgrades.html">Upgrades</a></li>
+      <li class="nav-book"><a href="book.html">Book a Table</a></li>
+      <li><a href="moments.html">Moments</a></li>
+      <li><a href="events.html" aria-current="page">Events</a></li>
+      <li><a href="faq.html">FAQs</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="main">
+
+<style>
+.ev-intro{text-align:center}
+.ev-intro .eyebrow{justify-content:center}
+.ev-intro .lead{margin:14px auto 0}
+.event{margin-top:56px}
+.ev-head{text-align:center;max-width:720px;margin:0 auto}
+.ev-head h3{font-family:var(--serif,'Cormorant Garamond',serif);font-weight:500;font-size:clamp(26px,3.4vw,36px);color:var(--ink);line-height:1.2}
+.ev-meta{font-family:var(--sans);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--rose);margin-top:8px}
+.ev-head p{font-size:17px;color:var(--body);margin-top:14px}
+.ev-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:30px auto 0;max-width:820px;border-radius:12px;overflow:hidden}
+.ev-ph{position:relative;display:block;overflow:hidden;background:var(--card);grid-column:span 2;aspect-ratio:1/1}
+.ev-ph:nth-child(1),.ev-ph:nth-child(2){grid-column:span 3;aspect-ratio:4/3}
+.ev-ph img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.ev-ph:hover img{transform:scale(1.04)}
+.ev-hide{display:none}
+.ev-more::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.ev-more span{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--sans);font-weight:600;font-size:clamp(28px,4.6vw,44px)}
+.ev-hd{margin:22px auto 0;max-width:820px;text-align:center;background:var(--sage-deep);color:#fff;border-radius:18px;padding:34px 24px;box-shadow:0 10px 28px rgba(46,42,36,.18)}
+.ev-hd b{display:block;font-family:var(--serif);font-weight:500;font-size:clamp(26px,3.6vw,36px);line-height:1.2}
+.ev-hd b i{font-style:normal;font-family:var(--sans);font-size:12px;letter-spacing:.22em;text-transform:uppercase;display:block;opacity:.8;margin-bottom:8px}
+.ev-hd p{margin:10px auto 20px;max-width:520px;color:rgba(255,255,255,.88)}
+.ev-hd .btn{background:#fff;color:var(--sage-deep);font-weight:600;min-height:54px;padding:0 34px}
+.ev-hd .btn:hover{background:var(--card)}
+.ev-lb{position:fixed;inset:0;background:rgba(20,18,15,.92);display:none;align-items:center;justify-content:center;z-index:100}
+.ev-lb.on{display:flex}
+.ev-lb img{max-width:92vw;max-height:84vh;border-radius:6px}
+.ev-lb button{position:absolute;background:rgba(255,255,255,.14);color:#fff;border:0;width:46px;height:46px;border-radius:50%;font-size:24px;cursor:pointer}
+.ev-lb .x{top:16px;right:16px} .ev-lb .p{left:12px;top:50%;transform:translateY(-50%)} .ev-lb .n{right:12px;top:50%;transform:translateY(-50%)}
+.ev-lb .c{position:absolute;bottom:16px;left:0;right:0;text-align:center;color:#ddd;font-family:var(--sans);font-size:13px;letter-spacing:.1em}
+@media (max-width:640px){.ev-grid{gap:4px;border-radius:8px}}
+</style>
+
+<section id="events">
+  <div class="wrap">
+    <div class="ev-intro">
+      <div class="eyebrow">Workshops &amp; Events</div>
+      <h2 class="script-title">Come gather with us.</h2>
+      <p class="lead">Whimsy Touch started with beautiful tables, and our events bring people around them. We host small workshops where strangers become friends, hands get busy, and everyone gets to experience a Whimsy Touch table for themselves.</p>
+    </div>
+
+    <article class="event">
+      <div class="ev-head">
+        <h3>Halloween Cookie Decorating Workshop</h3>
+        <div class="ev-meta">Saturday, 24 October 2026 · Just Coffee &amp; Sip, Davao City</div>
+        <p>An afternoon of icing, laughter and new friends. Guests decorated spooky sugar cookies by Emmi Bakes around a Halloween table styled by Whimsy Touch, then took their creations home.</p>
+      </div>
+      <div class="ev-grid">
+        <a class="ev-ph" href="img/events/hw-01.jpg"><img src="img/events/hw-01-s.jpg" alt="Halloween table set with flowers and candles" loading="lazy"></a>
+        <a class="ev-ph" href="img/events/hw-02.jpg"><img src="img/events/hw-02-s.jpg" alt="Candlelight and orange blooms on the table" loading="lazy"></a>
+        <a class="ev-ph" href="img/events/hw-04.jpg"><img src="img/events/hw-04-s.jpg" alt="Kids decorating cookies together" loading="lazy"></a>
+        <a class="ev-ph" href="img/events/hw-06.jpg"><img src="img/events/hw-06-s.jpg" alt="Finished Halloween cookies in a box" loading="lazy"></a>
+        <a class="ev-ph" href="img/events/hw-09.jpg"><img src="img/events/hw-09-s.jpg" alt="Piping black icing" loading="lazy"></a>
+        <a class="ev-ph" href="img/events/hw-03.jpg"><img src="img/events/hw-03-s.jpg" alt="Whimsy Touch napkin detail" loading="lazy"></a>
+        <a class="ev-ph" href="img/events/hw-16.jpg"><img src="img/events/hw-16-s.jpg" alt="Guests showing their cookies" loading="lazy"></a>
+        <a class="ev-ph ev-more" href="img/events/hw-10.jpg"><img src="img/events/hw-10-s.jpg" alt="A young guest piping icing" loading="lazy"><span>+12</span></a>
+        <a class="ev-ph ev-hide" href="img/events/hw-17.jpg"><img src="img/events/hw-17-s.jpg" alt="Kids decorating and laughing" loading="lazy"></a>
+        <a class="ev-ph ev-hide" href="img/events/hw-12.jpg"><img src="img/events/hw-12-s.jpg" alt="The styled Halloween table" loading="lazy"></a>
+        <a class="ev-ph ev-hide" href="img/events/hw-13.jpg"><img src="img/events/hw-13-s.jpg" alt="Cookies ready to decorate" loading="lazy"></a>
+        <a class="ev-ph ev-hide" href="img/events/hw-18.jpg"><img src="img/events/hw-18-s.jpg" alt="Kids having fun at the workshop" loading="lazy"></a>
+        <a class="ev-ph ev-hide" href="img/events/hw-11.jpg"><img src="img/events/hw-11-s.jpg" alt="Detailing an orange cookie" loading="lazy"></a>
+        <a class="ev-ph ev-hide" href="img/events/hw-15.jpg"><img src="img/events/hw-15-s.jpg" alt="Guests decorating around the table" loading="lazy"></a>
+        <a class="ev-ph ev-hide" href="img/events/hw-08.jpg"><img src="img/events/hw-08-s.jpg" alt="A mummy cookie with a name card" loading="lazy"></a>
+        <a class="ev-ph ev-hide" href="img/events/hw-19.jpg"><img src="img/events/hw-19-s.jpg" alt="Spooky cookies in a box" loading="lazy"></a>
+        <a class="ev-ph ev-hide" href="img/events/hw-07.jpg"><img src="img/events/hw-07-s.jpg" alt="A parent helping at the cafe" loading="lazy"></a>
+        <a class="ev-ph ev-hide" href="img/events/hw-14.jpg"><img src="img/events/hw-14-s.jpg" alt="Guests at the workshop" loading="lazy"></a>
+        <a class="ev-ph ev-hide" href="img/events/hw-05.jpg"><img src="img/events/hw-05-s.jpg" alt="Piping icing onto a cookie" loading="lazy"></a>
+        <a class="ev-ph ev-hide" href="img/events/hw-20.jpg"><img src="img/events/hw-20-s.jpg" alt="Guests decorating cookies" loading="lazy"></a>
+      </div>
+      <div class="ev-hd">
+        <b><i>📸 Full gallery</i>See all the photos in HD</b>
+        <p>Relive every little moment, from the first swirl of icing to the last proud smile. Save your favorites in full quality, free to download and keep.</p>
+        <a class="btn" href="https://drive.google.com/drive/folders/1K1x8cJZdmsIgm2s7XRyUd9vFsjtGNCwn?usp=sharing" target="_blank" rel="noopener">View &amp; download all photos</a>
+      </div>
+    </article>
+  </div>
+</section>
+
+<div class="ev-lb" id="evLb" role="dialog" aria-label="Photo viewer"><button class="x" aria-label="Close">×</button><button class="p" aria-label="Previous">‹</button><img alt=""><button class="n" aria-label="Next">›</button><div class="c"></div></div>
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('.ev-ph')),lb=document.getElementById('evLb'),im=lb.querySelector('img'),c=lb.querySelector('.c'),i=0,x0=null;
+  function show(k){i=(k+links.length)%links.length;im.src=links[i].href;im.alt=links[i].querySelector('img').alt;c.textContent=(i+1)+' / '+links.length;}
+  links.forEach(function(a,k){a.addEventListener('click',function(e){e.preventDefault();show(k);lb.classList.add('on');document.body.style.overflow='hidden';});});
+  function close(){lb.classList.remove('on');document.body.style.overflow='';}
+  lb.querySelector('.x').onclick=close;lb.querySelector('.p').onclick=function(){show(i-1)};lb.querySelector('.n').onclick=function(){show(i+1)};
+  lb.addEventListener('click',function(e){if(e.target===lb)close();});
+  document.addEventListener('keydown',function(e){if(!lb.classList.contains('on'))return;if(e.key==='Escape')close();if(e.key==='ArrowLeft')show(i-1);if(e.key==='ArrowRight')show(i+1);});
+  lb.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+  lb.addEventListener('touchend',function(e){if(x0===null)return;var d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>40)show(i+(d<0?1:-1));x0=null;});
+})();
+</script>
+
+<!-- BOOK -->
+<section class="book" id="book">
+  <div class="book-bg" aria-hidden="true"></div>
+  <div class="wrap">
+    <h2>Ready to gather your table?</h2>
+    <div>
+      <p>Message Whimsy Touch with your date and guest count, and we’ll match you to a gathering. Prices exclude the refundable security deposit and delivery. Delivery and pickup are by our own rider, at the Grab rate for your location, paid directly to the rider before each trip.</p>
+      <div class="actions">
+        <a class="btn ghost" href="https://ig.me/m/thewhimsytouch" target="_blank" rel="noopener">Message us on Instagram</a>
+        <a class="btn ghost" href="https://m.me/61594083157602" target="_blank" rel="noopener">Message us on Facebook</a>
+        <a class="btn" href="book.html">Book Now</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <span class="brand">Whimsy Touch</span>
+    <span>Davao City, Philippines</span>
+    <span>Prices in Philippine Pesos for a 24-hour rental, exclusive of security deposit &amp; delivery fee</span>
+    <a href="terms.html">Terms &amp; Conditions</a>
+  </div>
+</footer>
+
+<script src="site.js?v=20261026a"></script>
+</body>
+</html>

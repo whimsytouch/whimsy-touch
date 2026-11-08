@@ -161,9 +161,9 @@ var WT = (function () {
   var root = document.getElementById('quote');
   if (!root || !window.RUNNER_GROUPS) return;
   var BASE = [500, 1000, 2000, 3000], GUESTS = ['2 guests', '10–15 guests', '15–30 guests', '30–40 guests'];
-  var FD = { tiered: [60, 150, 250], glass: [100, 250, 500] }, FB = [700, 1500, 2500];
+  var FD = { tiered: [60, 150, 250], glass: [100, 250, 500] }, FB = [700, 1200, 2000];
   var TAPER = [50, 150, 200, 400], GM = [1000, 1500, 2000], LAYER_PER_RUNNER = 100;
-  // layering: ₱100 for every runner in the gathering (Ruby Red, Onyx Black and Buttercup Yellow are longer, so fewer runners)
+  // layering: ₱100 for every runner in the gathering
   function layerFee(t) { return LAYER_PER_RUNNER * WT.nr(s.runner != null ? RUN[s.runner] : null, t); }
   var ALA = [
     { id: 'cakestand', name: 'Gold cake stand', set: '25 cm wide × 20 cm tall', price: 100 },
@@ -336,7 +336,7 @@ var WT = (function () {
   }
 
   var GM_PAUSED = false;   // Fairy Godmother: same dates as Full Bloom
-  var FB_CLOSED = [['2026-10-29', '2026-11-05']];   // Full Bloom (fresh flowers) not bookable on these dates (from, to)
+  var FB_CLOSED = [];   // Full Bloom not bookable on these dates, e.g. [['2026-12-24', '2026-12-26']] (from, to)
   // Special booking link only (book.html?special=bloom): Full Bloom with colored faux flowers, upgraded holders, pillar candles
   // and napkins, no placemats or name cards. Works only on the date below.
   var FB_FAUX = { date: '2026-11-03', price: [0, 800, 1500] };
@@ -389,7 +389,7 @@ var WT = (function () {
     avLost = '';
     if (s.runner != null && isBooked(RUN[s.runner], need(RUN[s.runner]))) { avLost = RUN[s.runner].name; s.runner = null; }
     var nMain = s.runner != null ? need(RUN[s.runner]) : [1, 1, 3, 4][t];
-    if (s.runner2 != null && isBooked(RUN[s.runner2], nMain)) { avLost = RUN[s.runner2].name; s.runner2 = null; }
+    if (s.runner2 != null && isBooked(RUN[s.runner2], need(RUN[s.runner2]))) { avLost = RUN[s.runner2].name; s.runner2 = null; }
     if (s.runner != null && mx(RUN[s.runner]) < t) s.runner = null;
     if (s.runner2 != null && (mx(RUN[s.runner2]) < t || s.runner2 === s.runner)) s.runner2 = null;
     var dBox = $('qDlv');
@@ -420,7 +420,8 @@ var WT = (function () {
         var row = WT.el('div', 'q-rgroup', '<span class="q-rlabel">' + (g.label || WT.fabricLabel(g)) + '</span>');
         var box = WT.el('div', 'q-rrow');
         g.items.forEach(function (r) {
-          var i = RUN.indexOf(r), cnt = layerPick ? nMain : need(r), booked = mx(r) >= t && isBooked(r, cnt), ok = mx(r) >= t && i !== exclude && !booked && !!avDate;
+          var i = RUN.indexOf(r), cnt = need(r),   // each color needs its own count (long runners need fewer)
+              booked = mx(r) >= t && isBooked(r, cnt), ok = mx(r) >= t && i !== exclude && !booked && !!avDate;
           var b = WT.el('button', 'q-chip' + (booked ? ' is-booked' : ''), '<i style="background:' + r.hex + '"></i>' + r.name);
           b.type = 'button'; b.title = r.name + ' · ' + r.fabric + (booked ? ' · booked on ' + niceDate(avDate) : '');
           b.setAttribute('aria-label', r.name + ' ' + r.fabric + (booked ? ' (booked on this date)' : mx(r) >= t ? '' : ' (not available for ' + WT.TIERS[t] + ')'));
@@ -435,7 +436,7 @@ var WT = (function () {
     rb.appendChild(chips(s.runner, -1, function (i) { s.runner = i; }));
     var R = s.runner != null ? RUN[s.runner] : null;
     var R2 = s.layer && s.runner2 != null ? RUN[s.runner2] : null;
-    var canLayer = R && RUN.some(function (r, i) { return i !== s.runner && mx(r) >= t && !isBooked(r, nMain); });
+    var canLayer = R && RUN.some(function (r, i) { return i !== s.runner && mx(r) >= t && !isBooked(r, need(r)); });
     if (R && !canLayer) { s.layer = false; s.runner2 = null; }
     if (R && canLayer) {
       var lr = WT.el('div', 'q-layer');
@@ -543,11 +544,11 @@ var WT = (function () {
       NV + (s.up === 'fb' ? (NV > 1 ? ' glass vases' : ' glass vase') : (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase')) + (s.up === 'fb' ? '' : ' with faux flowers (2 ivory roses, 2 eucalyptus, 2 ivory carnations each)')
     ];
     if (s.up === 'fb') incG.push(
-      NV + (fbFaux() ? (NV > 1 ? ' colored faux flower arrangements, one at every vase' : ' colored faux flower arrangement') : (NV > 1 ? ' fresh flower arrangements, one at every vase' : ' fresh flower arrangement')),
+      NV + (fbFaux() ? (NV > 1 ? ' colored faux flower arrangements, one at every vase' : ' colored faux flower arrangement') : (NV > 1 ? ' colored faux flower arrangements, one at every vase' : ' colored faux flower arrangement')),
       NV + (NV > 1 ? ' LED pillar candles, one at every vase' : ' LED pillar candle'));
     incG.push(NT + ' ' + (s.taper ? 'pink' : 'cream') + ' LED taper candles');
     incG.push(s.up === 'none' ? NT + ' gold candle holders' : holderTxt);
-    if (s.up === 'fb') incG.push.apply(incG, fbFaux() ? [s.nap === 'red' ? 'Red satin napkins with gold rings' : 'White cloth napkins with leaf rings', 'Kraft-paper wrap to take a bloom home'] : [(s.mat === 'gold' ? 'Sheer gold' : 'Jute') + ' placemats', s.nap === 'red' ? 'Red satin napkins with gold rings' : 'White cloth napkins with leaf rings', 'Name cards', 'Kraft-paper wrap to take a bloom home']);
+    if (s.up === 'fb') incG.push.apply(incG, fbFaux() ? [s.nap === 'red' ? 'Red satin napkins with gold rings' : 'White cloth napkins with leaf rings'] : [(s.mat === 'gold' ? 'Sheer gold' : 'Jute') + ' placemats', s.nap === 'red' ? 'Red satin napkins with gold rings' : 'White cloth napkins with leaf rings', 'Name cards']);
     incG.push('Spare batteries and a care card');
     incG.push('24-hour rental, starting when you receive the items');
     lines.push([WT.TIERS[t] + ' gathering', BASE[t], s.up === 'none' ? incG : null]);
@@ -756,7 +757,7 @@ var WT = (function () {
   function runnersField() {
     if (s.alc || s.runner == null) return '';
     var n = WT.nr(RUN[s.runner], s.tier), out = [RUN[s.runner].name + ' x' + n];
-    if (s.layer && s.runner2 != null) out.push(RUN[s.runner2].name + ' x' + n);
+    if (s.layer && s.runner2 != null) out.push(RUN[s.runner2].name + ' x' + WT.nr(RUN[s.runner2], s.tier));
     return out.join(', ');
   }
   function detailsMode(on) {

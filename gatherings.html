@@ -89,6 +89,27 @@
       </article>
     </div>
     <p class="center g-tables-note"><strong>1 runner = 1 table</strong><br>Storybook: 1 runner, dresses 1 table<br>Once Upon: 3 runners, up to 3 tables<br>Ever After: 4 runners, up to 4 tables<br><em style="font-size:.9em">Sage Green, Buttercup Yellow and Ruby Red are longer (5 meters), so Once Upon uses 2 of them and Ever After uses 3.</em></p>
+
+    <!-- SPECIAL SETUP -->
+    <style>
+.lux{display:block;position:relative;max-width:1000px;margin:0 auto;border-radius:22px;overflow:hidden;text-decoration:none;aspect-ratio:16/8;box-shadow:0 18px 40px rgba(46,42,36,.18)}
+.lux img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;transition:transform 1.2s ease}
+.lux:hover img{transform:scale(1.04)}
+.lux:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(56,60,38,.92) 0%,rgba(79,85,54,.6) 42%,rgba(79,85,54,0) 78%)}
+.lux .tx{position:absolute;z-index:1;left:clamp(24px,5vw,60px);top:50%;transform:translateY(-50%);max-width:440px}
+.lux .k{display:block;font-family:var(--sans);font-weight:600;font-size:11.5px;letter-spacing:.38em;text-transform:uppercase;color:#EAD9B8}
+.lux .t{display:block;font-family:var(--script);font-size:clamp(48px,6vw,76px);line-height:1;margin:10px 0 8px;color:#F6EFE4}
+.lux .m{display:block;font-family:var(--serif);font-style:italic;font-size:clamp(17px,1.8vw,21px);color:#F2E6D3}
+.lux .b{display:inline-flex;align-items:center;margin-top:22px;min-height:46px;padding:0 28px;border-radius:999px;background:#F6EFE4;font-family:var(--sans);font-weight:600;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--sage-deep);transition:background .25s}
+.lux:hover .b{background:#fff}
+@media (max-width:760px){.lux{aspect-ratio:4/5;border-radius:18px}.lux:after{background:linear-gradient(180deg,rgba(79,85,54,0) 30%,rgba(56,60,38,.92) 100%)}.lux .tx{top:auto;bottom:26px;transform:none;left:22px;right:22px}.lux .b{margin-top:14px}}
+</style>
+    <div style="margin-top:56px">
+      <a class="lux" href="calla-lily-dream.html">
+        <img src="img/cld-main.jpg" alt="Calla Lily Dream table by candlelight">
+        <span class="tx"><span class="k">A Special Setup</span><span class="t">Calla Lily Dream</span><span class="m">10–20 guests · up to 2 tables · ₱3,000</span><span class="b">Discover</span></span>
+      </a>
+    </div>
     <p class="center" style="margin-top:40px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center"><a class="btn ghost" href="upgrades.html">See the upgrades</a><a class="btn" href="book.html">Build your table &amp; see the price</a></p>
   </div>
 </section>

@@ -14,7 +14,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&family=Griffy&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=20261013d">
-<style>/* hw-griffy */.hw-title{font-family:'Griffy','Pinyon Script',cursive;color:#BD4C3B;-webkit-text-stroke:0;font-size:30px;line-height:1.1}@media (max-width:640px){.hw-title{font-size:22px}}.hw-img{position:relative;overflow:hidden}.hw-img img{position:absolute;inset:0}@media (min-width:761px){.latest-ev .hw-card{flex-direction:row;max-width:720px}.latest-ev .hw-img{aspect-ratio:auto;flex:0 0 46%}.latest-ev .hw-text{justify-content:center;padding:26px 30px}}</style>
 </head>
 <body id="top">
 <a class="skip" href="#main">Skip to content</a>
@@ -48,17 +47,25 @@
   <img class="hero-logo" src="img/logo.webp" alt="Whimsy Touch">
 </div>
 
-<!-- LATEST EVENT (remove this section to take it off the homepage) -->
-<section class="latest-ev" style="padding:34px 16px 14px">
-    <a class="hw-card" id="latest-event" href="events.html">
-      <span class="hw-img"><img src="img/hw-01.jpg" alt="The Halloween cookie decorating table styled by Whimsy Touch" style="object-position:center 60%"></span>
-      <span class="hw-text">
-        <span class="hw-eyebrow">Latest event · photos are up</span>
-        <span class="hw-title">Halloween Cookie Decorating</span>
-        <span class="hw-meta">Sat, 24 Oct · Just Coffee &amp; Sip, Davao City</span>
-        <span class="btn hw-btn">See the photos</span>
-      </span>
-    </a>
+<!-- SPECIAL SETUP (remove this section to take it off the homepage) -->
+<style>
+.lux{display:block;position:relative;max-width:1000px;margin:0 auto;border-radius:22px;overflow:hidden;text-decoration:none;aspect-ratio:16/8;box-shadow:0 18px 40px rgba(46,42,36,.18)}
+.lux img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;transition:transform 1.2s ease}
+.lux:hover img{transform:scale(1.04)}
+.lux:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(56,60,38,.92) 0%,rgba(79,85,54,.6) 42%,rgba(79,85,54,0) 78%)}
+.lux .tx{position:absolute;z-index:1;left:clamp(24px,5vw,60px);top:50%;transform:translateY(-50%);max-width:440px}
+.lux .k{display:block;font-family:var(--sans);font-weight:600;font-size:11.5px;letter-spacing:.38em;text-transform:uppercase;color:#EAD9B8}
+.lux .t{display:block;font-family:var(--script);font-size:clamp(48px,6vw,76px);line-height:1;margin:10px 0 8px;color:#F6EFE4}
+.lux .m{display:block;font-family:var(--serif);font-style:italic;font-size:clamp(17px,1.8vw,21px);color:#F2E6D3}
+.lux .b{display:inline-flex;align-items:center;margin-top:22px;min-height:46px;padding:0 28px;border-radius:999px;background:#F6EFE4;font-family:var(--sans);font-weight:600;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--sage-deep);transition:background .25s}
+.lux:hover .b{background:#fff}
+@media (max-width:760px){.lux{aspect-ratio:4/5;border-radius:18px}.lux:after{background:linear-gradient(180deg,rgba(79,85,54,0) 30%,rgba(56,60,38,.92) 100%)}.lux .tx{top:auto;bottom:26px;transform:none;left:22px;right:22px}.lux .b{margin-top:14px}}
+</style>
+<section class="latest-ev" style="padding:40px 16px 18px">
+  <a class="lux" href="calla-lily-dream.html">
+    <img src="img/cld-main.jpg" alt="Calla Lily Dream table by candlelight">
+    <span class="tx"><span class="k">A Special Setup</span><span class="t">Calla Lily Dream</span><span class="m">10–20 guests · ₱3,000</span><span class="b">Discover</span></span>
+  </a>
 </section>
 
 <!-- ABOUT -->
@@ -146,6 +153,6 @@
   </div>
 </footer>
 
-<script src="site.js?v=20261108c"></script>
+<script src="site.js?v=20261109c"></script>
 </body>
 </html>

@@ -177,13 +177,45 @@ var WT = (function () {
     'LED pillar candles': 'LED pillar candles', 'Tiered gold candle holders': 'tiered gold candle holders', 'Gold candle holders': 'short gold candle holders',
     'Glass candle holders': 'glass candle holders', 'Glass vases': 'glass vases', 'Clear acrylic vases': 'clear acrylic vases' };
   var MAXG = [2, 15, 30, 40];
+  // Full Bloom flowers match the runner: each vase gets 3 flowers in the runner's color, 3 ivory roses and 3 eucalyptus.
+  // Flowers are booked as a whole set per color per day (one Full Bloom per flower color per day).
+  var FLOWER_OF = { 'Sage Green': 'Mint Green', 'Dusty Sage': 'Mint Green', 'Aquamarine Blue': 'Baby Blue', 'Buttercup Yellow': 'Yellow', 'Marigold Yellow': 'Yellow',
+    'Tangerine Orange': 'Burnt Orange', 'Blush Pink': 'Baby Pink', 'Pearl White': 'White', 'Mocha Brown': 'Brown', 'Rust Brown': 'Brown',
+    'Cherry Red': 'Red', 'Ruby Red': 'Red', 'Midnight Black': 'Black', 'Lilac Purple': 'Purple' };
+  var FLOWER_STOCK = { 'Mint Green': 12, 'Baby Blue': 12, 'Yellow': 24, 'Burnt Orange': 12, 'Baby Pink': 36, 'White': 36, 'Brown': 24, 'Red': 36, 'Black': 25, 'Purple': 12 };   // backup if the sheet can't be reached
+  function flowerKey(c) { return 'Faux flowers: ' + c; }
+  // flower colors for the chosen runner(s) and how many of each a Full Bloom needs: { 'Mint Green': 12 } or { 'Mint Green': 6, 'Baby Blue': 6 }
+  function fbFlowers(t) {
+    var cols = [], NV = [1, 4, 8, 12][t], need = 3 * NV, out = {};
+    [s.runner, s.layer ? s.runner2 : null].forEach(function (i) { if (i != null && RUN[i]) { var f = FLOWER_OF[RUN[i].name]; if (f && cols.indexOf(f) < 0) cols.push(f); } });
+    if (!cols.length) return null;
+    cols.forEach(function (c, k) { out[c] = k === 0 ? Math.ceil(need / cols.length) : Math.floor(need / cols.length); });
+    return out;
+  }
+  // why Full Bloom can't be booked with these flowers ('' = it can)
+  function fbFlowerIssue(t) {
+    if (s.runner == null) return '';
+    var fl = fbFlowers(t); if (!fl) return 'not with ' + RUN[s.runner].name;
+    var own = (AV && AV.flowers) || FLOWER_STOCK, cols = Object.keys(fl), need = 3 * [1, 4, 8, 12][t];
+    var owned = cols.reduce(function (a, c) { return a + (own[c] || 0); }, 0);
+    if (owned < need) return 'not for ' + WT.TIERS[t] + ' with this color';
+    if (avDate && cols.some(function (c) { return freeOf(flowerKey(c)) < (own[c] || 0); })) return 'flowers booked that day';
+    return '';
+  }
   // pieces a table uses, for a given setup c = { t, up, holder, taper, mat, ala }
   function needFor(c, extra) {
     var n = {}, add = function (k, q) { if (q) n[k] = (n[k] || 0) + q; };
     var t = c.t, NV = [1, 4, 8, 12][t], NT = [3, 8, 16, 24][t], G = MAXG[t];
+    if (c.cld) {   // Calla Lily Dream pieces
+      add('Glass candle holders', 10); add('Cream LED taper candles', 10); add('LED pillar candles', 9); add('Black pillar stands', 9);
+      add('White cloth napkins', 20); add('Name card holders', 20); add('Calla lilies', 12); add('Ivory carnations', 15); add('Small glass vases', 9);
+      if (c.ala) ALA.forEach(function (it) { var q = (s.ala[it.id] || 0) + (extra === it.id ? 1 : 0); if (q) add(SETS[it.id][0], q * SETS[it.id][1]); });
+      return n;
+    }
     add(c.up === 'fb' ? 'Glass vases' : 'Clear acrylic vases', NV);   // Full Bloom uses glass vases
     if (c.up !== 'fb') { add('Ivory roses', 2 * NV); add('Eucalyptus stems', 2 * NV); add('Ivory carnations', 2 * NV); }
     if (c.up === 'fb') {
+      add('Ivory roses', 3 * NV); add('Eucalyptus stems', 3 * NV);
       add('LED pillar candles', NV); if (!fbFaux()) add(c.mat === 'jute' ? 'Jute placemats' : 'Sheer gold placemats', G);
       if (c.nap === 'red') { add('Red satin napkins', G); add('Gold napkin rings', G); } else { add('White cloth napkins', G); add('Leaf napkin rings', G); }
       if (!fbFaux()) add('Name card holders', G);
@@ -193,7 +225,7 @@ var WT = (function () {
     if (c.ala) ALA.forEach(function (it) { var q = (s.ala[it.id] || 0) + (extra === it.id ? 1 : 0); if (q) add(SETS[it.id][0], q * SETS[it.id][1]); });
     return n;
   }
-  function cur() { return { t: s.tier, up: s.up, holder: s.holder, taper: s.taper, mat: s.mat, nap: s.nap, ala: true }; }
+  function cur() { return { t: s.tier, up: s.up, holder: s.holder, taper: s.taper, mat: s.mat, nap: s.nap, ala: true, cld: !!s.cld }; }
   function needs(extra) { return needFor(cur(), extra); }
   function freeOf(k) { var f = AV && AV.items; return f && typeof f[k] === 'number' ? f[k] : Infinity; }
   function fits(c) { var n = needFor(c); return Object.keys(n).every(function (k) { return n[k] <= freeOf(k); }); }
@@ -271,6 +303,12 @@ var WT = (function () {
     var mm = toMin_(t.value), same = w.value.indexOf('Same') === 0;
     if (same && s.gm && mm > 90 && mm < 8 * 60) return 'We pack down at the venue until 1:30 AM at the latest. If your event ends later, please choose next-day pickup: pack the items into our boxes, keep them safe overnight, and we’ll pick them up the next day from 8:00 AM.';
     if (!same && mm < 8 * 60) return 'Next-day pickup starts at 8:00 AM. Please choose a time from 8:00 AM.';
+    // every rental is 24 hours from delivery, so a next-day pickup can't be later than the delivery time
+    var dIn = document.querySelector('input[name="time"]');
+    if (!same && dIn && /^\d{1,2}:\d{2}/.test(dIn.value) && mm > toMin_(dIn.value)) {
+      var dm = toMin_(dIn.value), h = Math.floor(dm / 60), m2 = ('0' + (dm % 60)).slice(-2);
+      return 'Every rental is for 24 hours from delivery, so next-day pickup must be by ' + ((h % 12) || 12) + ':' + m2 + (h < 12 ? ' AM' : ' PM') + '. Please choose an earlier pickup time.';
+    }
     return '';
   }
   function syncPick() {
@@ -341,6 +379,9 @@ var WT = (function () {
   // and napkins, no placemats or name cards. Works only on the date below.
   var FB_FAUX = { date: '2026-11-03', price: [0, 800, 1500] };
   var SPECIAL_LINK = /[?&]special=bloom\b/.test(location.search);
+  // Calla Lily Dream: a special setup (own price, 2 runners, 10–20 guests). Book page opens with it picked from calla-lily-dream.html.
+  var CLD = { price: 3000, deposit: 500, runners: 2, colors: ['Pearl White', 'Blush Pink', 'Sage Green', 'Ruby Red', 'Buttercup Yellow', 'Midnight Black'], img: 'img/cld-main.jpg' };
+  if (/[?&]special=calla\b/.test(location.search)) { s.cld = true; s.tier = 2; }
   function fbFaux() { return SPECIAL_LINK && !!avDate && avDate === FB_FAUX.date; }
   function fbPrice(t) { return fbFaux() ? FB_FAUX.price[t] : FB[t]; }
   function fbOpen() { return !avDate || fbFaux() || !FB_CLOSED.some(function (r) { return avDate >= r[0] && avDate <= r[1]; }); }
@@ -363,8 +404,10 @@ var WT = (function () {
     WT.TIERS.forEach(function (n, i) {
       if (i === 0) return;   // Sweetheart is no longer offered
       var tOk = !avDate || tierOk(i);
-      tierBox.appendChild(opt(n, tOk ? WT.peso(BASE[i]) + ' · ' + GUESTS[i] : 'fully booked on ' + niceDate(avDate), !s.alc && t === i, function () { s.tier = i; s.alc = false; render(); }, !tOk && t !== i));
+      tierBox.appendChild(opt(n, tOk ? WT.peso(BASE[i]) + ' · ' + GUESTS[i] : 'fully booked on ' + niceDate(avDate), !s.alc && !s.cld && t === i, function () { s.tier = i; s.alc = false; s.cld = false; render(); }, !tOk && t !== i));
     });
+    tierBox.appendChild(opt('Calla Lily Dream', WT.peso(CLD.price) + ' · 10–20 guests · special setup', !s.alc && !!s.cld, function () { s.cld = true; s.tier = 2; s.alc = false; s.up = 'none'; s.layer = false; s.runner2 = null; s.taper = false; render(); }));
+    if (s.cld) tierBox.appendChild(WT.el('p', 'q-note', 'Calla lilies, carnations and candlelight for up to 2 tables. <a href="calla-lily-dream.html">See what’s included</a>'));
     document.querySelectorAll('.q-pkg').forEach(function (f) { f.hidden = s.alc; });
     // à la carte picker
     var ab = $('qAla'); ab.innerHTML = '';
@@ -385,7 +428,7 @@ var WT = (function () {
     ab.appendChild(WT.el('p', 'q-note', 'Disposable napkins are yours to keep.'));
     var alaLines = ALA.filter(function (it) { return s.ala[it.id]; }).map(function (it) { var q = s.ala[it.id]; return [q + ' × ' + it.name + ' (' + it.set + ')', q * it.price]; });
     // 2 runner
-    var mx = function (r) { return WT.maxOn(r, avDate); }, need = function (r) { return WT.nr(r, t); };
+    var mx = function (r) { return s.cld ? (CLD.colors.indexOf(r.name) >= 0 ? 9 : -1) : WT.maxOn(r, avDate); }, need = function (r) { return s.cld ? CLD.runners : WT.nr(r, t); };
     avLost = '';
     if (s.runner != null && isBooked(RUN[s.runner], need(RUN[s.runner]))) { avLost = RUN[s.runner].name; s.runner = null; }
     var nMain = s.runner != null ? need(RUN[s.runner]) : [1, 1, 3, 4][t];
@@ -436,7 +479,7 @@ var WT = (function () {
     rb.appendChild(chips(s.runner, -1, function (i) { s.runner = i; }));
     var R = s.runner != null ? RUN[s.runner] : null;
     var R2 = s.layer && s.runner2 != null ? RUN[s.runner2] : null;
-    var canLayer = R && RUN.some(function (r, i) { return i !== s.runner && mx(r) >= t && !isBooked(r, need(r)); });
+    var canLayer = !s.cld && R && RUN.some(function (r, i) { return i !== s.runner && mx(r) >= t && !isBooked(r, need(r)); });
     if (R && !canLayer) { s.layer = false; s.runner2 = null; }
     if (R && canLayer) {
       var lr = WT.el('div', 'q-layer');
@@ -454,8 +497,12 @@ var WT = (function () {
     s.vase = 'acrylic';
     // 3 upgrade
     if (t === 3) { s.up = 'none'; s.gm = false; }
+    if (s.cld) { s.up = 'none'; s.taper = false; }
+    try { var upFs = $('qUp').closest('fieldset'); if (upFs) upFs.hidden = !!s.cld || !!s.alc; } catch (e) {}
+    try { var sn = 0; document.querySelectorAll('.q-steps > fieldset').forEach(function (f) { var sp = f.querySelector('legend > span'); if (!f.hidden && sp) sp.textContent = ++sn; }); } catch (e) {}
     var NTt = [3, 8, 16, 24][t], NVt = [1, 4, 8, 12][t], stockOn = !!(avDate && AV && AV.items);
     var shortGoldOut = stockOn && freeOf('Gold candle holders') < NTt, tieredOut = stockOn && freeOf('Tiered gold candle holders') < NTt, glassOut = stockOn && freeOf('Glass candle holders') < NTt;
+    var fbFlowerWhy = fbFlowerIssue(t);
     var fbItemsOut = stockOn && ['LED pillar candles', 'Glass vases'].concat(fbFaux() ? [] : ['Name card holders']).some(function (k) { return freeOf(k) < (k === 'Name card holders' ? MAXG[t] : NVt); });
     var RED_NAP_MAX = 1;   // red satin napkins (24 pcs): Storybook only
     var whiteNapOut = stockOn && (freeOf('White cloth napkins') < MAXG[t] || freeOf('Leaf napkin rings') < MAXG[t]);
@@ -463,7 +510,7 @@ var WT = (function () {
     if (whiteNapOut && (redNapOff || redNapOut)) fbItemsOut = true;
     var goldMatOut = stockOn && freeOf('Sheer gold placemats') < MAXG[t], juteOut = stockOn && freeOf('Jute placemats') < MAXG[t];
     if (goldMatOut && juteOut && !fbFaux()) fbItemsOut = true;
-    if (s.up === 'fb' && fbItemsOut) s.up = 'none';
+    if (s.up === 'fb' && (fbItemsOut || fbFlowerWhy)) s.up = 'none';
     if (shortGoldOut && t < 3 && s.up === 'none' && !(tieredOut && glassOut)) s.up = 'fd';
     if (s.up !== 'none') { if (s.holder === 'tiered' && tieredOut && !glassOut) s.holder = 'glass'; if (s.holder === 'glass' && glassOut && !tieredOut) s.holder = 'tiered'; }
     if (s.up === 'fb') { if (s.mat === 'gold' && goldMatOut) s.mat = 'jute'; if (s.mat === 'jute' && juteOut) s.mat = 'gold'; if (s.nap === 'red' && (redNapOff || redNapOut)) s.nap = 'white'; if (s.nap === 'white' && whiteNapOut) s.nap = 'red'; }
@@ -471,7 +518,7 @@ var WT = (function () {
     var fdFrom = t < 3 ? 'from ' + WT.peso(FD.tiered[t]) : 'not for Ever After';
     ub.appendChild(opt('Just the standard', shortGoldOut ? 'gold holders booked that day' : 'included', s.up === 'none', function () { s.up = 'none'; s.gm = false; render(); }, shortGoldOut && s.up !== 'none'));
     ub.appendChild(opt('Fairy Dust', fdFrom, s.up === 'fd', function () { s.up = 'fd'; s.gm = false; render(); }, t === 3));
-    ub.appendChild(opt('Full Bloom', !fbOpen() ? 'not available on ' + niceDate(avDate) : fbItemsOut ? 'booked that day' : t < 3 ? WT.peso(fbPrice(t)) + (fbFaux() ? ' · special' : '') : 'not for Ever After', s.up === 'fb', function () { s.up = 'fb'; render(); }, !fbOpen() || t === 3 || fbItemsOut));
+    ub.appendChild(opt('Full Bloom', !fbOpen() ? 'not available on ' + niceDate(avDate) : fbFlowerWhy && t < 3 ? fbFlowerWhy : fbItemsOut ? 'booked that day' : t < 3 ? WT.peso(fbPrice(t)) + (fbFaux() ? ' · special' : '') : 'not for Ever After', s.up === 'fb', function () { s.up = 'fb'; render(); }, !fbOpen() || t === 3 || fbItemsOut || !!fbFlowerWhy));
     if (shortGoldOut && t < 3 && !(tieredOut && glassOut)) ub.appendChild(WT.el('p', 'q-note warn', 'Our short gold candle holders are fully booked on ' + niceDate(avDate) + ', so your table comes with Fairy Dust holders (tiered gold or glass).'));
     var sub = $('qUpSub'); sub.innerHTML = '';
     if (s.up !== 'none') {
@@ -512,7 +559,7 @@ var WT = (function () {
     var pinkOk = !pinkOut, pinkForced = creamOut && !pinkOut;
     if (pinkForced) s.taper = true;
     if (!pinkOk) s.taper = false;
-    if (s.up !== 'fb') s.gm = false;
+    if (s.up !== 'fb' && !s.cld) s.gm = false;
     function check(label, price, on, ok, why, set, locked) {
       var l = WT.el('label', 'q-check' + (ok ? '' : ' off'));
       var c = document.createElement('input'); c.type = 'checkbox'; c.checked = on; c.disabled = !ok || !!locked;
@@ -521,19 +568,19 @@ var WT = (function () {
       l.appendChild(WT.el('span', '', label + ' <b>+' + WT.peso(price) + '</b>' + (ok && !locked ? '' : '<small>' + why + '</small>')));
       eb.appendChild(l);
     }
-    check('Pink LED taper candles', TAPER[t], s.taper, pinkOk, pinkForced ? 'Our cream candles are fully booked on ' + niceDate(avDate) + ', so your table comes with pink LED taper candles.' : 'Pink candles are fully booked on ' + niceDate(avDate) + '.', function (v) { s.taper = v; }, pinkForced);
+    if (!s.cld) check('Pink LED taper candles', TAPER[t], s.taper, pinkOk, pinkForced ? 'Our cream candles are fully booked on ' + niceDate(avDate) + ', so your table comes with pink LED taper candles.' : 'Pink candles are fully booked on ' + niceDate(avDate) + '.', function (v) { s.taper = v; }, pinkForced);
     // 4 setup
     var sb = $('qSetup'); sb.innerHTML = '';
     // Dates when Fairy Godmother Service is not available (edit this list anytime: ['start', 'end'])
     var GM_OFF = FB_CLOSED;
     var gmOffDay = !!avDate && GM_OFF.some(function (r) { return avDate >= r[0] && avDate <= r[1]; });
     if (gmOffDay) s.gm = false;
-    var gmOk = t < 3 && s.up === 'fb' && !gmOffDay;
+    var gmOk = (s.cld || t < 3 && s.up === 'fb') && !gmOffDay;
     sb.appendChild(opt('I’ll set it up', 'included · with our care card', !s.gm, function () { s.gm = false; render(); }));
     sb.appendChild(opt('Fairy Godmother Service', GM_PAUSED ? 'paused for now' : gmOffDay ? 'not available on ' + niceDate(avDate) : t < 3 ? 'we set up & pack down · +' + WT.peso(GM[t]) : 'not for Ever After', s.gm, function () { s.gm = true; render(); }, GM_PAUSED || !gmOk));
     $('qSetupNote').textContent = GM_PAUSED ? 'Fairy Godmother Service is paused for now. Every table comes with our care card to guide your setup.' : gmOffDay ? 'Fairy Godmother Service isn’t available on ' + niceDate(avDate) + ', but you can still book your table and set it up yourself with our care card.' : gmOk ? 'Free delivery within Roxas–Lanang–Indangan. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
     // summary
-    var lines = [], total = s.alc ? 0 : BASE[t];
+    var lines = [], total = s.alc ? 0 : s.cld ? CLD.price : BASE[t];
     if (s.alc) lines.push(['À la carte order', 0]);
     else {
     var NV = [1, 4, 8, 12][t], NT = [3, 8, 16, 24][t], NR = R ? WT.nr(R, t) : WT.nr(null, t);
@@ -544,13 +591,18 @@ var WT = (function () {
       NV + (s.up === 'fb' ? (NV > 1 ? ' glass vases' : ' glass vase') : (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase')) + (s.up === 'fb' ? '' : ' with faux flowers (2 ivory roses, 2 eucalyptus, 2 ivory carnations each)')
     ];
     if (s.up === 'fb') incG.push(
-      NV + (fbFaux() ? (NV > 1 ? ' colored faux flower arrangements, one at every vase' : ' colored faux flower arrangement') : (NV > 1 ? ' colored faux flower arrangements, one at every vase' : ' colored faux flower arrangement')),
+      NV + (NV > 1 ? ' faux flower arrangements, one at every vase' : ' faux flower arrangement') + ' (3 ' + (fbFlowers(t) ? Object.keys(fbFlowers(t)).join(' + ').toLowerCase() : 'colored') + ' flowers to match your runner, 3 ivory roses and 3 eucalyptus each)',
       NV + (NV > 1 ? ' LED pillar candles, one at every vase' : ' LED pillar candle'));
     incG.push(NT + ' ' + (s.taper ? 'pink' : 'cream') + ' LED taper candles');
     incG.push(s.up === 'none' ? NT + ' gold candle holders' : holderTxt);
     if (s.up === 'fb') incG.push.apply(incG, fbFaux() ? [s.nap === 'red' ? 'Red satin napkins with gold rings' : 'White cloth napkins with leaf rings'] : [(s.mat === 'gold' ? 'Sheer gold' : 'Jute') + ' placemats', s.nap === 'red' ? 'Red satin napkins with gold rings' : 'White cloth napkins with leaf rings', 'Name cards']);
     incG.push('Spare batteries and a care card');
     incG.push('24-hour rental, starting when you receive the items');
+    if (s.cld) {
+      incG = [CLD.runners + ' runners' + (R ? ' in ' + R.name : ''), '9 glass vases: 4 with calla lilies, 5 with carnations', '10 cream LED taper candles in glass holders',
+        '9 LED pillar candles on black stands', 'Table napkins for up to 20 guests', 'Acrylic name cards and holders for up to 20 guests, with a reusable pen', 'Spare batteries and a care card', '24-hour rental, starting when you receive the items'];
+      lines.push(['Calla Lily Dream (special setup)', CLD.price, incG, 'Tableware (plates, glasses and cutlery) not included']);
+    } else
     lines.push([WT.TIERS[t] + ' gathering', BASE[t], s.up === 'none' ? incG : null]);
     if (s.up === 'fd') lines.push(['Fairy Dust', FD[s.holder][t], incG]);
     if (s.up === 'fb') lines.push([fbFaux() ? 'Full Bloom special (colored faux flowers, no placemats or name cards)' : 'Full Bloom', fbPrice(t), incG, 'Tableware (plates, glasses and cutlery) not included']);
@@ -568,7 +620,7 @@ var WT = (function () {
       var inc = (l[2] ? '<ul class="q-inc">' + l[2].map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>' : '') + (l[3] ? '<em class="q-inc-note">' + l[3] + '</em>' : '');
       ul.appendChild(WT.el('li', (l[2] ? 'has-inc' : '') + (i === 0 && !s.alc && s.up !== 'none' ? ' q-joined' : ''), '<span>' + l[0] + inc + '</span><span>' + (i === 0 ? (s.alc ? '' : WT.peso(l[1])) : l[1] ? (s.alc ? WT.peso(l[1]) : '+' + WT.peso(l[1])) : (s.alc ? '' : 'included')) + '</span>'));
     });
-    var depAmt = s.alc ? (alaLines.length ? ALA_DEP : 0) : (s.up === 'fb' ? [350, 500, 600, 500] : [300, 300, 500, 500])[t];
+    var depAmt = s.alc ? (alaLines.length ? ALA_DEP : 0) : s.cld ? CLD.deposit : (s.up === 'fb' ? [350, 500, 600, 500] : [300, 300, 500, 500])[t];
     if (depAmt) ul.appendChild(WT.el('li', '', '<span>Security deposit<em class="q-inc-note">Refundable</em></span><span>+' + WT.peso(depAmt) + '</span>'));
     if (!needsDelivery()) ul.appendChild(WT.el('li', '', '<span>Delivery &amp; pickup<em class="q-inc-note">Grab rate, paid to the rider (their QR or cash)</em></span><span>to rider</span>'));
     if (dl) { total += dl[1]; ul.appendChild(WT.el('li', '', '<span>' + dl[0] + (dl[3] ? '<em class="q-inc-note">' + dl[3] + '</em>' : '') + '</span><span>' + (dl[1] ? '+' + WT.peso(dl[1]) : 'free') + '</span>')); }
@@ -584,7 +636,7 @@ var WT = (function () {
       'Includes the refundable security deposit.';
     if (pending) tot.innerHTML = shown + '<small>+ delivery</small>';
     else if (tot.textContent !== shown) { tot.textContent = shown; tot.classList.remove('pop'); void tot.offsetWidth; tot.classList.add('pop'); }
-    var ph = $('qPhoto'), want = (!s.alc && R) ? R.img : 'img/standard-setup.jpg';
+    var ph = $('qPhoto'), want = s.cld && !s.alc ? CLD.img : (!s.alc && R) ? R.img : 'img/standard-setup.jpg';
     if (ph.getAttribute('src') !== want) { ph.classList.add('fade'); var pre = new Image(); pre.onload = pre.onerror = function () { if (ph._want === want) { ph.src = want; ph.classList.remove('fade'); } }; ph._want = want; pre.src = want; }
     ph.alt = R ? R.name + ' ' + R.fabric + ' runner' : 'Standard setup';
     ph.parentNode.hidden = !!s.alc;
@@ -595,8 +647,9 @@ var WT = (function () {
     var PAX = [2, 15, 30, 40], DEP = [300, 300, 500, 500];
     var rib = s.ribbon === 'custom' ? (s.ribbonColor.trim() ? s.ribbonColor.trim() + ' ribbon' : 'ribbon color to confirm') : 'ribbon matched to runner';
     var ml = [];
-    var first = WT.TIERS[t] + ' gathering (' + (t === 0 ? '2 pax' : 'up to ' + PAX[t] + ' pax') + ')';
-    if (R && !R2) first += ', ' + R.name + ' runner';
+    var first = s.cld ? 'Calla Lily Dream special setup (10–20 pax), ' + CLD.runners + ' runners' + (R ? ' in ' + R.name : '') + ', calla lilies, carnations, taper and pillar candles, napkins and name cards, ' + WT.peso(CLD.price)
+      : WT.TIERS[t] + ' gathering (' + (t === 0 ? '2 pax' : 'up to ' + PAX[t] + ' pax') + ')';
+    if (R && !R2 && !s.cld) first += ', ' + R.name + ' runner';
     ml.push(first);
     if (R2) ml.push('Layered ' + R.name + ' + ' + R2.name + ' runner, +' + WT.peso(layerFee(t)));
     if (s.up === 'fd') ml.push('Fairy Dust, ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders (' + rib + '), +' + WT.peso(FD[s.holder][t]));
@@ -740,6 +793,8 @@ var WT = (function () {
     if (w) { w.textContent = m; w.hidden = !m; }
   }
   if (ptIn0) ptIn0.addEventListener('change', function () { render(); pickWarn(); });
+  var dtIn0 = document.querySelector('#qForm input[name="time"]');
+  if (dtIn0) dtIn0.addEventListener('change', function () { pickWarn(); });
   document.querySelectorAll('input[name="pickup_when"]').forEach(function (r) { r.addEventListener('change', function () { setTimeout(pickWarn, 0); }); });
   if (pickSame) pickSame.addEventListener('change', function () { document.getElementById('qPickBox').hidden = pickSame.checked; resetDlv(); });
   function dlvKey() { return venueIn.value.trim() + '|' + (pickupSame() ? '' : pickIn.value.trim()); }
@@ -756,7 +811,7 @@ var WT = (function () {
   function isMapsLink(v) { return /^https?:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|(www\.)?google\.[a-z.]+\/maps|maps\.google\.[a-z.]+)\S*/i.test(String(v || '').trim()); }
   function runnersField() {
     if (s.alc || s.runner == null) return '';
-    var n = WT.nr(RUN[s.runner], s.tier), out = [RUN[s.runner].name + ' x' + n];
+    var n = s.cld ? CLD.runners : WT.nr(RUN[s.runner], s.tier), out = [RUN[s.runner].name + ' x' + n];
     if (s.layer && s.runner2 != null) out.push(RUN[s.runner2].name + ' x' + WT.nr(RUN[s.runner2], s.tier));
     return out.join(', ');
   }

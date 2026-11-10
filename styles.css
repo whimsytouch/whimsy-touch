@@ -871,3 +871,16 @@ section.quote.is-details{padding-top:28px}
 .script-title,.about h2 em,.about .sign,.gathering h3,.standard .kicker,.upgrade-card .kicker,.godmother .kicker,.book h2,.footer .brand,.fabric-head h2,.addon-body .kicker,.picker-side h2,.q-summary h3,.q-form h4,.q-done h4,.addon-head h3,.gm-kicker span:first-child,.terms-sign,.tc-body .terms-sign,.faq-cat-head h2,.sf-done h3,.cm-title,.ab-col h3,.q-pay h5,.q-done-page h4,.q-venue h4,.q-form #qSumBlock h3,.hw-title{-webkit-text-stroke:.022em currentColor}
 .nav-brand img.nav-logo{width:auto;height:46px;border-radius:0;object-fit:contain}
 @media(max-width:640px){.nav-brand img.nav-logo{height:38px}}
+
+/* Tablescape style picker (Book a Table step 1) */
+.st-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.st-opt{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;border:1.5px solid rgba(94,87,77,.2);background:var(--card);cursor:pointer;text-align:left;padding:0;font:inherit;color:var(--ink);transition:box-shadow .15s,border-color .15s}
+.st-opt img{aspect-ratio:1/1;width:100%;object-fit:cover;display:block}
+.st-opt span{padding:9px 10px 10px;font:400 15px var(--serif);line-height:1.2;flex:1}
+.st-opt small{display:block;font:400 12.5px var(--sans);color:var(--muted);margin-top:2px}
+.st-opt:hover{border-color:var(--sage-deep)}
+.st-opt[aria-pressed="true"]{border-color:var(--sage-deep);box-shadow:0 0 0 2px var(--sage-deep)}
+.st-opt[aria-pressed="true"] span{background:var(--sage-deep);color:#fff}
+.st-opt[aria-pressed="true"] small{color:#E7E3D6}
+.st-opt:disabled{opacity:.45;cursor:not-allowed}
+@media (max-width:640px){.st-row{grid-template-columns:repeat(2,minmax(0,1fr))}}

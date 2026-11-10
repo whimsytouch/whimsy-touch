@@ -27,7 +27,7 @@
     </button>
     <ul class="nav-links" id="menu">
       <li><a href="index.html">Home</a></li>
-      <li><a href="gatherings.html">Gatherings</a></li>
+      <li><a href="gatherings.html">Tablescapes</a></li>
       <li><a href="runners.html">Runners</a></li>
       <li><a href="upgrades.html">Upgrades</a></li>
       <li class="nav-book"><a href="book.html" aria-current="page">Book a Table</a></li>
@@ -45,12 +45,14 @@
   <div class="wrap">
     <div class="eyebrow"><img src="img/icon-treehouse.webp" alt="">Build Your Table</div>
     <h2 class="script-title">Book your table</h2>
-    <p class="lead">Pick your options below. Your total updates as you go.</p>
+    <p class="lead">Pick your style, guest count, date and color. Your total updates as you go.</p>
     <div class="q-grid">
       <div class="q-steps">
-        <fieldset class="q-step"><legend><span>1</span>Gathering</legend><div class="q-opts" id="qTier"></div></fieldset>
-        <fieldset class="q-step q-pkg"><legend><span>2</span>Runner</legend><div class="q-avail"><label>Your event date<input type="date" id="qAvDate"></label><p class="q-note" id="qAvNote">Pick your date to see available runners.</p><p class="q-note q-samenote" id="qSameNote" hidden><b>Same-day booking?</b> You can send a request, and we’ll confirm availability with you before you pay.</p></div><div class="q-runners" id="qRunner"></div><p class="q-note warn" id="qStockNote" hidden></p><p class="q-note" id="qRunnerNote"></p></fieldset>
-        <fieldset class="q-step q-pkg"><legend><span>3</span>Upgrade</legend><div class="q-opts" id="qUp"></div><div class="q-sub" id="qUpSub"></div></fieldset>
+        <fieldset class="q-step q-pkg"><legend><span>1</span>Tablescape style</legend><div class="st-row" id="qStyle"></div><p class="q-note" id="qStyleNote"></p></fieldset>
+        <fieldset class="q-step"><legend><span>2</span>Guest count</legend><div class="q-opts" id="qTier"></div></fieldset>
+        <fieldset class="q-step q-pkg"><legend><span>3</span>Event date</legend><div class="q-avail"><label>Your event date<input type="date" id="qAvDate"></label><p class="q-note" id="qAvNote">Pick your date to see available runners.</p><p class="q-note q-samenote" id="qSameNote" hidden><b>Same-day booking?</b> You can send a request, and we’ll confirm availability with you before you pay.</p></div></fieldset>
+        <fieldset class="q-step q-pkg"><legend><span>4</span>Runner color</legend><div class="q-runners" id="qRunner"></div><p class="q-note warn" id="qStockNote" hidden></p><p class="q-note" id="qRunnerNote"></p></fieldset>
+        <fieldset class="q-step q-pkg"><legend><span>5</span>Your style choices</legend><div class="q-opts" id="qUp"></div><div class="q-sub" id="qUpSub"></div></fieldset>
         <fieldset class="q-step q-pkg"><legend><span>4</span>Setup</legend><div class="q-opts" id="qSetup"></div><p class="q-note" id="qSetupNote"></p></fieldset>
                 <fieldset class="q-step q-pkg"><legend><span>5</span>Extras <small class="q-opt-tag">optional</small></legend><div class="q-checks" id="qExtras"></div><div class="q-ala" id="qAla"></div></fieldset>
       </div>
@@ -177,7 +179,7 @@
   </div>
 </footer>
 
-<script src="runners-data.js?v=20261109c"></script>
-<script src="site.js?v=20261109c"></script>
+<script src="runners-data.js?v=20261110a"></script>
+<script src="site.js?v=20261110a"></script>
 </body>
 </html>

@@ -121,7 +121,7 @@ b.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:tr
 <script src="site.js?v=20261110a"></script>
 <script>(function(){var all=[];(window.RUNNER_GROUPS||[]).forEach(function(g){g.items.forEach(function(r){all.push(r)})});
 document.querySelectorAll('.ts-colors').forEach(function(box){var c=box.dataset.colors,L=c==='all'?all:all.filter(function(r){return c.split(',').indexOf(r.name)>=0});
-box.innerHTML='<b>'+L.length+' colors</b>'+L.map(function(r){return '<i title="'+r.name+'" style="background:'+r.hex+'"></i>'}).join('')+(c==='all'?'<a href="runners.html">see all</a>':'');
-var card=box.closest('.ts-card');card.dataset.note=c==='all'?'Shown in a few colors · available in all '+L.length+' runner colors':'Available in '+L.length+' colors';});})();</script>
+box.innerHTML='<b>Available colors</b>'+L.map(function(r){return '<i title="'+r.name+'" style="background:'+r.hex+'"></i>'}).join('')+(c==='all'?'<a href="runners.html">see all</a>':'');
+var card=box.closest('.ts-card');card.dataset.note=c==='all'?'Shown in a few colors · available in more colors':'Available in limited colors';});})();</script>
 </body>
 </html>

@@ -884,3 +884,9 @@ section.quote.is-details{padding-top:28px}
 .st-opt[aria-pressed="true"] small{color:#E7E3D6}
 .st-opt:disabled{opacity:.45;cursor:not-allowed}
 @media (max-width:640px){.st-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Book a Table nav button */
+.nav-links{align-items:center}
+.nav-links .nav-cta a{background:var(--sage-deep);color:#F6EFE4;padding:9px 20px;border-radius:999px;border:0;font-family:var(--sans);font-size:14px;letter-spacing:.06em}
+.nav-links .nav-cta a:hover,.nav-links .nav-cta a[aria-current="page"]{background:#3d4229;color:#fff;border:0}
+@media (max-width:860px){.nav-links{align-items:stretch}.nav-links .nav-cta a{display:inline-block;margin-top:8px;text-align:center}}

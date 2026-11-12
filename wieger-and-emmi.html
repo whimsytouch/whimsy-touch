@@ -171,7 +171,7 @@ footer small{font:400 12px/1.6 var(--caps);letter-spacing:.24em;text-transform:u
     <img src="img/we-n-emmi.webp" alt="" width="1012" height="370">
   </h1>
   <div class="date">28 · XI · 2026</div>
-  <div class="stats" id="stats" hidden><span><b id="statM">0</b> moments</span><span><b id="statG">0</b> guests</span></div>
+  <div class="stats" id="stats" hidden><span><b id="statM">0</b> <span id="statMw">moments</span></span><span><b id="statG">0</b> <span id="statGw">guests</span></span></div>
 </section>
 
 <section id="share">
@@ -393,7 +393,7 @@ var PHOTO_URL = 'https://script.google.com/macros/s/AKfycbyJABsKdXOmrcFBUGHR9flY
       if (my !== seq || !d || !d.ok) return;
       total = d.items.length;
       var g = {}; d.items.forEach(function(it){ if (it.by) g[it.by.toLowerCase()] = 1; });
-      $('statM').textContent = total; $('statG').textContent = Object.keys(g).length; $('stats').hidden = !total;
+      var ng = Object.keys(g).length; $('statM').textContent = total; $('statMw').textContent = total === 1 ? 'moment' : 'moments'; $('statG').textContent = ng; $('statGw').textContent = ng === 1 ? 'guest' : 'guests'; $('stats').hidden = !total;
       // a random handful of photos, picked again on each visit (everything is still saved in Drive)
       if (!loadedOnce || force || (!items.length && total)) {
         items = shuffle(d.items.filter(function(it){ return it.type === 'image'; })).slice(0, SHOW);
@@ -403,7 +403,7 @@ var PHOTO_URL = 'https://script.google.com/macros/s/AKfycbyJABsKdXOmrcFBUGHR9flY
     }).catch(function(){});
   }
   function meta(){
-    $('count').textContent = items.length ? 'a random ' + items.length + ', new each visit' : '';
+    $('count').textContent = items.length ? (items.length < SHOW ? '' : 'a random ' + items.length + ', new each visit') : '';
     $('empty').hidden = total > 0;
     $('more').hidden = true;
   }

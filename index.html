@@ -3,145 +3,217 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Whimsy Touch — Table Décor Rentals in Davao City</title>
-<meta name="description" content="A DIY tablescape rental in Davao City. Borrow the table of your dreams: Runners, LED candlelight and faux florals for gatherings of 10 to 40 guests in Davao City.">
+<title>The Whimsy Touch — Tablescape Rental in Davao City</title>
+<meta name="description" content="Tablescape rentals in Davao City. Runners, LED candlelight and faux florals delivered to your venue.">
 <meta property="og:title" content="The Whimsy Touch">
-<meta property="og:description" content="The table of your dreams, borrowed, not bought. Table décor rentals in Davao City.">
-<meta property="og:image" content="img/standard-setup.jpg">
-<link rel="icon" href="img/favicon.png">
+<meta property="og:image" content="img/gathering-hero.jpg">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="icon" href="img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&family=Griffy&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261013d">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20261110a">
+<style>
+/* nav: 5 links + book button */
+.nav-links{align-items:center}
+.nav-links .nav-cta a{background:var(--sage-deep);color:#F6EFE4;padding:9px 20px;border-radius:999px;border:0;font-family:var(--sans);font-size:14px;letter-spacing:.06em}
+.nav-links .nav-cta a:hover{background:#3d4229;color:#fff}
+@media (max-width:860px){.nav-links .nav-cta a{display:inline-block;margin-top:8px}}
+
+/* hero */
+.hx{position:relative;min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;text-align:center;color:#F6EFE4;overflow:hidden}
+.hx img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%}
+.hx:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(28,24,16,.45) 0%,rgba(28,24,16,.55) 60%,rgba(28,24,16,.75) 100%)}
+.hx .in{position:relative;z-index:2;max-width:760px;padding:0 20px}
+.hx .k{font:600 13px var(--sans);letter-spacing:.34em;text-transform:uppercase;color:#EAD9B8}
+.hx h1{font:400 clamp(44px,6.5vw,84px)/1.05 var(--serif);margin:14px 0 14px;color:#fff;position:static;width:auto;height:auto;clip:auto;overflow:visible}
+.hx h1 em{font-family:var(--script);font-style:normal;color:#F3D9D3;font-size:1.05em}
+.hx p{font:400 clamp(18px,2vw,22px)/1.5 var(--serif);color:#F2E6D3;margin:0 auto;max-width:560px}
+.hx .bt{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+.pill{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 30px;border-radius:999px;font:600 14px var(--sans);letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
+.pill.light{background:#F6EFE4;color:var(--sage-deep)}.pill.light:hover{background:#fff}
+.pill.ghost{border:1.5px solid rgba(246,239,228,.85);color:#F6EFE4}.pill.ghost:hover{background:rgba(246,239,228,.12)}
+.pill.dark{background:var(--sage-deep);color:#F6EFE4}.pill.dark:hover{background:#3d4229}
+.hx .scroll{position:absolute;z-index:2;bottom:22px;left:50%;transform:translateX(-50%);font:600 11px var(--sans);letter-spacing:.3em;color:#EAD9B8;text-transform:uppercase}
+
+/* sections */
+.sx{padding:84px 0}.sx .wrap{width:min(1080px,100% - 40px);margin:0 auto}
+.sx h2{font:400 clamp(34px,4vw,48px)/1.1 var(--serif);color:var(--ink);text-align:center;margin:8px 0 10px}
+.sx h2 em{font-family:var(--script);font-style:normal;color:var(--rose);font-size:1.15em}
+.sx .sub{text-align:center;color:var(--body);font-size:17px;max-width:600px;margin:0 auto}
+.ey{text-align:center;font:600 12px var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.alt{background:var(--bg-soft)}
+
+/* styles row */
+.st4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px}
+.st4 a{display:block;text-decoration:none;color:var(--ink)}
+.st4 .ph{display:block;aspect-ratio:4/5;border-radius:18px;overflow:hidden;position:relative;box-shadow:0 10px 26px rgba(46,42,36,.12)}
+.st4 img{width:100%;height:100%;object-fit:cover;transition:transform .7s}
+.st4 a:hover img{transform:scale(1.05)}
+.st4 .tg{position:absolute;top:12px;left:12px;background:rgba(246,239,228,.92);color:var(--sage-deep);font:600 10.5px var(--sans);letter-spacing:.2em;padding:6px 10px;border-radius:99px}
+.st4 b{display:block;font:400 30px var(--script);color:var(--rose);margin-top:12px;line-height:1.1}
+.st4 small{display:block;font:600 12px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.ctr{text-align:center;margin-top:36px}
+
+/* how */
+.how3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:40px}
+.how3 div{background:var(--card);border-radius:20px;padding:30px 24px;text-align:center}
+.how3 i{display:inline-flex;width:44px;height:44px;border-radius:50%;background:var(--sage-deep);color:#F6EFE4;font:600 17px var(--sans);font-style:normal;align-items:center;justify-content:center}
+.how3 h3{font:500 25px var(--serif);margin:14px 0 6px;color:var(--ink)}
+.how3 p{margin:0;color:var(--body);font-size:16px}
+.how3 span{display:block}
+
+/* why */
+.why4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px}
+.why4 div{border-top:1px solid rgba(94,87,77,.25);padding-top:18px}
+.why4 h3{font:500 22px var(--serif);margin:0 0 6px;color:var(--ink)}
+.why4 p{margin:0;font-size:15.5px;color:var(--body)}
+
+/* moments */
+.mo{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:10px;margin-top:40px;height:520px}
+.mo div{border-radius:16px;overflow:hidden}.mo div:first-child{grid-row:1 / span 2}
+.mo img{width:100%;height:100%;object-fit:cover}
+
+/* faq */
+.fq2{max-width:760px;margin:36px auto 0}
+.fq2 details{border-bottom:1px solid rgba(94,87,77,.22);padding:18px 4px}
+.fq2 summary{list-style:none;cursor:pointer;font:500 21px var(--serif);color:var(--ink);display:flex;justify-content:space-between;gap:16px}
+.fq2 summary::-webkit-details-marker{display:none}
+.fq2 summary:after{content:"+";font-size:26px;line-height:1;color:var(--sage-deep);transition:transform .2s}
+.fq2 details[open] summary:after{transform:rotate(45deg)}
+.fq2 p{margin:10px 0 0;color:var(--body);font-size:16px}
+
+/* final cta */
+.end{position:relative;padding:110px 20px;text-align:center;color:#F6EFE4;overflow:hidden}
+.end img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.end:before{content:"";position:absolute;inset:0;z-index:1;background:rgba(40,42,26,.68)}
+.end .in{position:relative;z-index:2}
+.end h2{font:400 clamp(36px,4.5vw,54px) var(--serif);margin:0 0 10px;color:#fff}
+.end h2 em{font-family:var(--script);font-style:normal;color:#F3D9D3}
+.end p{font:400 19px var(--serif);color:#F2E6D3;margin:0 0 28px}
+
+@media (max-width:860px){
+  .st4{grid-template-columns:repeat(2,1fr);gap:14px}.st4 b{font-size:26px}
+  .how3{grid-template-columns:1fr;gap:8px;margin-top:24px}
+  .how3 div{display:flex;align-items:center;gap:14px;text-align:left;padding:14px 16px;border-radius:14px}
+  .how3 i{flex:none;width:34px;height:34px;font-size:14px}
+  .how3 h3{font-size:19px;margin:0 0 1px}.how3 p{font-size:14px;line-height:1.4}
+  .why4{grid-template-columns:1fr 1fr;gap:14px 16px;margin-top:24px}
+  .why4 div{padding-top:12px}.why4 h3{font-size:18px}.why4 p{font-size:13.5px;line-height:1.45}
+  .st4{margin-top:24px}.sx h2{font-size:32px}.sx .sub{font-size:15px}
+  .fq2 summary{font-size:18px}.fq2 details{padding:14px 2px}
+  .end{padding:72px 20px}
+  .mo{grid-template-columns:1fr 1fr;grid-template-rows:auto;height:auto}.mo div{aspect-ratio:1}.mo div:first-child{grid-column:1 / span 2;grid-row:auto;aspect-ratio:4/3}
+  .sx{padding:46px 0}
+  .hx{min-height:calc(78vh - 64px)}
+}
+</style>
 </head>
-<body id="top">
-<a class="skip" href="#main">Skip to content</a>
-
-
+<body>
 <header class="nav">
   <div class="wrap">
     <a class="nav-brand" href="index.html" aria-label="Whimsy Touch home"><img class="nav-logo" src="img/logo-script.webp" alt="Whimsy Touch" width="700" height="187"></a>
-    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-    </button>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     <ul class="nav-links" id="menu">
       <li><a href="index.html" aria-current="page">Home</a></li>
-      <li><a href="gatherings.html">Tablescapes</a></li>
-      <li><a href="runners.html">Runners</a></li>
-      <li><a href="upgrades.html">Upgrades</a></li>
-      <li class="nav-book"><a href="book.html">Book a Table</a></li>
+      <li><a href="catalog.html">Catalog</a></li>
       <li><a href="moments.html">Moments</a></li>
-      <li><a href="events.html">Events</a></li>
+      <li><a href="about.html">About</a></li>
       <li><a href="faq.html">FAQs</a></li>
+      <li class="nav-cta"><a href="book.html">Book a Table</a></li>
     </ul>
   </div>
 </header>
 
-<main id="main">
-
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-bg" aria-hidden="true"></div>
-  <h1>The Whimsy Touch</h1>
-  <img class="hero-logo" src="img/logo.webp" alt="Whimsy Touch">
-</div>
-
-<!-- SPECIAL SETUP (remove this section to take it off the homepage) -->
-<style>
-.lux{display:block;position:relative;max-width:1000px;margin:0 auto;border-radius:22px;overflow:hidden;text-decoration:none;aspect-ratio:16/8;box-shadow:0 18px 40px rgba(46,42,36,.18)}
-.lux img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;transition:transform 1.2s ease}
-.lux:hover img{transform:scale(1.04)}
-.lux:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(56,60,38,.92) 0%,rgba(79,85,54,.6) 42%,rgba(79,85,54,0) 78%)}
-.lux .tx{position:absolute;z-index:1;left:clamp(24px,5vw,60px);top:50%;transform:translateY(-50%);max-width:440px}
-.lux .k{display:block;font-family:var(--sans);font-weight:600;font-size:11.5px;letter-spacing:.38em;text-transform:uppercase;color:#EAD9B8}
-.lux .t{display:block;font-family:var(--script);font-size:clamp(48px,6vw,76px);line-height:1;margin:10px 0 8px;color:#F6EFE4}
-.lux .m{display:block;font-family:var(--serif);font-style:italic;font-size:clamp(17px,1.8vw,21px);color:#F2E6D3}
-.lux .b{display:inline-flex;align-items:center;margin-top:22px;min-height:46px;padding:0 28px;border-radius:999px;background:#F6EFE4;font-family:var(--sans);font-weight:600;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--sage-deep);transition:background .25s}
-.lux:hover .b{background:#fff}
-@media (max-width:760px){.lux{aspect-ratio:4/5;border-radius:18px}.lux:after{background:linear-gradient(180deg,rgba(79,85,54,0) 30%,rgba(56,60,38,.92) 100%)}.lux .tx{top:auto;bottom:26px;transform:none;left:22px;right:22px}.lux .b{margin-top:14px}}
-</style>
-<section class="latest-ev" style="padding:40px 16px 18px">
-  <a class="lux" href="calla-lily-dream.html">
-    <img src="img/cld-main.jpg" alt="Calla Lily Dream table by candlelight">
-    <span class="tx"><span class="k">A Special Setup</span><span class="t">Calla Lily Dream</span><span class="m">10–20 guests · ₱3,000</span><span class="b">Discover</span></span>
-  </a>
+<main>
+<section class="hx">
+  <img class="bg" src="img/gathering-hero.jpg" alt="Candlelit table set by Whimsy Touch">
+  <div class="in">
+    <div class="k">Tablescape Rental · Davao City</div>
+    <h1>The table of your dreams, <em>borrowed</em></h1>
+    <p>Runners, candlelight and flowers delivered to your venue. You set it up in minutes, or let us do it for you.</p>
+    <div class="bt"><a class="pill light" href="catalog.html">See the catalog</a><a class="pill ghost" href="book.html">Book a table</a></div>
+  </div>
+  <div class="scroll">Scroll ↓</div>
 </section>
 
-<!-- ABOUT -->
-<section class="about" id="about">
+<section class="sx">
   <div class="wrap">
-    <div>
-      <div class="eyebrow">About Whimsy Touch</div>
-      <h2>the table of your dreams, <em>borrowed, not bought</em></h2>
-      <p class="about-lead">Whimsy Touch is a <strong>tablescape rental</strong> in Davao City. We lend you the pieces, and you set the table yourself, wherever you’re celebrating.</p>
-      <p class="poem">You don’t need a stylist to style your affair,<br>just borrow the pieces and place them with care —<br>we bring the runners, the candlelight, the bloom,<br>you make the magic happen in your own room.</p>
+    <div class="ey">Our catalog</div>
+    <h2>Pick your <em>style</em></h2>
+    <p class="sub">Four looks, all delivered and picked up by us. Tap one to see the photos, colors and what's included.</p>
+    <div class="st4">
+      <a href="catalog.html#standard"><span class="ph"><img src="img/ts-std-1-s.jpg" alt=""></span><b>Standard Whimsy</b><small>from ₱1,000 · 10–40 guests</small></a>
+      <a href="catalog.html#fairydust"><span class="ph"><img src="img/ts-fd-1-s.jpg" alt=""></span><b>Fairy Dust</b><small>from ₱1,150 · 10–30 guests</small></a>
+      <a href="catalog.html#fullbloom"><span class="ph"><img src="img/ts-fb-1-s.jpg" alt=""></span><b>Full Bloom</b><small>from ₱2,200 · 10–30 guests</small></a>
+      <a href="catalog.html#calla"><span class="ph"><img src="img/cld-main-s.jpg" alt="" style="object-position:center 70%"><span class="tg">SPECIAL</span></span><b>Calla Lily Dream</b><small>₱3,000 · 10–20 guests</small></a>
     </div>
-    <div class="doily">
-      <img class="frame" src="img/doily.webp" alt="">
-      <img class="photo" src="img/hero-table.jpg" alt="A candlelit table dressed with a blush runner, taper candles and flowers">
-    </div>
-  </div>
-
-  <div class="wrap">
-    <div class="about-box">
-      <div class="ab-col">
-        <h3>What we bring</h3>
-        <ul>
-          <li>A table runner in the color you choose</li>
-          <li>LED candles, pre-loaded with batteries</li>
-          <li>Candle holders and clear vases</li>
-          <li>Faux flowers in every vase</li>
-          <li>A care card to guide your setup</li>
-        </ul>
-      </div>
-      <div class="ab-col ab-you">
-        <h3>What you bring</h3>
-        <ul>
-          <li>Your venue, home or restaurant</li>
-          <li>The food and drinks</li>
-          <li>Plates, glasses and cutlery</li>
-          <li>Your table, and about 30 minutes to set it up</li>
-        </ul>
-      </div>
-      <p class="ab-note">We’re not a restaurant, caterer or venue, just the pieces that make your table unforgettable. Setup isn’t included, but our care card guides you every step of the way. Every rental is for <strong>24 hours</strong>, starting when you receive the items.</p>
-    </div>
-    <p class="sign">come live your dream gathering, even just for a night.</p>
+    <div class="ctr"><a class="pill dark" href="catalog.html">View full catalog</a></div>
   </div>
 </section>
 
-
-<!-- EXPLORE -->
-<section class="explore">
+<section class="sx alt">
   <div class="wrap">
-    <div class="eyebrow">Start here</div>
-    <h2 class="script-title">Set your table</h2>
-    <div class="explore-grid">
-      <a class="ex-card ex-main" href="book.html"><img src="img/standard-setup.jpg" alt="" loading="lazy" style="object-position:center 55%"><span class="ex-text"><b>Book a Table</b><small>Build your table &amp; see your price</small></span><span class="ex-arrow" aria-hidden="true">→</span></a>
-      <a class="ex-card" href="gatherings.html"><img src="img/moment-02.jpg" alt="" loading="lazy" style="object-position:center"><span class="ex-text"><b>Tablescapes</b><small>Four styles, from 10 to 40 guests</small></span><span class="ex-arrow" aria-hidden="true">→</span></a>
-      <a class="ex-card" href="runners.html"><img src="img/runner-orange.jpg" alt="" loading="lazy" style="object-position:center 30%"><span class="ex-text"><b>Runners</b><small>Every color, on the table</small></span><span class="ex-arrow" aria-hidden="true">→</span></a>
-      <a class="ex-card" href="upgrades.html"><img src="img/fullbloom-1.jpg" alt="" loading="lazy" style="object-position:center 40%"><span class="ex-text"><b>Upgrades &amp; À La Carte</b><small>Fairy Dust &amp; single pieces</small></span><span class="ex-arrow" aria-hidden="true">→</span></a>
-      <a class="ex-card" href="moments.html"><img src="img/moment-04.jpg" alt="" loading="lazy" style="object-position:center"><span class="ex-text"><b>Moments</b><small>Real tables, real events</small></span><span class="ex-arrow" aria-hidden="true">→</span></a>
+    <div class="ey">How it works</div>
+    <h2>Three easy <em>steps</em></h2>
+    <div class="how3">
+      <div><i>1</i><span><h3>Pick your style</h3><p>Choose a tablescape and your guest count.</p></span></div>
+      <div><i>2</i><span><h3>Choose date &amp; color</h3><p>See which runner colors are free on your date, then book online.</p></span></div>
+      <div><i>3</i><span><h3>We deliver</h3><p>Set it up with our guide, and we pick it up within 24 hours.</p></span></div>
     </div>
   </div>
 </section>
 
-<!-- BOOK -->
-<section class="book" id="book">
-  <div class="book-bg" aria-hidden="true"></div>
+<section class="sx">
   <div class="wrap">
-    <h2>Ready to gather your table?</h2>
-    <div>
-      <p>Message Whimsy Touch with your date and guest count, and we’ll match you to a gathering. Prices exclude the refundable security deposit and delivery. Delivery and pickup are by our own rider, at the Grab rate for your location, paid directly to the rider before each trip.</p>
-      <div class="actions">
-        <a class="btn ghost" href="https://ig.me/m/thewhimsytouch" target="_blank" rel="noopener">Message us on Instagram</a>
-        <a class="btn ghost" href="https://m.me/61594083157602" target="_blank" rel="noopener">Message us on Facebook</a>
-        <a class="btn" href="book.html">Book Now</a>
-      </div>
+    <div class="ey">Why Whimsy Touch</div>
+    <h2>Made to look <em>effortless</em></h2>
+    <div class="why4">
+      <div><h3>Set up in minutes</h3><p>Every table comes with a simple care card and setup guide.</p></div>
+      <div><h3>Delivered to you</h3><p>Our own rider brings everything and picks it up after.</p></div>
+      <div><h3>LED candlelight</h3><p>Battery-powered candles, no wax and no worries.</p></div>
+      <div><h3>Fairy Godmother</h3><p>Want it done for you? We'll set up and pack down.</p></div>
     </div>
   </div>
 </section>
 
+<section class="sx alt">
+  <div class="wrap">
+    <div class="ey">Moments</div>
+    <h2>Real tables, <em>real celebrations</em></h2>
+    <div class="mo">
+      <div><img src="img/moment-09.jpg" alt=""></div>
+      <div><img src="img/moment-11.jpg" alt=""></div>
+      <div><img src="img/moment-13.jpg" alt=""></div>
+      <div><img src="img/moment-03.jpg" alt=""></div>
+      <div><img src="img/moment-14.jpg" alt=""></div>
+    </div>
+    <div class="ctr"><a class="pill dark" href="moments.html">See more moments</a></div>
+  </div>
+</section>
+
+<section class="sx">
+  <div class="wrap">
+    <div class="ey">FAQs</div>
+    <h2>Good to <em>know</em></h2>
+    <div class="fq2">
+      <details><summary>Is setup included?</summary><p>Our tablescapes are DIY rentals: we deliver everything with an easy guide. Want us to do it? Add our Fairy Godmother Service with Full Bloom or Calla Lily Dream.</p></details>
+      <details><summary>How much is delivery?</summary><p>Our rider delivers and picks up at the Grab rate, paid directly to the rider before each trip.</p></details>
+      <details><summary>How long is the rental?</summary><p>24 hours, starting when you receive the items.</p></details>
+      <details><summary>How do I reserve my date?</summary><p>Book at thewhimsytouch.com and pay a 50% downpayment. The balance and refundable deposit are due 1 day before your event.</p></details>
+    </div>
+    <div class="ctr"><a class="pill dark" href="faq.html">All FAQs</a></div>
+  </div>
+</section>
+
+<section class="end">
+  <img src="img/hero-table.jpg" alt="">
+  <div class="in">
+    <h2>Ready to set your <em>table?</em></h2>
+    <p>Pick your style and check your date in minutes.</p>
+    <a class="pill light" href="book.html">Book a table</a>
+  </div>
+</section>
 </main>
 
 <footer class="footer">
@@ -152,7 +224,6 @@
     <a href="terms.html">Terms &amp; Conditions</a>
   </div>
 </footer>
-
 <script src="site.js?v=20261110a"></script>
 </body>
 </html>

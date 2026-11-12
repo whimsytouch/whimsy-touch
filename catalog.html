@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalog — The Whimsy Touch</title>
+<meta name="description" content="Borrow the table of your dreams. Runners, LED candlelight and faux florals for gatherings of 10 to 40 guests in Davao City.">
+<meta property="og:title" content="The Whimsy Touch">
+<meta property="og:description" content="The table of your dreams, borrowed, not bought. Table décor rentals in Davao City.">
+<meta property="og:image" content="img/standard-setup.jpg">
+<link rel="icon" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20261110a">
+<style>@media (max-width:640px){.g-pt.flipf .g-txt .w{display:none}}</style>
+<style>@media (min-width:861px){.gatherings{grid-template-columns:repeat(3,minmax(0,1fr));gap:40px 36px;max-width:1080px}}</style>
+</head>
+<body id="top">
+<a class="skip" href="#main">Skip to content</a>
+
+
+<header class="nav">
+  <div class="wrap">
+    <a class="nav-brand" href="index.html" aria-label="Whimsy Touch home"><img class="nav-logo" src="img/logo-script.webp" alt="Whimsy Touch" width="700" height="187"></a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <ul class="nav-links" id="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="catalog.html" aria-current="page">Catalog</a></li>
+      <li><a href="moments.html">Moments</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="faq.html">FAQs</a></li>
+      <li class="nav-cta"><a href="book.html">Book a Table</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="main">
+<style>
+.ts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px;max-width:980px;margin:40px auto 0}
+.ts-card{position:relative;display:block;text-decoration:none;color:var(--ink);background:var(--card);border-radius:22px;overflow:hidden;box-shadow:0 12px 30px rgba(46,42,36,.10);transition:transform .2s,box-shadow .2s}
+.ts-card:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(46,42,36,.16)}
+.ts-ph{display:block;aspect-ratio:4/3.4;overflow:hidden;position:relative}.ts-ph img{width:100%;height:100%;object-fit:cover;transition:transform .8s}
+.ts-card:hover .ts-ph img{transform:scale(1.04)}
+.ts-tag{position:absolute;top:14px;left:14px;background:var(--sage-deep);color:#F6EFE4;font:600 11px var(--sans);letter-spacing:.2em;text-transform:uppercase;padding:7px 12px;border-radius:999px}
+.ts-body{display:block;padding:20px 24px 24px}
+.ts-name{display:block;font-family:var(--script);font-size:42px;line-height:1.05;color:var(--rose);-webkit-text-stroke:.022em currentColor}
+.ts-desc{display:block;font-size:16px;color:var(--body);margin-top:6px}
+.ts-meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;padding-top:14px;border-top:1px dashed rgba(94,87,77,.25)}
+.ts-meta b{font:400 26px var(--serif);color:var(--ink)}.ts-meta b small{font:600 11px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-right:6px}
+.ts-meta span{font:600 12px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.ts-how{max-width:760px;margin:30px auto 0;text-align:center;background:var(--card);border-radius:22px;padding:24px 22px}
+.ts-how h4{font:600 12px var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.ts-how ol{list-style:none;padding:0;margin:14px 0 0;display:flex;justify-content:center;gap:10px 26px;flex-wrap:wrap;font-family:var(--serif);font-size:19px;color:var(--ink)}
+.ts-how li b{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--sage-deep);color:#fff;font:600 13px var(--sans);align-items:center;justify-content:center;margin-right:8px}
+.ts-main{display:block;width:100%;height:100%;cursor:zoom-in}
+.ts-count{position:absolute;right:12px;bottom:12px;background:rgba(30,32,22,.6);color:#fff;font:600 11px var(--sans);letter-spacing:.14em;text-transform:uppercase;padding:6px 10px;border-radius:999px;pointer-events:none}
+.ts-thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:5px 5px 0}
+.ts-thumbs a{position:relative;display:block;aspect-ratio:1;border-radius:10px;overflow:hidden;cursor:zoom-in}
+.ts-thumbs a[hidden]{display:none}
+.ts-thumbs img{width:100%;height:100%;object-fit:cover;transition:transform .5s}.ts-thumbs a:hover img{transform:scale(1.06)}
+.ts-thumbs .more:after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.ts-thumbs .more span{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;color:#fff;font:600 22px var(--sans)}
+.ts-book{display:inline-block;margin-top:16px;background:var(--sage-deep);color:#F6EFE4;text-decoration:none;font:600 13px var(--sans);letter-spacing:.08em;padding:11px 20px;border-radius:999px}
+.ts-card:hover{transform:none}
+.ts-card{display:flex;flex-direction:column}.ts-body{flex:1;display:flex!important;flex-direction:column}.ts-meta{margin-top:auto!important}.ts-book{align-self:flex-start}.ts-desc{margin-bottom:16px}
+.cld-lb{position:fixed;inset:0;z-index:200;background:rgba(30,32,22,.92);display:none;align-items:center;justify-content:center}
+.cld-lb.on{display:flex}.cld-lb img{max-width:92vw;max-height:84vh;border-radius:8px}
+.cld-lb button{position:absolute;width:46px;height:46px;border-radius:50%;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:24px;cursor:pointer}
+.cld-lb .x{top:16px;right:16px}.cld-lb .pv{left:12px;top:50%;transform:translateY(-50%)}.cld-lb .nx{right:12px;top:50%;transform:translateY(-50%)}
+.cld-lb .ct{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#F6EFE4;font:600 12px var(--sans);letter-spacing:.16em;text-transform:uppercase}
+@media (max-width:700px){.ts-thumbs a{border-radius:8px}}
+.ts-colors{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 14px}
+.ts-colors i{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(46,42,36,.18);display:inline-block}
+.ts-colors b{font:600 11px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-right:4px}
+.ts-colors a{font:400 13px var(--sans);color:var(--muted);margin-left:4px}
+.cld-lb .note{position:absolute;top:22px;left:50%;transform:translateX(-50%);background:rgba(246,239,228,.95);color:var(--ink);font:600 12px var(--sans);letter-spacing:.08em;padding:9px 16px;border-radius:999px;white-space:nowrap;max-width:calc(100vw - 110px);overflow:hidden;text-overflow:ellipsis}
+.cld-lb .note:empty{display:none}
+.ts-grid{align-items:start}
+.ts-more,.ts-cdet{margin:0 0 10px}
+.ts-more summary,.ts-cdet summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font:600 11.5px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--gold);padding:4px 0}
+.ts-more summary::-webkit-details-marker,.ts-cdet summary::-webkit-details-marker{display:none}
+.ts-more summary:after,.ts-cdet summary:after{content:"+";font:400 18px var(--serif);line-height:1;color:var(--sage-deep);transition:transform .2s}
+.ts-more[open] summary:after,.ts-cdet[open] summary:after{transform:rotate(45deg)}
+.ts-more ul{margin:6px 0 4px;padding:0 0 0 18px;font-size:15px;color:var(--body);line-height:1.55}
+.ts-more li.note{list-style:none;margin:6px 0 0 -18px;font-size:13.5px;color:var(--muted)}
+.ts-cdet .ts-colors{margin:8px 0 4px}
+@media (max-width:700px){.ts-grid{grid-template-columns:1fr;gap:18px}.ts-name{font-size:36px}}
+</style>
+<section id="catalog">
+  <div class="wrap">
+    <div class="eyebrow"><img src="img/icon-lantern.webp" alt="">Choose Your Style</div>
+    <h2 class="script-title">Our catalog</h2>
+    <p class="lead">Pick the look you love, then tell us how many guests. Every style is a DIY rental, and you can add our Fairy Godmother Service to have us set it up.</p>
+    <div class="ts-how"><h4>How it works</h4><ol><li><b>1</b>Pick a style</li><li><b>2</b>Choose your guest count</li><li><b>3</b>Pick your date &amp; color</li></ol></div>
+    <div class="ts-grid">
+      <div id="standard" class="ts-card"><span class="ts-ph"><a class="ts-main" href="img/ts-std-1.jpg" data-g="std"><img src="img/ts-std-1.jpg" alt="Standard Whimsy"></a><span class="ts-count">8 photos</span></span><span class="ts-thumbs n4"><a href="img/ts-std-2.jpg" data-g="std"><img src="img/ts-std-2-s.jpg" alt="" loading="lazy"></a><a href="img/ts-std-3.jpg" data-g="std"><img src="img/ts-std-3-s.jpg" alt="" loading="lazy"></a><a href="img/ts-std-4.jpg" data-g="std"><img src="img/ts-std-4-s.jpg" alt="" loading="lazy"></a><a class="more" href="img/ts-std-5.jpg" data-g="std"><img src="img/ts-std-5-s.jpg" alt="" loading="lazy"><span>+3</span></a><a hidden href="img/ts-std-6.jpg" data-g="std"></a><a hidden href="img/ts-std-7.jpg" data-g="std"></a><a hidden href="img/ts-std-8.jpg" data-g="std"></a></span><span class="ts-body"><span class="ts-name">Standard Whimsy</span><span class="ts-desc">A runner, faux flowers in clear vases, and soft LED taper candles.</span><details class="ts-more"><summary>What’s included</summary><ul><li>Runner in your color</li><li>Clear vases with faux ivory roses, carnations and eucalyptus</li><li>Cream LED taper candles in gold holders</li><li>Spare batteries and a care card</li><li>24-hour rental</li><li class="note"><em>10–15 guests: 1 runner, 4 vases, 8 candles · 15–30: 3 runners, 8 vases, 16 candles · 30–40: 4 runners, 12 vases, 24 candles</em></li></ul></details><span class="ts-colors" data-colors="all"></span><span class="ts-meta"><b><small>From</small>₱1,000</b><span>10–40 guests</span></span><a class="ts-book" href="book.html?style=std">Book this style</a></span></div>
+      <div id="fairydust" class="ts-card"><span class="ts-ph"><a class="ts-main" href="img/ts-fd-1.jpg" data-g="fd"><img src="img/ts-fd-1.jpg" alt="Fairy Dust"></a><span class="ts-count">6 photos</span></span><span class="ts-thumbs n4"><a href="img/ts-fd-2.jpg" data-g="fd"><img src="img/ts-fd-2-s.jpg" alt="" loading="lazy"></a><a href="img/ts-fd-3.jpg" data-g="fd"><img src="img/ts-fd-3-s.jpg" alt="" loading="lazy"></a><a href="img/ts-fd-4.jpg" data-g="fd"><img src="img/ts-fd-4-s.jpg" alt="" loading="lazy"></a><a class="more" href="img/ts-fd-5.jpg" data-g="fd"><img src="img/ts-fd-5-s.jpg" alt="" loading="lazy"><span>+1</span></a><a hidden href="img/ts-fd-6.jpg" data-g="fd"></a></span><span class="ts-body"><span class="ts-name">Fairy Dust</span><span class="ts-desc">Tiered gold or glass candle holders with ribbons in your color.</span><details class="ts-more"><summary>What’s included</summary><ul><li>Everything in Standard Whimsy</li><li>Tiered gold or glass candle holders instead of the short gold ones</li><li>Ribbons matched to your runner, or in any color you like</li><li class="note"><em>For 10–30 guests</em></li></ul></details><span class="ts-colors" data-colors="all"></span><span class="ts-meta"><b><small>From</small>₱1,150</b><span>10–30 guests</span></span><a class="ts-book" href="book.html?style=fd">Book this style</a></span></div>
+      <div id="fullbloom" class="ts-card"><span class="ts-ph"><a class="ts-main" href="img/ts-fb-1.jpg" data-g="fb"><img src="img/ts-fb-1.jpg" alt="Full Bloom"></a><span class="ts-count">8 photos</span></span><span class="ts-thumbs n4"><a href="img/ts-fb-2.jpg" data-g="fb"><img src="img/ts-fb-2-s.jpg" alt="" loading="lazy"></a><a href="img/ts-fb-3.jpg" data-g="fb"><img src="img/ts-fb-3-s.jpg" alt="" loading="lazy"></a><a href="img/ts-fb-4.jpg" data-g="fb"><img src="img/ts-fb-4-s.jpg" alt="" loading="lazy"></a><a class="more" href="img/ts-fb-5.jpg" data-g="fb"><img src="img/ts-fb-5-s.jpg" alt="" loading="lazy"><span>+3</span></a><a hidden href="img/ts-fb-6.jpg" data-g="fb"></a><a hidden href="img/ts-fb-7.jpg" data-g="fb"></a><a hidden href="img/ts-fb-8.jpg" data-g="fb"></a></span><span class="ts-body"><span class="ts-name">Full Bloom</span><span class="ts-desc">Colored flowers, pillar candles, placemats, napkins and name cards.</span><details class="ts-more"><summary>What’s included</summary><ul><li>Runner in your color</li><li>Glass vases with colored faux flowers matched to your runner, plus ivory roses and eucalyptus</li><li>LED pillar candles and cream LED taper candles</li><li>Tiered gold or glass candle holders with ribbon</li><li>Sheer gold or jute placemats</li><li>White or red satin napkins</li><li>Name cards</li><li>Spare batteries and a care card</li><li class="note"><em>Tableware not included · Fairy Godmother setup available</em></li></ul></details><span class="ts-colors" data-colors="all"></span><span class="ts-meta"><b><small>From</small>₱2,200</b><span>10–30 guests</span></span><a class="ts-book" href="book.html?style=fb">Book this style</a></span></div>
+      <div id="calla" class="ts-card"><span class="ts-ph"><a class="ts-main" href="img/cld-main.jpg" data-g="cld"><img src="img/cld-main.jpg" alt="Calla Lily Dream"></a><span class="ts-tag">Special</span><span class="ts-count">12 photos</span></span><span class="ts-thumbs n4"><a href="img/cld-2167.jpg" data-g="cld"><img src="img/cld-2167-s.jpg" alt="" loading="lazy"></a><a href="img/cld-2131.jpg" data-g="cld"><img src="img/cld-2131-s.jpg" alt="" loading="lazy"></a><a href="img/cld-2204.jpg" data-g="cld"><img src="img/cld-2204-s.jpg" alt="" loading="lazy"></a><a class="more" href="img/cld-2148.jpg" data-g="cld"><img src="img/cld-2148-s.jpg" alt="" loading="lazy"><span>+7</span></a><a hidden href="img/cld-2149.jpg" data-g="cld"></a><a hidden href="img/cld-2181.jpg" data-g="cld"></a><a hidden href="img/cld-2192.jpg" data-g="cld"></a><a hidden href="img/cld-2208.jpg" data-g="cld"></a><a hidden href="img/cld-2211.jpg" data-g="cld"></a><a hidden href="img/cld-2213.jpg" data-g="cld"></a><a hidden href="img/cld-2230.jpg" data-g="cld"></a></span><span class="ts-body"><span class="ts-name">Calla Lily Dream</span><span class="ts-desc">Calla lilies, carnations and candlelight, with names at every seat.</span><details class="ts-more"><summary>What’s included</summary><ul><li>2 runners in your color</li><li>9 glass vases with calla lilies and carnations</li><li>10 cream LED taper candles in glass holders</li><li>9 LED pillar candles on black stands</li><li>Table napkins for up to 20 guests</li><li>Acrylic name cards with a reusable pen</li><li>Spare batteries and a care card</li><li class="note"><em>Tableware not included · Fairy Godmother setup available</em></li></ul></details><span class="ts-colors" data-colors="Pearl White,Blush Pink,Sage Green,Ruby Red,Buttercup Yellow,Midnight Black"></span><span class="ts-meta"><b><small>From</small>₱3,000</b><span>10–20 guests</span></span><a class="ts-book" href="book.html?style=calla">Book this style</a></span></div>
+    </div>
+    <p class="center" style="margin-top:30px;font-size:16px">Want us to set it up? <a href="upgrades.html#godmother">See our Fairy Godmother Service</a> · <a href="runners.html">See all runner colors</a></p>
+    <p class="center" style="margin-top:18px"><a class="btn" href="book.html">Book a table</a></p>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <span class="brand">Whimsy Touch</span>
+    <span>Davao City, Philippines</span>
+    <span>Prices in Philippine Pesos for a 24-hour rental, exclusive of security deposit &amp; delivery fee</span>
+    <a href="terms.html">Terms &amp; Conditions</a>
+  </div>
+</footer>
+
+
+<div class="cld-lb" id="cldLb"><button class="x" aria-label="Close">×</button><button class="pv" aria-label="Previous">‹</button><img alt=""><button class="nx" aria-label="Next">›</button><div class="ct"></div><div class="note"></div></div>
+<script>(function(){var b=document.getElementById('cldLb'),im=b.querySelector('img'),ct=b.querySelector('.ct'),nt=b.querySelector('.note'),L=[],i=0,x0=null;
+function sh(k){i=(k+L.length)%L.length;im.src=L[i].href;ct.textContent=L[i].dataset.n+'  ·  '+(i+1)+' / '+L.length;}
+document.querySelectorAll('.ts-card').forEach(function(c){var n=c.querySelector('.ts-name').textContent,A=[].slice.call(c.querySelectorAll('a[data-g]'));A.forEach(function(a,k){a.dataset.n=n;a.addEventListener('click',function(e){e.preventDefault();L=A;nt.textContent=c.dataset.note||'';sh(k);b.classList.add('on');document.body.style.overflow='hidden';});});});
+function cl(){b.classList.remove('on');document.body.style.overflow='';}b.querySelector('.x').onclick=cl;b.querySelector('.pv').onclick=function(){sh(i-1)};b.querySelector('.nx').onclick=function(){sh(i+1)};
+b.addEventListener('click',function(e){if(e.target===b)cl();});document.addEventListener('keydown',function(e){if(!b.classList.contains('on'))return;if(e.key==='Escape')cl();if(e.key==='ArrowLeft')sh(i-1);if(e.key==='ArrowRight')sh(i+1);});
+b.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});b.addEventListener('touchend',function(e){if(x0===null)return;var d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>40)sh(i+(d<0?1:-1));x0=null;});})();</script>
+<script src="runners-data.js?v=20261110a"></script>
+<script src="site.js?v=20261110a"></script>
+<script>(function(){var all=[];(window.RUNNER_GROUPS||[]).forEach(function(g){g.items.forEach(function(r){all.push(r)})});
+document.querySelectorAll('.ts-colors').forEach(function(box){var c=box.dataset.colors,L=c==='all'?all:all.filter(function(r){return c.split(',').indexOf(r.name)>=0});
+box.innerHTML=L.map(function(r){return '<i title="'+r.name+'" style="background:'+r.hex+'"></i>'}).join('')+(c==='all'?'<a href="runners.html">see all runners</a>':'');var d=document.createElement('details');d.className='ts-cdet';d.innerHTML='<summary>See available colors</summary>';box.parentNode.insertBefore(d,box);d.appendChild(box);
+var card=box.closest('.ts-card');card.dataset.note=c==='all'?'Shown in a few colors · available in more colors':'Available in limited colors';});})();</script>
+</body>
+</html>

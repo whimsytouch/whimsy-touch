@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261110a">
+<link rel="stylesheet" href="styles.css?v=20261113a">
 <style>
 /* nav: 5 links + book button */
 .nav-links{align-items:center}
@@ -51,8 +51,9 @@
 .st4 img{width:100%;height:100%;object-fit:cover;transition:transform .7s}
 .st4 a:hover img{transform:scale(1.05)}
 .st4 .tg{position:absolute;top:12px;left:12px;background:rgba(246,239,228,.92);color:var(--sage-deep);font:600 10.5px var(--sans);letter-spacing:.2em;padding:6px 10px;border-radius:99px}
-.st4 b{display:block;font:400 30px var(--script);color:var(--rose);margin-top:12px;line-height:1.1}
-.st4 small{display:block;font:600 12px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.st4 b{display:block;font:500 25px/1.15 var(--serif);color:var(--ink);margin-top:14px;letter-spacing:.01em}
+.st4 .pr{display:block;font:400 17px var(--serif);color:var(--muted);margin-top:4px}.st4 .pr em{font-style:normal;font-weight:600;color:var(--sage-deep);font-size:19px}
+.st4 small{display:block;font:400 13px var(--sans);letter-spacing:.04em;color:var(--muted);margin-top:2px}
 .ctr{text-align:center;margin-top:36px}
 
 /* how */
@@ -93,7 +94,7 @@
 .end p{font:400 19px var(--serif);color:#F2E6D3;margin:0 0 28px}
 
 @media (max-width:860px){
-  .st4{grid-template-columns:repeat(2,1fr);gap:14px}.st4 b{font-size:26px}
+  .st4{grid-template-columns:repeat(2,1fr);gap:22px 14px}.st4 b{font-size:20px;margin-top:10px}.st4 .pr{font-size:15px}.st4 .pr em{font-size:16px}.st4 small{font-size:12px}
   .how3{grid-template-columns:1fr;gap:8px;margin-top:24px}
   .how3 div{display:flex;align-items:center;gap:14px;text-align:left;padding:14px 16px;border-radius:14px}
   .how3 i{flex:none;width:34px;height:34px;font-size:14px}
@@ -107,6 +108,22 @@
   .sx{padding:46px 0}
   .hx{min-height:calc(78vh - 64px)}
 }
+
+/* style cards: option D */
+.st4 a{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 10px 26px rgba(46,42,36,.12);padding-bottom:16px}
+.st4 .ph{border-radius:0;box-shadow:none}
+.st4 b{font:400 31px/1.05 var(--script);color:var(--rose);-webkit-text-stroke:.4px var(--rose);white-space:nowrap;padding:0 16px;margin-top:12px}
+.st4 b.long{font-size:28px}
+.st4 .pr,.st4 small{padding:0 16px}
+.st4 .pr em{color:var(--ink)}
+@media (max-width:860px){.st4 a{padding-bottom:12px}.st4 b{font-size:25px;padding:0 12px;margin-top:10px}.st4 b.long{font-size:21px}.st4 .pr,.st4 small{padding:0 12px}.st4 .pr{font-size:15px}}
+@media (max-width:360px){.st4 b{font-size:22px}.st4 b.long{font-size:18px}}
+
+.xmas{display:flex;align-items:center;justify-content:center;gap:6px 16px;flex-wrap:wrap;margin:26px auto 0;max-width:640px;padding:14px 22px;border-radius:16px;background:#6B1F2E;color:#F6EFE4;text-align:center;box-shadow:0 8px 20px rgba(107,31,46,.18)}
+.xmas .xk{font:600 11px var(--sans);letter-spacing:.24em;text-transform:uppercase;background:#F6EFE4;color:#6B1F2E;padding:5px 10px;border-radius:99px}
+.xmas .xt{font:400 30px/1 var(--script);color:#F6EFE4}
+.xmas .xs{font:400 16px var(--serif);color:#EAD9B8}
+@media (max-width:860px){.xmas{flex-direction:column;padding:14px 16px;gap:6px}.xmas .xt{font-size:28px}.xmas .xs{font-size:14.5px}}
 </style>
 </head>
 <body>
@@ -143,11 +160,12 @@
     <h2>Pick your <em>style</em></h2>
     <p class="sub">Four looks, all delivered and picked up by us. Tap one to see the photos, colors and what's included.</p>
     <div class="st4">
-      <a href="catalog.html#standard"><span class="ph"><img src="img/ts-std-1-s.jpg" alt=""></span><b>Standard Whimsy</b><small>from ₱1,000 · 10–40 guests</small></a>
-      <a href="catalog.html#fairydust"><span class="ph"><img src="img/ts-fd-1-s.jpg" alt=""></span><b>Fairy Dust</b><small>from ₱1,150 · 10–30 guests</small></a>
-      <a href="catalog.html#fullbloom"><span class="ph"><img src="img/ts-fb-1-s.jpg" alt=""></span><b>Full Bloom</b><small>from ₱2,200 · 10–30 guests</small></a>
-      <a href="catalog.html#calla"><span class="ph"><img src="img/cld-main-s.jpg" alt="" style="object-position:center 70%"><span class="tg">SPECIAL</span></span><b>Calla Lily Dream</b><small>₱3,000 · 10–20 guests</small></a>
+      <a href="catalog.html#standard"><span class="ph"><img src="img/ts-std-1-s.jpg" alt=""></span><b class="long">Standard Whimsy</b><span class="pr">from <em>₱1,000</em></span><small>10–40 guests</small></a>
+      <a href="catalog.html#fairydust"><span class="ph"><img src="img/ts-fd-1-s.jpg" alt=""></span><b>Fairy Dust</b><span class="pr">from <em>₱1,150</em></span><small>10–30 guests</small></a>
+      <a href="catalog.html#fullbloom"><span class="ph"><img src="img/ts-fb-1-s.jpg" alt=""></span><b>Full Bloom</b><span class="pr">from <em>₱2,200</em></span><small>10–30 guests</small></a>
+      <a href="catalog.html#calla"><span class="ph"><img src="img/cld-main-s.jpg" alt="" style="object-position:center 70%"><span class="tg">SPECIAL</span></span><b class="long">Calla Lily Dream</b><span class="pr"><em>₱3,000</em></span><small>10–20 guests</small></a>
     </div>
+    <div class="xmas"><span class="xk">Coming soon</span><span class="xt">Whimsy Christmas</span><span class="xs">A holiday tablescape for your noche buena 🎄</span></div>
     <div class="ctr"><a class="pill dark" href="catalog.html">View full catalog</a></div>
   </div>
 </section>
@@ -224,6 +242,6 @@
     <a href="terms.html">Terms &amp; Conditions</a>
   </div>
 </footer>
-<script src="site.js?v=20261110a"></script>
+<script src="site.js?v=20261113a"></script>
 </body>
 </html>

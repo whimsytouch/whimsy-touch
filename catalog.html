@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261110a">
+<link rel="stylesheet" href="styles.css?v=20261113a">
 <style>@media (max-width:640px){.g-pt.flipf .g-txt .w{display:none}}</style>
 <style>@media (min-width:861px){.gatherings{grid-template-columns:repeat(3,minmax(0,1fr));gap:40px 36px;max-width:1080px}}</style>
 </head>
@@ -125,8 +125,8 @@ document.querySelectorAll('.ts-card').forEach(function(c){var n=c.querySelector(
 function cl(){b.classList.remove('on');document.body.style.overflow='';}b.querySelector('.x').onclick=cl;b.querySelector('.pv').onclick=function(){sh(i-1)};b.querySelector('.nx').onclick=function(){sh(i+1)};
 b.addEventListener('click',function(e){if(e.target===b)cl();});document.addEventListener('keydown',function(e){if(!b.classList.contains('on'))return;if(e.key==='Escape')cl();if(e.key==='ArrowLeft')sh(i-1);if(e.key==='ArrowRight')sh(i+1);});
 b.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});b.addEventListener('touchend',function(e){if(x0===null)return;var d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>40)sh(i+(d<0?1:-1));x0=null;});})();</script>
-<script src="runners-data.js?v=20261110a"></script>
-<script src="site.js?v=20261110a"></script>
+<script src="runners-data.js?v=20261113a"></script>
+<script src="site.js?v=20261113a"></script>
 <script>(function(){var all=[];(window.RUNNER_GROUPS||[]).forEach(function(g){g.items.forEach(function(r){all.push(r)})});
 document.querySelectorAll('.ts-colors').forEach(function(box){var c=box.dataset.colors,L=c==='all'?all:all.filter(function(r){return c.split(',').indexOf(r.name)>=0});
 box.innerHTML=L.map(function(r){return '<i title="'+r.name+'" style="background:'+r.hex+'"></i>'}).join('')+(c==='all'?'<a href="runners.html">see all runners</a>':'');var d=document.createElement('details');d.className='ts-cdet';d.innerHTML='<summary>See available colors</summary>';box.parentNode.insertBefore(d,box);d.appendChild(box);

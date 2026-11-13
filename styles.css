@@ -890,3 +890,13 @@ section.quote.is-details{padding-top:28px}
 .nav-links .nav-cta a{background:var(--sage-deep);color:#F6EFE4;padding:9px 20px;border-radius:999px;border:0;font-family:var(--sans);font-size:14px;letter-spacing:.06em}
 .nav-links .nav-cta a:hover,.nav-links .nav-cta a[aria-current="page"]{background:#3d4229;color:#fff;border:0}
 @media (max-width:860px){.nav-links{align-items:stretch}.nav-links .nav-cta a{display:inline-block;margin-top:8px;text-align:center}}
+
+/* name card reminder on the booking confirmation */
+.q-nc{margin-top:18px;background:var(--sage-deep);border-radius:20px;padding:24px 22px 22px;text-align:center;color:#F6EFE4}
+.q-nc h5{font:400 36px/1.1 var(--script);color:#fff;margin:0 0 12px;-webkit-text-stroke:.5px #fff}
+.q-nc p{font-size:16px}
+.q-nc p{margin:0 auto 16px;max-width:440px;color:#EFE8DA}
+.q-nc p b{color:#fff}
+.q-nc .btn{display:inline-flex;background:#F6EFE4;border-color:#F6EFE4;color:var(--sage-deep);min-width:220px;justify-content:center}
+.q-nc .btn:hover{background:#fff}
+.q-nc .q-note{margin:14px auto 0;font-size:14px;color:#DCD3C2}

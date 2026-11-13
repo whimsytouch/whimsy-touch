@@ -161,7 +161,7 @@ var WT = (function () {
   var root = document.getElementById('quote');
   if (!root || !window.RUNNER_GROUPS) return;
   var BASE = [500, 1000, 2000, 3000], GUESTS = ['2 guests', '10–15 guests', '15–30 guests', '30–40 guests'];
-  var FD = { tiered: [60, 150, 250], glass: [100, 250, 500] }, FB = [700, 1000, 1500];
+  var FD = { tiered: [60, 150, 250], glass: [100, 250, 500] }, FB = [700, 1200, 2000];
   var TAPER = [50, 150, 200, 400], GM = [1000, 1500, 2000], LAYER_PER_RUNNER = 100;
   // layering: ₱100 for every runner in the gathering
   function layerFee(t) { return LAYER_PER_RUNNER * WT.nr(s.runner != null ? RUN[s.runner] : null, t); }
@@ -946,6 +946,7 @@ var WT = (function () {
           document.getElementById('qSameDay').hidden = false;
           document.getElementById('qNotifyTxt').innerHTML = '<strong>Message us to confirm:</strong>';
         } else showPayment(ref, mm);
+        try { var nc = document.getElementById('qNc'); if (nc && !s.alc && (s.cld || s.up === 'fb')) { nc.hidden = false; document.getElementById('qNcLink').href = 'namecards.html?ref=' + encodeURIComponent(ref); } } catch (e) {}
         document.getElementById('qCopyTxt').textContent = copy;
         form.hidden = true; document.querySelector('.q-actions').hidden = true;
         var done = document.getElementById('qDone'), qs = document.getElementById('quote'), wrap = qs.querySelector('.wrap');

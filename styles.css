@@ -900,3 +900,17 @@ section.quote.is-details{padding-top:28px}
 .q-nc .btn{display:inline-flex;background:#F6EFE4;border-color:#F6EFE4;color:var(--sage-deep);min-width:220px;justify-content:center}
 .q-nc .btn:hover{background:#fff}
 .q-nc .q-note{margin:14px auto 0;font-size:14px;color:#DCD3C2}
+
+/* extra rental days (booking page) */
+.q-xday{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0 4px;border-top:1px dashed rgba(94,87,77,.25);margin-top:8px}
+.q-xday-txt b{display:block;font-weight:600;color:var(--ink)}
+.q-xday-txt small{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.q-step-n{min-width:18px;text-align:center}
+.q-xwrap .q-xday{border-top:0;margin-top:4px;padding:12px 14px;background:var(--card);border-radius:14px}
+.q-xwrap .q-note{margin-top:6px}
+
+.q-xret{display:flex;flex-direction:column;gap:6px;margin-top:14px;font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+.q-xret input{align-self:flex-start;padding:10px 12px;border-radius:12px;border:1px solid rgba(94,87,77,.3);font:400 16px var(--sans);background:var(--card);color:var(--ink);letter-spacing:0;text-transform:none}
+.q-xret small{text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted)}
+.q-xhint{margin-top:4px}
+.q-grid.is-details .q-xhint{display:none}

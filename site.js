@@ -162,6 +162,8 @@ var WT = (function () {
   if (!root || !window.RUNNER_GROUPS) return;
   var BASE = [500, 1000, 2000, 3000], GUESTS = ['2 guests', '10–15 guests', '15–30 guests', '30–40 guests'];
   var FD = { tiered: [60, 150, 250], glass: [100, 250, 500] }, FB = [700, 1200, 2000];
+  // Full Bloom price change: bookings made from Dec 1, 2026 use the new rates (10–15 ₱2,500 · 15–30 ₱4,500)
+  (function () { var d = new Date(), t = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); if (t >= 20261201) FB = [700, 1500, 2500]; })();
   var TAPER = [50, 150, 200, 400], GM = [1000, 1500, 2000], LAYER_PER_RUNNER = 100;
   // layering: ₱100 for every runner in the gathering
   function layerFee(t) { return LAYER_PER_RUNNER * WT.nr(s.runner != null ? RUN[s.runner] : null, t); }
@@ -186,7 +188,7 @@ var WT = (function () {
   function flowerKey(c) { return 'Faux flowers: ' + c; }
   // flower colors for the chosen runner(s) and how many of each a Full Bloom needs: { 'Mint Green': 12 } or { 'Mint Green': 6, 'Baby Blue': 6 }
   function fbFlowers(t) {
-    var cols = [], NV = [1, 4, 8, 12][t], need = 3 * NV, out = {};
+    var cols = [], NV = [1, 4, 8, 12][t], need = 2 * NV, out = {};
     [s.runner, s.layer ? s.runner2 : null].forEach(function (i) { if (i != null && RUN[i]) { var f = FLOWER_OF[RUN[i].name]; if (f && cols.indexOf(f) < 0) cols.push(f); } });
     if (!cols.length) return null;
     cols.forEach(function (c, k) { out[c] = k === 0 ? Math.ceil(need / cols.length) : Math.floor(need / cols.length); });
@@ -208,14 +210,14 @@ var WT = (function () {
     var t = c.t, NV = [1, 4, 8, 12][t], NT = [3, 8, 16, 24][t], G = MAXG[t];
     if (c.cld) {   // Calla Lily Dream pieces
       add('Glass candle holders', 10); add('Cream LED taper candles', 10); add('LED pillar candles', 9); add('Black pillar stands', 9);
-      add('White cloth napkins', 20); add('Name card holders', 20); add('Calla lilies', 12); add('Ivory carnations', 15); add('Small glass vases', 9);
+      add('White cloth napkins', 20); add('Name card holders', 20); add('Calla lilies', 12); add('Ivory carnations', 15); add('Glass vases', 9);
       if (c.ala) ALA.forEach(function (it) { var q = (s.ala[it.id] || 0) + (extra === it.id ? 1 : 0); if (q) add(SETS[it.id][0], q * SETS[it.id][1]); });
       return n;
     }
     add(c.up === 'fb' ? 'Glass vases' : 'Clear acrylic vases', NV);   // Full Bloom uses glass vases
     if (c.up !== 'fb') { add('Ivory roses', 2 * NV); add('Eucalyptus stems', 2 * NV); add('Ivory carnations', 2 * NV); }
     if (c.up === 'fb') {
-      add('Ivory roses', 3 * NV); add('Eucalyptus stems', 3 * NV);
+      add('Ivory carnations', 2 * NV); add('Eucalyptus stems', 2 * NV);
       add('LED pillar candles', NV); if (!fbFaux()) add(c.mat === 'jute' ? 'Jute placemats' : 'Sheer gold placemats', G);
       if (c.nap === 'red') { add('Red satin napkins', G); add('Gold napkin rings', G); } else { add('White cloth napkins', G); add('Leaf napkin rings', G); }
       if (!fbFaux()) add('Name card holders', G);
@@ -275,7 +277,25 @@ var WT = (function () {
     return q.km <= DLV_MAX_KM ? q.km + ' km past Roxas–Lanang–Indangan, ' + WT.peso(DLV_PER_KM) + '/km' : 'over ' + DLV_MAX_KM + ' km past Roxas–Lanang–Indangan';
   }
   function fmt12(tm) { if (!/^\d{1,2}:\d{2}/.test(tm || '')) return ''; var h = +tm.split(':')[0]; return (h % 12 || 12) + ':' + tm.split(':')[1] + ' ' + (h < 12 ? 'AM' : 'PM'); }
+  // Extra rental days: 30% of the tablescape price for every day after the first 24 hours
+  var EXTRA_RATE = 0.3, EXTRA_MAX = 5;
+  function tsPrice() { var t = s.tier; return s.cld ? CLD.price : BASE[t] + (s.up === 'fd' ? FD[s.holder][t] : s.up === 'fb' ? fbPrice(t) : 0); }
+  // rental items only: no security deposit, delivery, Fairy Godmother (labor) or disposable napkins
+  function rentalItems() {
+    var t = s.tier, v = tsPrice();
+    if (!s.cld && s.layer && s.runner != null) v += layerFee(t);
+    if (!s.cld && s.taper) v += TAPER[t];
+    v += (s.ala.cakestand || 0) * 100;
+    return v;
+  }
+  function extraPerDay() { return Math.round(rentalItems() * EXTRA_RATE / 10) * 10; }
+  function extraFee() { return s.alc ? 0 : (s.extra || 0) * extraPerDay(); }
+  function addDays_(v, n) { var p = String(v).split('-'); var d = new Date(+p[0], +p[1] - 1, +p[2] + n, 12); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
   function pickupText() {
+    var pre = s.extra && !s.alc ? 'After ' + s.extra + ' extra rental day' + (s.extra > 1 ? 's' : '') + (avDate ? ' (return by ' + niceDate(addDays_(avDate, s.extra + 1)) + ')' : '') + ' · ' : '';
+    return pre + pickupText0();
+  }
+  function pickupText0() {
     var w = document.querySelector('input[name="pickup_when"]:checked'), t = document.getElementById('qPickTime'), tt = fmt12(t ? t.value : '');
     var e = document.getElementById('qEndTime'), et = s.gm && e ? fmt12(e.value) : '', v = w ? w.value : '', how = '';
     if (s.gm && !s.alc) {
@@ -368,8 +388,18 @@ var WT = (function () {
     avBlocked = '';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(v || '') || !window.WT_SHEETS_URL) { AV = null; avDate = ''; render(); if (done) done(); return; }
     avBusy = true; avDate = v; render();
-    fetch(window.WT_SHEETS_URL + '?avail=' + v).then(function (r) { return r.json(); }).then(function (j) {
-      if (avDate !== v) return; AV = (j && j.b1) ? j : null; avAt = Date.now(); avBusy = false; render(); if (done) done();
+    var days = [v], nx = s.alc ? 0 : (s.extra || 0); for (var k = 1; k <= nx; k++) days.push(addDays_(v, k));
+    Promise.all(days.map(function (d) { return fetch(window.WT_SHEETS_URL + '?avail=' + d).then(function (r) { return r.json(); }); })).then(function (js) {
+      if (avDate !== v) return;
+      var j = js[0];
+      if (j && j.b1 && js.length > 1) {   // a longer rental needs the items free on every day
+        js.slice(1).forEach(function (o) {
+          if (!o || !o.b1) return;
+          ['b1', 'b2', 'b3', 'b4'].forEach(function (b) { (o[b] || []).forEach(function (n) { if ((j[b] || []).indexOf(n) < 0) (j[b] = j[b] || []).push(n); }); });
+          if (o.items && j.items) Object.keys(o.items).forEach(function (k2) { if (typeof o.items[k2] === 'number') j.items[k2] = Math.min(typeof j.items[k2] === 'number' ? j.items[k2] : Infinity, o.items[k2]); });
+        });
+      }
+      AV = (j && j.b1) ? j : null; avAt = Date.now(); avBusy = false; render(); if (done) done();
     }).catch(function () { if (avDate !== v) return; AV = null; avBusy = false; render(); if (done) done(); });
   }
 
@@ -393,7 +423,10 @@ var WT = (function () {
     s.alc = false; s.up = k; if (k !== 'fb') s.gm = false; if (k !== 'none' && s.tier === 3) s.tier = 2;
   }
   function fbFaux() { return SPECIAL_LINK && !!avDate && avDate === FB_FAUX.date; }
-  function fbPrice(t) { return fbFaux() ? FB_FAUX.price[t] : FB[t]; }
+  // Full Bloom goes up on bookings made from Dec 1, 2026 (₱2,500 for 10–15, ₱4,500 for 15–30)
+  var FB_NEW = { from: '2026-12-01', price: [700, 1500, 2500] };
+  function fbList() { return todayStr_() >= FB_NEW.from ? FB_NEW.price : FB; }
+  function fbPrice(t) { return fbFaux() ? FB_FAUX.price[t] : fbList()[t]; }
   function fbOpen() { return !avDate || fbFaux() || !FB_CLOSED.some(function (r) { return avDate >= r[0] && avDate <= r[1]; }); }
   function opt(label, sub, on, click, disabled) {
     var b = WT.el('button', 'q-opt', label + (sub ? '<small>' + sub + '</small>' : ''));
@@ -590,6 +623,31 @@ var WT = (function () {
       eb.appendChild(l);
     }
     if (!s.cld) check('Pink LED taper candles', TAPER[t], s.taper, pinkOk, pinkForced ? 'Our cream candles are fully booked on ' + niceDate(avDate) + ', so your table comes with pink LED taper candles.' : 'Pink candles are fully booked on ' + niceDate(avDate) + '.', function (v) { s.taper = v; }, pinkForced);
+    var xw = $('qXday');
+    if (xw) {
+      if (s.alc || !avDate) { xw.innerHTML = ''; xw._d = ''; }
+      else {
+        var per = extraPerDay(), nd = s.extra || 0, maxD = addDays_(avDate, EXTRA_MAX + 1), minD = avDate, freeD = addDays_(avDate, 1);
+        if (xw._d !== avDate) {   // rebuild when the event date changes
+          xw._d = avDate;
+          xw.innerHTML = '<label class="q-xret">Need it longer? Return date <small>(optional)</small><input type="date" id="qRetDate"></label><p class="q-note" id="qRetNote"></p>';
+          var ri0 = xw.querySelector('#qRetDate');
+          ri0.addEventListener('change', function () {
+            var v = this.value; if (!v) { s.extra = 0; } else {
+              if (v < avDate) v = avDate; if (v > addDays_(avDate, EXTRA_MAX + 1)) v = addDays_(avDate, EXTRA_MAX + 1);
+              var d = Math.round((new Date(v + 'T12:00') - new Date(avDate + 'T12:00')) / 864e5); s.extra = Math.max(0, d - 1);
+            }
+            checkAvail(avDate);
+          });
+        }
+        var ri = xw.querySelector('#qRetDate'); ri.min = minD; ri.max = maxD;
+        if (nd && !ri.value) ri.value = addDays_(avDate, nd + 1);
+        xw.querySelector('#qRetNote').innerHTML = nd ? 'Extra ' + nd + ' day' + (nd > 1 ? 's' : '') + ': <b>+' + WT.peso(per * nd) + '</b> (' + WT.peso(per) + ' per day, 30% of your rental). All pieces stay reserved until ' + niceDate(addDays_(avDate, nd + 1)) + '.'
+          : 'Leave this blank for a regular rental (24 hours, same day or next day pickup). For a later return, each extra day is <b>+' + WT.peso(per) + '</b> (30% of your rental).';
+        try { var rq = document.querySelector('#qPickWhen .q-radio'), pq = document.getElementById('qPickQ'); if (rq) rq.style.display = nd ? 'none' : ''; if (pq) pq.textContent = nd ? 'Pickup on ' + niceDate(addDays_(avDate, nd + 1)) : 'Pickup'; } catch (e) {}
+        if (avLost && nd) xw.querySelector('#qRetNote').innerHTML = '<b>' + avLost + ' is already booked on one of those days.</b> Please pick an earlier return date, or go back and choose another color.';
+      }
+    }
     // 4 setup
     var sb = $('qSetup'); sb.innerHTML = '';
     // Dates when Fairy Godmother Service is not available (edit this list anytime: ['start', 'end'])
@@ -612,7 +670,7 @@ var WT = (function () {
       NV + (s.up === 'fb' ? (NV > 1 ? ' glass vases' : ' glass vase') : (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase')) + (s.up === 'fb' ? '' : ' with faux flowers (2 ivory roses, 2 eucalyptus, 2 ivory carnations each)')
     ];
     if (s.up === 'fb') incG.push(
-      NV + (NV > 1 ? ' faux flower arrangements, one at every vase' : ' faux flower arrangement') + ' (3 ' + (fbFlowers(t) ? Object.keys(fbFlowers(t)).join(' + ').toLowerCase() : 'colored') + ' flowers to match your runner, 3 ivory roses and 3 eucalyptus each)',
+      NV + (NV > 1 ? ' faux flower arrangements, one at every vase' : ' faux flower arrangement') + ' (2 ' + (fbFlowers(t) ? Object.keys(fbFlowers(t)).join(' + ').toLowerCase() : 'colored') + ' flowers to match your runner, 2 ivory carnations and fillers each)',
       NV + (NV > 1 ? ' LED pillar candles, one at every vase' : ' LED pillar candle'));
     incG.push(NT + ' ' + (s.taper ? 'pink' : 'cream') + ' LED taper candles');
     incG.push(s.up === 'none' ? NT + ' gold candle holders' : holderTxt);
@@ -631,6 +689,7 @@ var WT = (function () {
     if (s.taper) lines.push(['Pink LED taper candles', TAPER[t]]);
     if (s.gm) lines.push(['Setup: Fairy Godmother Service', GM[t]]);
     if (lateFee()) lines.push(['Late-night pack-down (after 11 PM)', LATE_FEE]);
+    if (extraFee()) lines.push(['Extra rental days: ' + s.extra + (avDate ? ' (return by ' + niceDate(addDays_(avDate, s.extra + 1)) + ')' : ''), extraFee()]);
     var dl = deliveryLine();
     }
     alaLines.forEach(function (l) { lines.push(l); });
@@ -679,6 +738,7 @@ var WT = (function () {
     if (s.taper) ml.push('Pink LED taper candles, +' + WT.peso(TAPER[t]));
     if (s.gm) ml.push('Setup: Fairy Godmother Service, +' + WT.peso(GM[t]));
     if (lateFee()) ml.push('Late-night pack-down (after 11 PM), +' + WT.peso(LATE_FEE));
+    if (extraFee()) ml.push(s.extra + ' extra rental day' + (s.extra > 1 ? 's' : '') + (avDate ? ' (return by ' + niceDate(addDays_(avDate, s.extra + 1)) + ')' : '') + ', +' + WT.peso(extraFee()));
     if (dl) ml.push(dl[0] + (dl[1] ? ', +' + WT.peso(dl[1]) : ''));
     else if (!needsDelivery()) ml.push('Delivery & pickup: by our rider at the Grab rate, paid directly to the rider before each trip through their QR code or exact cash (not deducted from your security deposit)');
     alaLines.forEach(function (l) { ml.push(l[0] + ', ' + (s.alc ? '' : '+') + WT.peso(l[1])); });
@@ -839,6 +899,8 @@ var WT = (function () {
   function detailsMode(on) {
     var qs = document.getElementById('quote'), grid = qs.querySelector('.q-grid'), bk = document.getElementById('book');
     grid.classList.toggle('is-details', on);
+    try { document.getElementById('qTotLbl').textContent = on ? 'Total' : 'Subtotal'; } catch (e) {}
+    try { render(); } catch (e) {}
     qs.classList.toggle('is-details', on);
     ['.eyebrow', '.script-title', '.lead'].forEach(function (sel) { var el = qs.querySelector('.wrap > ' + sel); if (el) el.style.display = on ? 'none' : ''; });
     if (bk) bk.style.display = on ? 'none' : '';
@@ -1283,4 +1345,10 @@ var WT = (function () {
   function upd() { var w = row.children[0].getBoundingClientRect().width + 16, i = Math.min(n - 1, Math.round(row.scrollLeft / w)); ds.forEach(function (d, j) { d.classList.toggle('on', j === i); }); }
   row.addEventListener('scroll', function () { clearTimeout(row._t); row._t = setTimeout(function () { upd(); row.querySelectorAll('video').forEach(function (v) { var r = v.getBoundingClientRect(); if (r.left < 0 || r.right > innerWidth) v.pause(); }); }, 80); });
   upd();
+})();
+
+// Scheduled price text: <span data-from="YYYY-MM-DD" data-new="₱…">old</span> switches on that date (Philippine time on the visitor's device)
+(function () {
+  var d = new Date(), today = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+  document.querySelectorAll('[data-from][data-new]').forEach(function (el) { if (today >= el.getAttribute('data-from')) el.textContent = el.getAttribute('data-new'); });
 })();

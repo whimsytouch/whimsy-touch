@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261113h">
+<link rel="stylesheet" href="styles.css?v=20261116m">
 </head>
 <body id="top">
 <a class="skip" href="#main">Skip to content</a>
@@ -28,6 +28,7 @@
     <ul class="nav-links" id="menu">
       <li><a href="index.html">Home</a></li>
       <li><a href="catalog.html">Catalog</a></li>
+      <li><a href="runners.html">Runners</a></li>
       <li><a href="moments.html">Moments</a></li>
       <li><a href="events.html">Events</a></li>
       <li><a href="about.html">About</a></li>
@@ -76,6 +77,7 @@
               <label id="qPickBox" hidden>Google Maps link for pickup <input id="qPickLink" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/…"></label>
             </div>
             <label><span id="qPickTimeLbl">Pickup time</span><input type="time" name="pickup_time" id="qPickTime"></label>
+            <div class="q-xwrap" id="qXday"></div>
             <p class="q-note" id="qRentNote">Rental is <b>24 hours</b> from when you receive the items. If they’re booked next, we may ask for an earlier pickup.</p>
           </div>
           <div class="q-dlv" id="qDlv" hidden><button type="button" class="btn ghost" id="qDlvBtn">Check delivery fee</button><p class="q-note" id="qDlvNote"></p></div>
@@ -84,8 +86,9 @@
         <div id="qSumBlock">
         <h3>Your table</h3>
         <ul id="qLines"></ul>
-        <div class="q-total"><span>Total</span><strong id="qTotal">₱500</strong></div>
+        <div class="q-total"><span id="qTotLbl">Subtotal</span><strong id="qTotal">₱500</strong></div>
         <p class="q-fine" id="qFine">Includes the refundable security deposit.</p>
+        <p class="q-fine q-xhint" id="qXhint">Need it for more than a day? You can choose a later return date on the next step: +30% of your rental for each extra day.</p>
         </div>
         <div class="q-actions">
           <button type="button" class="btn" id="qBookBtn">Book this table</button>
@@ -184,7 +187,7 @@
   </div>
 </footer>
 
-<script src="runners-data.js?v=20261113h"></script>
-<script src="site.js?v=20261113h"></script>
+<script src="runners-data.js?v=20261116m"></script>
+<script src="site.js?v=20261116m"></script>
 </body>
 </html>

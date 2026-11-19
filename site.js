@@ -162,8 +162,8 @@ var WT = (function () {
   if (!root || !window.RUNNER_GROUPS) return;
   var BASE = [500, 1000, 2000, 3000], GUESTS = ['2 guests', '10–15 guests', '15–30 guests', '30–40 guests'];
   var FD = { tiered: [60, 150, 250], glass: [100, 250, 500] }, FB = [700, 1200, 2000];
-  // Full Bloom price change: bookings made from Dec 1, 2026 use the new rate (10–15 ₱2,500 · 15–30 stays ₱4,000)
-  (function () { var d = new Date(), t = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); if (t >= 20261201) FB = [700, 1500, 2000]; })();
+  // Full Bloom price change: bookings made from Dec 1, 2026 use the new rates (10–15 ₱2,500 · 15–30 ₱4,500)
+  (function () { var d = new Date(), t = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); if (t >= 20261201) { FB = [700, 1500, 2500]; FD = { tiered: [60, 500, 500], glass: [100, 500, 500] }; } })();   // Fairy Dust from Dec 1: ₱1,500 (10–15) / ₱2,500 (15–30), either holder
   var TAPER = [50, 150, 200, 400], GM = [1000, 1500, 2000], LAYER_PER_RUNNER = 100;
   // layering: ₱100 for every runner in the gathering
   function layerFee(t) { if (s.pic) return PIC.layer; return LAYER_PER_RUNNER * WT.nr(s.runner != null ? RUN[s.runner] : null, t); }
@@ -443,8 +443,8 @@ var WT = (function () {
     s.alc = false; s.up = k; if (k !== 'fb') s.gm = false; if (k !== 'none' && s.tier === 3) s.tier = 2;
   }
   function fbFaux() { return SPECIAL_LINK && !!avDate && avDate === FB_FAUX.date; }
-  // Full Bloom goes up on bookings made from Dec 1, 2026 (₱2,500 for 10–15; 15–30 stays ₱4,000)
-  var FB_NEW = { from: '2026-12-01', price: [700, 1500, 2000] };
+  // Full Bloom goes up on bookings made from Dec 1, 2026 (₱2,500 for 10–15, ₱4,500 for 15–30)
+  var FB_NEW = { from: '2026-12-01', price: [700, 1500, 2500] };
   function fbList() { return todayStr_() >= FB_NEW.from ? FB_NEW.price : FB; }
   function fbPrice(t) { return fbFaux() ? FB_FAUX.price[t] : fbList()[t]; }
   function fbOpen() { return !avDate || fbFaux() || !FB_CLOSED.some(function (r) { return avDate >= r[0] && avDate <= r[1]; }); }
@@ -628,7 +628,8 @@ var WT = (function () {
           sub.appendChild(ri);
         }
       }
-      if (s.up === 'fb' && !fbFaux() && todayStr_() < FB_NEW.from) sub.appendChild(WT.el('p', 'q-note', 'Full Bloom for 10–15 guests goes up to ₱2,500 for bookings made from Dec 1. Book now to keep today’s rate.'));
+      if (s.up === 'fd' && todayStr_() < '2026-12-01') sub.appendChild(WT.el('p', 'q-note', 'Fairy Dust goes up to ₱1,500 (10–15 guests) and ₱2,500 (15–30 guests), either holder, for bookings made from Dec 1. Book now to keep today’s rate.'));
+      if (s.up === 'fb' && !fbFaux() && todayStr_() < FB_NEW.from) sub.appendChild(WT.el('p', 'q-note', 'Full Bloom goes up to ₱2,500 (10–15 guests) and ₱4,500 (15–30 guests) for bookings made from Dec 1. Book now to keep today’s rate.'));
       if (s.up === 'fb' && !fbFaux()) {
         var row2 = WT.el('div', 'q-subrow', '<span class="lbl">Placemat</span>');
         row2.appendChild(opt('<img class="pm-thumb" src="img/placemat-gold.jpg" alt="">Sheer Gold', goldMatOut ? 'fully booked on ' + niceDate(avDate) : '', s.mat === 'gold', function () { s.mat = 'gold'; render(); }, goldMatOut && s.mat !== 'gold'));
@@ -732,7 +733,7 @@ var WT = (function () {
       incG = ['Low wooden picnic table', 'Waterproof picnic mat with a soft picnic blanket on top', '8 brown seat cushions', R ? (R2 ? 'Layered runners: ' + R.name + ' + ' + R2.name : '1 runner in ' + runnerName) : '1 runner',
         '6 small glass vases with ' + (s.picFl === 'roses' ? 'ivory roses (2 roses and 1 eucalyptus each)' : 'gerberas (2 each)'), '5 LED taper candles in short gold holders', '8 jute placemats',
         '24-hour rental, starting when you ' + (!s.gm && s.picHow !== 'grab' ? 'pick it up' : 'receive the items')];
-      lines.push(['Whimsy Picnic (up to 8 guests)', PIC.price, incG, 'Food and tableware (plates, glasses and cutlery) not included']);
+      lines.push(['Whimsy Picnic (up to 8 guests)', PIC.price, incG, 'Food, paper plates and tableware (glasses and cutlery) not included']);
     } else if (s.cld) {
       incG = [CLD.runners + ' runners' + (R ? ' in ' + R.name : ''), '9 glass vases: 4 with calla lilies (3 each), 5 with carnations (3 each)', '10 cream LED taper candles in glass holders',
         '9 LED pillar candles on black stands', 'Table napkins for up to 20 guests', 'Printed name cards in holders for up to 20 guests, with your guests’ names', 'Spare batteries and a care card', '24-hour rental, starting when you receive the items'];

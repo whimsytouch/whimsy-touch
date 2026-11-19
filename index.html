@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261116m">
+<link rel="stylesheet" href="styles.css?v=20261119p">
 <style>
 /* nav: 5 links + book button */
 .nav-links{align-items:center}
@@ -45,6 +45,13 @@
 .alt{background:var(--bg-soft)}
 
 /* styles row */
+.pcn{display:grid;grid-template-columns:200px 1fr auto;align-items:center;gap:26px;margin-top:30px;padding:16px;background:var(--card);border:1px solid var(--gold-line);border-radius:22px;text-decoration:none;color:var(--ink)}
+.pcn img{width:200px;height:150px;object-fit:cover;border-radius:14px;display:block}
+.pcn .k{font:600 11px var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--rose)}
+.pcn b{display:block;font:500 30px/1.1 var(--serif);margin-top:4px}
+.pcn span.d{display:block;font:italic 17px var(--serif);color:var(--muted);margin-top:4px}
+.pcn em{font-style:normal;font:600 22px var(--serif);color:var(--sage-deep);padding-right:14px;white-space:nowrap}
+@media (max-width:640px){.pcn{grid-template-columns:110px 1fr;gap:14px;padding:12px}.pcn img{width:110px;height:120px}.pcn b{font-size:23px}.pcn span.d{font-size:14.5px}.pcn em{grid-column:2;font-size:18px;padding:0}}
 .st4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px}
 .st4 a{display:block;text-decoration:none;color:var(--ink)}
 .st4 .ph{display:block;aspect-ratio:4/5;border-radius:18px;overflow:hidden;position:relative;box-shadow:0 10px 26px rgba(46,42,36,.12)}
@@ -167,6 +174,7 @@
       <a href="full-bloom.html"><span class="ph"><img src="img/ts-fb-1-s.jpg" alt=""></span><b>Full Bloom</b><span class="pr">from <em><span data-from="2026-12-01" data-new="₱2,500">₱2,200</span></em></span><small>10–30 guests</small></a>
       <a href="calla-lily-dream.html"><span class="ph"><img src="img/cld-main-s.jpg" alt="" style="object-position:center 70%"><span class="tg">SPECIAL</span></span><b class="long">Calla Lily Dream</b><span class="pr"><em>₱3,000</em></span><small>10–20 guests</small></a>
     </div>
+    <a class="pcn" href="picnic.html"><img src="img/pic-main-1-s.jpg" alt=""><span><span class="k">New · Picnic</span><b>Whimsy Picnic</b><span class="d">A low table, blankets, cushions, flowers and candlelight for up to 8.</span></span><em>₱4,000</em></a>
     <div class="xmas"><span class="xk">Coming soon</span><span class="xt">Whimsy Christmas</span><span class="xs">A holiday tablescape for your noche buena 🎄</span></div>
     <div class="ctr"><a class="pill dark" href="catalog.html">View full catalog</a></div>
   </div>
@@ -217,7 +225,7 @@
     <div class="ey">FAQs</div>
     <h2>Good to <em>know</em></h2>
     <div class="fq2">
-      <details><summary>Is setup included?</summary><p>Our tablescapes are DIY rentals: we deliver everything with an easy guide. Want us to do it? Add our Fairy Godmother Service with Full Bloom or Calla Lily Dream.</p></details>
+      <details><summary>Is setup included?</summary><p>Our tablescapes are DIY rentals: we deliver everything with an easy guide. Want us to do it? Add our Fairy Godmother Service with Full Bloom, Calla Lily Dream or the Picnic.</p></details>
       <details><summary>How much is delivery?</summary><p>Our rider delivers and picks up at the Grab rate, paid directly to the rider before each trip.</p></details>
       <details><summary>How long is the rental?</summary><p>24 hours, starting when you receive the items.</p></details>
       <details><summary>How do I reserve my date?</summary><p>Book at thewhimsytouch.com and pay a 50% downpayment. The balance and refundable deposit are due 1 day before your event.</p></details>
@@ -241,9 +249,10 @@
     <span class="brand">Whimsy Touch</span>
     <span>Davao City, Philippines</span>
     <span>Prices in Philippine Pesos for a 24-hour rental, exclusive of security deposit &amp; delivery fee</span>
+    <a href="namecards.html" class="ft-nc">Send your guest names</a>
     <a href="terms.html">Terms &amp; Conditions</a>
   </div>
 </footer>
-<script src="site.js?v=20261116m"></script>
+<script src="site.js?v=20261119r"></script>
 </body>
 </html>

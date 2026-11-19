@@ -162,11 +162,11 @@ var WT = (function () {
   if (!root || !window.RUNNER_GROUPS) return;
   var BASE = [500, 1000, 2000, 3000], GUESTS = ['2 guests', '10–15 guests', '15–30 guests', '30–40 guests'];
   var FD = { tiered: [60, 150, 250], glass: [100, 250, 500] }, FB = [700, 1200, 2000];
-  // Full Bloom price change: bookings made from Dec 1, 2026 use the new rates (10–15 ₱2,500 · 15–30 ₱4,500)
-  (function () { var d = new Date(), t = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); if (t >= 20261201) FB = [700, 1500, 2500]; })();
+  // Full Bloom price change: bookings made from Dec 1, 2026 use the new rate (10–15 ₱2,500 · 15–30 stays ₱4,000)
+  (function () { var d = new Date(), t = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); if (t >= 20261201) FB = [700, 1500, 2000]; })();
   var TAPER = [50, 150, 200, 400], GM = [1000, 1500, 2000], LAYER_PER_RUNNER = 100;
   // layering: ₱100 for every runner in the gathering
-  function layerFee(t) { return LAYER_PER_RUNNER * WT.nr(s.runner != null ? RUN[s.runner] : null, t); }
+  function layerFee(t) { if (s.pic) return PIC.layer; return LAYER_PER_RUNNER * WT.nr(s.runner != null ? RUN[s.runner] : null, t); }
   var ALA = [
     { id: 'cakestand', name: 'Gold cake stand', set: '25 cm wide × 20 cm tall', price: 100 },
     { id: 'napbow', name: 'Pink bow disposable napkins', set: 'pack of 10', price: 30 },
@@ -179,7 +179,7 @@ var WT = (function () {
     'LED pillar candles': 'LED pillar candles', 'Tiered gold candle holders': 'tiered gold candle holders', 'Gold candle holders': 'short gold candle holders',
     'Glass candle holders': 'glass candle holders', 'Glass vases': 'glass vases', 'Clear acrylic vases': 'clear acrylic vases' };
   var MAXG = [2, 15, 30, 40];
-  // Full Bloom flowers match the runner: each vase gets 3 flowers in the runner's color, 3 ivory roses and 3 eucalyptus.
+  // Full Bloom flowers match the runner: each vase gets 3 flowers in the runner's color, 3 ivory carnations and 3 eucalyptus.
   // Flowers are booked as a whole set per color per day (one Full Bloom per flower color per day).
   var FLOWER_OF = { 'Sage Green': 'Mint Green', 'Dusty Sage': 'Mint Green', 'Aquamarine Blue': 'Baby Blue', 'Buttercup Yellow': 'Yellow', 'Marigold Yellow': 'Yellow',
     'Tangerine Orange': 'Burnt Orange', 'Blush Pink': 'Baby Pink', 'Pearl White': 'White', 'Mocha Brown': 'Brown', 'Rust Brown': 'Brown',
@@ -200,14 +200,21 @@ var WT = (function () {
     var fl = fbFlowers(t); if (!fl) return 'not with ' + RUN[s.runner].name;
     var own = (AV && AV.flowers) || FLOWER_STOCK, cols = Object.keys(fl), need = 3 * [1, 4, 8, 12][t];
     var owned = cols.reduce(function (a, c) { return a + (own[c] || 0); }, 0);
-    if (owned < need) return 'not for ' + WT.TIERS[t] + ' with this color';
-    if (avDate && cols.some(function (c) { return freeOf(flowerKey(c)) < (own[c] || 0); })) return 'flowers booked that day';
+    if (owned < need) return 'not available for ' + GUESTS[t] + ' in this color';
+    if (avDate && cols.some(function (c) { return freeOf(flowerKey(c)) < (own[c] || 0); })) return 'flowers fully booked on ' + niceDate(avDate);
     return '';
   }
   // pieces a table uses, for a given setup c = { t, up, holder, taper, mat, ala }
   function needFor(c, extra) {
     var n = {}, add = function (k, q) { if (q) n[k] = (n[k] || 0) + q; };
     var t = c.t, NV = [1, 4, 8, 12][t], NT = [3, 8, 16, 24][t], G = MAXG[t];
+    if (c.pic) {   // Whimsy Picnic pieces (the table, mat, blanket and cushions are one set: 1 picnic a day)
+      add('Small glass vases', 6); add('Cream LED taper candles', 5); add('Gold candle holders', 5); add('Jute placemats', 8);
+      if (c.picFl === 'roses') { add('Ivory roses', 12); add('Eucalyptus stems', 6); } else add('Gerberas', 12);
+      if (c.picCloth) add('Satin tablecloth', 1);
+      if (c.ala) ALA.forEach(function (it) { var q = (s.ala[it.id] || 0) + (extra === it.id ? 1 : 0); if (q) add(SETS[it.id][0], q * SETS[it.id][1]); });
+      return n;
+    }
     if (c.cld) {   // Calla Lily Dream pieces
       add('Glass candle holders', 10); add('Cream LED taper candles', 10); add('LED pillar candles', 9); add('Black pillar stands', 9);
       add('White cloth napkins', 20); add('Name card holders', 20); add('Calla lilies', 12); add('Ivory carnations', 15); add('Glass vases', 9);
@@ -215,9 +222,9 @@ var WT = (function () {
       return n;
     }
     add(c.up === 'fb' ? 'Glass vases' : 'Clear acrylic vases', NV);   // Full Bloom uses glass vases
-    if (c.up !== 'fb') { add('Ivory roses', 2 * NV); add('Eucalyptus stems', 2 * NV); add('Ivory carnations', 2 * NV); }
+    if (c.up !== 'fb') { add('Ivory roses', 3 * NV); add('Eucalyptus stems', 3 * NV); add('Ivory carnations', 3 * NV); }
     if (c.up === 'fb') {
-      add('Ivory carnations', 2 * NV); add('Eucalyptus stems', 2 * NV);
+      add('Ivory carnations', 3 * NV); add('Eucalyptus stems', 3 * NV);
       add('LED pillar candles', NV); if (!fbFaux()) add(c.mat === 'jute' ? 'Jute placemats' : 'Sheer gold placemats', G);
       if (c.nap === 'red') { add('Red satin napkins', G); add('Gold napkin rings', G); } else { add('White cloth napkins', G); add('Leaf napkin rings', G); }
       if (!fbFaux()) add('Name card holders', G);
@@ -227,7 +234,7 @@ var WT = (function () {
     if (c.ala) ALA.forEach(function (it) { var q = (s.ala[it.id] || 0) + (extra === it.id ? 1 : 0); if (q) add(SETS[it.id][0], q * SETS[it.id][1]); });
     return n;
   }
-  function cur() { return { t: s.tier, up: s.up, holder: s.holder, taper: s.taper, mat: s.mat, nap: s.nap, ala: true, cld: !!s.cld }; }
+  function cur() { return { t: s.tier, up: s.up, holder: s.holder, taper: s.taper, mat: s.mat, nap: s.nap, ala: true, cld: !!s.cld, pic: !!s.pic, picFl: s.picFl, picCloth: !!s.picCloth }; }
   function needs(extra) { return needFor(cur(), extra); }
   function freeOf(k) { var f = AV && AV.items; return f && typeof f[k] === 'number' ? f[k] : Infinity; }
   function fits(c) { var n = needFor(c); return Object.keys(n).every(function (k) { return n[k] <= freeOf(k); }); }
@@ -249,12 +256,12 @@ var WT = (function () {
     var extraNames = ALA.map(function (it) { return SETS[it.id][0]; });
     var tableShort = sl.filter(function (x) { return extraNames.indexOf(x[0]) < 0; });
     var nm = function (x) { return NICE[x[0]] || x[0]; };
-    if (tableShort.length) return 'Sorry, ' + WT.TIERS[s.tier] + ' is fully booked on ' + niceDate(avDate) + ' (not enough ' + tableShort.map(nm).join(' and ') + ' left). Please pick a smaller gathering or another date.';
+    if (tableShort.length) return 'Sorry, ' + (s.pic ? 'the picnic' : GUESTS[s.tier]) + ' is fully booked on ' + niceDate(avDate) + ' (not enough ' + tableShort.map(nm).join(' and ') + ' left). ' + (s.pic ? 'Please pick another date' + (s.picFl === 'roses' || s.picFl === 'gerbera' ? ' or the other flowers' : '') + '.' : 'Please pick a smaller gathering or another date.');
     return 'Sorry, we only have ' + sl.map(function (x) { return x[1] + ' ' + nm(x); }).join(' and ') + ' left on ' + niceDate(avDate) + '. Please lower the amount.';
   }
 
   var RUN = WT.runners();
-  var s = { tier: 1, runner: null, vase: 'acrylic', up: 'none', holder: 'tiered', mat: 'gold', nap: 'white', layer: false, runner2: null, ribbon: 'match', ribbonColor: '', taper: false, gm: false, alc: false, ala: {} };
+  var s = { tier: 1, runner: null, vase: 'acrylic', up: 'none', holder: 'tiered', mat: 'gold', nap: 'white', layer: false, runner2: null, ribbon: 'match', ribbonColor: '', taper: false, gm: false, alc: false, ala: {}, pic: false, picFl: 'gerbera', picTable: false, picCloth: false, picHow: 'pickup' };
   var q = new URLSearchParams(location.search).get('runner');
   var OLDNAME = { 'Green': 'Sage Green', 'Blue': 'Aquamarine Blue', 'Buttercup': 'Buttercup Yellow', 'Orange': 'Tangerine Orange', 'Pink': 'Blush Pink', 'White': 'Pearl White', 'Marigold': 'Marigold Yellow', 'Coffee Brown': 'Mocha Brown', 'Purple': 'Lilac Purple' };
   if (q) { q = OLDNAME[q] || q; RUN.forEach(function (r, i) { if (r.name === q) s.runner = i; }); }
@@ -262,7 +269,7 @@ var WT = (function () {
   var AV = null, avDate = '', avBusy = false, avLost = '', avAt = 0;
   // delivery (Full Bloom / Fairy Godmother): zone check runs in the bookings sheet
   var DLV = null, DLVP = null, dlvBusy = false, dlvFor = '';
-  function needsDelivery() { return !s.alc && s.gm; }  // only Fairy Godmother has a computed delivery fee; everyone else pays our rider the Grab rate on the day
+  function needsDelivery() { return !s.alc && s.gm && !s.pic; }  // only Fairy Godmother has a computed delivery fee; everyone else pays our rider the Grab rate on the day
   var ZONE_NAME = { buhangin: 'Buhangin', lanang: 'Roxas–Lanang–Indangan' };
   var DLV_PER_KM = 25, DLV_MAX_KM = 20;   // venues outside Roxas–Lanang–Indangan: per km past it, each way; farther = message us
   // price of ONE trip (drop-off or pickup) for a checked location; null = too far, message us
@@ -279,12 +286,13 @@ var WT = (function () {
   function fmt12(tm) { if (!/^\d{1,2}:\d{2}/.test(tm || '')) return ''; var h = +tm.split(':')[0]; return (h % 12 || 12) + ':' + tm.split(':')[1] + ' ' + (h < 12 ? 'AM' : 'PM'); }
   // Extra rental days: 30% of the tablescape price for every day after the first 24 hours
   var EXTRA_RATE = 0.3, EXTRA_MAX = 5;
-  function tsPrice() { var t = s.tier; return s.cld ? CLD.price : BASE[t] + (s.up === 'fd' ? FD[s.holder][t] : s.up === 'fb' ? fbPrice(t) : 0); }
+  function tsPrice() { var t = s.tier; return s.pic ? PIC.price : s.cld ? CLD.price : BASE[t] + (s.up === 'fd' ? FD[s.holder][t] : s.up === 'fb' ? fbPrice(t) : 0); }
   // rental items only: no security deposit, delivery, Fairy Godmother (labor) or disposable napkins
   function rentalItems() {
     var t = s.tier, v = tsPrice();
     if (!s.cld && s.layer && s.runner != null) v += layerFee(t);
-    if (!s.cld && s.taper) v += TAPER[t];
+    if (!s.cld && !s.pic && s.taper) v += TAPER[t];
+    if (s.pic) v += (s.picTable ? PIC.table : 0) + (s.picCloth ? PIC.cloth : 0);
     v += (s.ala.cakestand || 0) * 100;
     return v;
   }
@@ -305,6 +313,7 @@ var WT = (function () {
       return (et ? 'Event ends ' + et + ' · ' : '') + how;
     }
     how = v.indexOf('Same') === 0 ? 'Same day' : 'Next day';
+    if (s.pic && !s.alc) return how + (tt ? ', ' + tt : '') + (s.picHow === 'grab' ? ', we collect it' : ', back at Deca Cabantian');
     return how + (tt ? ', ' + tt : '');
   }
   var LATE_FEE = 300;
@@ -338,10 +347,15 @@ var WT = (function () {
     var ep = document.getElementById('qElse'), nd = document.getElementById('qNextDay');
     if (ep) { ep.hidden = !gm; if (!gm && ep.querySelector('input').checked) document.querySelector('input[name="pickup_when"]').checked = true; }
     var st = document.getElementById('qSameTxt'), nt = document.getElementById('qNextTxt'), et = document.getElementById('qElseTxt');
-    if (st) st.textContent = gm ? 'We pack down at the venue' : 'Same day, after the event';
+    var picR = s.pic && !s.alc && !gm;
+    if (st) st.textContent = gm ? 'We pack down at the venue' : picR ? 'Same day' : 'Same day, after the event';
     if (nt) nt.textContent = gm ? 'Next day, from the venue' : 'Next day';
     if (et) et.textContent = 'Next day, from another place';
-    q.textContent = 'Pickup';
+    q.textContent = picR ? (s.picHow === 'grab' ? 'Return (we collect it)' : 'Return to Deca Cabantian') : 'Pickup';
+    try { var vh = document.getElementById('qVenueH'); if (vh) vh.textContent = s.pic && !s.alc ? 'Picnic spot & return' : 'Venue & pickup'; var tl = document.getElementById('qTimeLbl'), tn = document.getElementById('qTimeNote'); var pu = s.pic && !s.alc && !gm && s.picHow !== 'grab';
+      if (tl) tl.textContent = pu ? 'Pickup time (Deca Cabantian)' : 'Delivery arrival time';
+      if (tn) tn.textContent = pu ? 'This is when you’ll pick up the picnic in Cabantian. The table is about 9 kg, so bring a car.' : 'This is when your items arrive at the venue, so pick a time that gives you enough time to set up before your event starts.';
+      var vn = document.getElementById('qVenueName'); if (vn) vn.placeholder = s.pic && !s.alc ? 'Where’s your picnic? e.g. your garden, a park' : 'e.g. Rustica Bistro, Lanang branch'; } catch (e) {}
     var w = document.querySelector('input[name="pickup_when"]:checked'), v = w ? w.value : '';
     var el = gm && v.indexOf('Picked') === 0, nv = gm && v.indexOf('Next') === 0;
     var pw = document.getElementById('qPickWrap'), ps = document.getElementById('qPickSame'), pb = document.getElementById('qPickBox');
@@ -358,9 +372,9 @@ var WT = (function () {
         ? 'Included until <b>11 PM</b>. From 11 PM to <b>1:30 AM</b>, add ' + WT.peso(LATE_FEE) + '. Ending later than 1:30 AM? Please choose next-day pickup.'
         : 'You pack the items into our boxes, switch off all candles, and send us photos.' +
           (nv ? ' Please arrange with the venue to keep them safe overnight.' : '') + ' Pickup from 8:00 AM.' +
-          ' Free pickup within Roxas–Lanang–Indangan.';
+          (s.pic ? ' Free pickup within our picnic area.' : ' Free pickup within Roxas–Lanang–Indangan.');
     }
-    lb.textContent = el ? 'Pickup time' : nv ? 'Pickup time (when the venue opens)' : gm ? 'Pack-down time' : 'Pickup time';
+    lb.textContent = picR ? 'Return time' : el ? 'Pickup time' : nv ? 'Pickup time (when the venue opens)' : gm ? 'Pack-down time' : 'Pickup time';
   }
   function selfReturn() { return false; }
   function elsePick() { var x = document.querySelector('#qElse input'); return !!(s.gm && x && x.checked); }
@@ -396,6 +410,7 @@ var WT = (function () {
         js.slice(1).forEach(function (o) {
           if (!o || !o.b1) return;
           ['b1', 'b2', 'b3', 'b4'].forEach(function (b) { (o[b] || []).forEach(function (n) { if ((j[b] || []).indexOf(n) < 0) (j[b] = j[b] || []).push(n); }); });
+          if (o.picnic) j.picnic = Math.max(j.picnic || 0, o.picnic);
           if (o.items && j.items) Object.keys(o.items).forEach(function (k2) { if (typeof o.items[k2] === 'number') j.items[k2] = Math.min(typeof j.items[k2] === 'number' ? j.items[k2] : Infinity, o.items[k2]); });
         });
       }
@@ -412,19 +427,24 @@ var WT = (function () {
   // Calla Lily Dream: a special setup (own price, 2 runners, 10–20 guests). Book page opens with it picked from calla-lily-dream.html.
   var CLD = { price: 3000, deposit: 500, runners: 2, colors: ['Pearl White', 'Blush Pink', 'Sage Green', 'Ruby Red', 'Buttercup Yellow', 'Midnight Black'], img: 'img/cld-main.jpg' };
   if (/[?&]special=calla\b/.test(location.search)) { s.cld = true; s.tier = 2; }
+  // Whimsy Picnic: up to 8 guests, 1 runner, one picnic a day, pickup at Deca Cabantian (delivery on request, subject to availability; Fairy Godmother within the picnic area)
+  var PIC = { price: 4000, deposit: 800, gm: 2000, table: 300, cloth: 100, layer: 100, img: { gerbera: 'img/pic-main-1.jpg', roses: 'img/pic-brown-1.jpg' } };
+  function picBooked() { return !!(AV && (AV.picnic || 0) >= 1); }
   // Tablescape styles (Book a Table step 1). ?style=std|fd|fb|calla picks one from the Tablescapes page.
   var STYLE_NAME = { none: 'Standard Whimsy', fd: 'Fairy Dust', fb: 'Full Bloom' };
   var styleMsg = '';
-  (function () { var m = location.search.match(/[?&]style=(std|fd|fb|calla)\b/); if (!m) return; if (m[1] === 'calla') { s.cld = true; s.tier = 2; } else { s.cld = false; s.up = m[1] === 'std' ? 'none' : m[1]; } })();
+  (function () { var m = location.search.match(/[?&]style=(std|fd|fb|calla|picnic)\b/); if (!m) return; if (m[1] === 'picnic') { s.pic = true; s.tier = 1; } else if (m[1] === 'calla') { s.cld = true; s.tier = 2; } else { s.cld = false; s.up = m[1] === 'std' ? 'none' : m[1]; } })();
   function pickStyle(k) {
     styleMsg = '';
+    if (k === 'pic') { s.pic = true; s.cld = false; s.tier = 1; s.alc = false; s.up = 'none'; s.taper = false; s.gm = false; return; }
+    if (s.pic) { s.pic = false; s.gm = false; s.layer = false; s.runner2 = null; }
     if (k === 'cld') { s.cld = true; s.tier = 2; s.alc = false; s.up = 'none'; s.layer = false; s.runner2 = null; s.taper = false; return; }
     if (s.cld) { s.cld = false; s.tier = 1; s.gm = false; }
     s.alc = false; s.up = k; if (k !== 'fb') s.gm = false; if (k !== 'none' && s.tier === 3) s.tier = 2;
   }
   function fbFaux() { return SPECIAL_LINK && !!avDate && avDate === FB_FAUX.date; }
-  // Full Bloom goes up on bookings made from Dec 1, 2026 (₱2,500 for 10–15, ₱4,500 for 15–30)
-  var FB_NEW = { from: '2026-12-01', price: [700, 1500, 2500] };
+  // Full Bloom goes up on bookings made from Dec 1, 2026 (₱2,500 for 10–15; 15–30 stays ₱4,000)
+  var FB_NEW = { from: '2026-12-01', price: [700, 1500, 2000] };
   function fbList() { return todayStr_() >= FB_NEW.from ? FB_NEW.price : FB; }
   function fbPrice(t) { return fbFaux() ? FB_FAUX.price[t] : fbList()[t]; }
   function fbOpen() { return !avDate || fbFaux() || !FB_CLOSED.some(function (r) { return avDate >= r[0] && avDate <= r[1]; }); }
@@ -444,12 +464,13 @@ var WT = (function () {
     var t = s.tier, $ = function (id) { return document.getElementById(id); };
     // 1 tier
     var tierBox = $('qTier'); tierBox.innerHTML = '';
-    if (s.cld) tierBox.appendChild(opt('10–20 guests', WT.peso(CLD.price) + ' · up to 2 tables', true, function () {}));
+    if (s.pic) tierBox.appendChild(opt('Up to 8 guests', WT.peso(PIC.price) + ' · picnic', true, function () {}));
+    else if (s.cld) tierBox.appendChild(opt('10–20 guests', WT.peso(CLD.price) + ' · up to 2 tables', true, function () {}));
     else WT.TIERS.forEach(function (n, i) {
       if (i === 0) return;   // Sweetheart is no longer offered
       var tOk = !avDate || tierOk(i), noUp = s.up !== 'none' && i === 3;
       var add = s.up === 'fd' ? FD.tiered[i] : s.up === 'fb' && i < 3 ? fbPrice(i) : 0;
-      var sub = noUp ? 'not for ' + STYLE_NAME[s.up] : !tOk ? 'fully booked on ' + niceDate(avDate) : (s.up === 'fd' ? 'from ' : '') + WT.peso(BASE[i] + add) + ' · ' + ['', '1 table', 'up to 3 tables', 'up to 4 tables'][i];
+      var sub = noUp ? 'not available for ' + STYLE_NAME[s.up] : !tOk ? 'fully booked on ' + niceDate(avDate) : (s.up === 'fd' ? 'from ' : '') + WT.peso(BASE[i] + add) + ' · ' + ['', '1 table', 'up to 3 tables', 'up to 4 tables'][i];
       tierBox.appendChild(opt(GUESTS[i], sub, !s.alc && t === i, function () { s.tier = i; s.alc = false; render(); }, (noUp || !tOk) && t !== i));
     });
     document.querySelectorAll('.q-pkg').forEach(function (f) { f.hidden = s.alc; });
@@ -472,7 +493,7 @@ var WT = (function () {
     ab.appendChild(WT.el('p', 'q-note', 'Disposable napkins are yours to keep.'));
     var alaLines = ALA.filter(function (it) { return s.ala[it.id]; }).map(function (it) { var q = s.ala[it.id]; return [q + ' × ' + it.name + ' (' + it.set + ')', q * it.price]; });
     // 2 runner
-    var mx = function (r) { return s.cld ? (CLD.colors.indexOf(r.name) >= 0 ? 9 : -1) : WT.maxOn(r, avDate); }, need = function (r) { return s.cld ? CLD.runners : WT.nr(r, t); };
+    var mx = function (r) { return s.cld ? (CLD.colors.indexOf(r.name) >= 0 ? 9 : -1) : WT.maxOn(r, avDate); }, need = function (r) { return s.cld ? CLD.runners : s.pic ? 1 : WT.nr(r, t); };
     avLost = '';
     if (s.runner != null && isBooked(RUN[s.runner], need(RUN[s.runner]))) { avLost = RUN[s.runner].name; s.runner = null; }
     var nMain = s.runner != null ? need(RUN[s.runner]) : [1, 1, 3, 4][t];
@@ -496,7 +517,7 @@ var WT = (function () {
       avN.classList.toggle('warn', !!avLost || !!avBlocked);
       avN.textContent = avBlocked ? 'Sorry, we’re fully booked on ' + niceDate(avBlocked) + '. Please pick another date.' : avBusy ? 'Checking what’s available on ' + niceDate(avDate) + '…' :
         avLost ? 'Sorry, ' + avLost + ' is already booked on ' + niceDate(avDate) + '. Please pick another color.' :
-        AV && RUN.some(function (r) { return mx(r) >= t && isBooked(r, need(r)); }) ? 'Crossed-out colors are booked that day.' :
+        AV && RUN.some(function (r) { return mx(r) >= t && isBooked(r, need(r)); }) ? 'Faded colors are booked on ' + niceDate(avDate) + '.' :
         AV || avDate ? '' : 'Pick your event date first to see which runners are available.';
     }
     var rb = $('qRunner'); rb.innerHTML = '';
@@ -507,11 +528,12 @@ var WT = (function () {
         var row = WT.el('div', 'q-rgroup', '<span class="q-rlabel">' + (g.label || WT.fabricLabel(g)) + '</span>');
         var box = WT.el('div', 'q-rrow');
         g.items.forEach(function (r) {
+          if (mx(r) < t) return;   // not offered for this guest count: hide it
           var i = RUN.indexOf(r), cnt = need(r),   // each color needs its own count (long runners need fewer)
               booked = mx(r) >= t && isBooked(r, cnt), ok = mx(r) >= t && i !== exclude && !booked && !!avDate;
           var b = WT.el('button', 'q-chip' + (booked ? ' is-booked' : ''), '<i style="background:' + r.hex + '"></i>' + r.name);
           b.type = 'button'; b.title = r.name + ' · ' + r.fabric + (booked ? ' · booked on ' + niceDate(avDate) : '');
-          b.setAttribute('aria-label', r.name + ' ' + r.fabric + (booked ? ' (booked on this date)' : mx(r) >= t ? '' : ' (not available for ' + WT.TIERS[t] + ')'));
+          b.setAttribute('aria-label', r.name + ' ' + r.fabric + (booked ? ' (booked on this date)' : ''));
           b.setAttribute('aria-pressed', sel === i ? 'true' : 'false');
           if (!ok) b.disabled = true; else b.addEventListener('click', function () { pickFn(i); render(); });
           box.appendChild(b);
@@ -537,12 +559,12 @@ var WT = (function () {
     } else if (!R) { s.layer = false; s.runner2 = null; }
     var runnerName = R ? (R2 ? R.name + ' + ' + R2.name + ' (layered)' : R.name + (s.layer ? ' + second color to choose' : '')) : '';
     $('qRunnerNote').classList.remove('warn');
-    $('qRunnerNote').textContent = R ? (R2 ? R.name + ' ' + R.fabric.toLowerCase() + ' layered with ' + R2.name + ' ' + R2.fabric.toLowerCase() : R.name + ' · ' + R.fabric) : 'Tap a runner. Faded ones aren’t available for ' + WT.TIERS[t] + '.';
+    $('qRunnerNote').textContent = R ? (R2 ? R.name + ' ' + R.fabric.toLowerCase() + ' layered with ' + R2.name + ' ' + R2.fabric.toLowerCase() : R.name + ' · ' + R.fabric) : 'Tap a runner.';
     s.vase = 'acrylic';
     // 3 upgrade
     if (t === 3) { s.up = 'none'; s.gm = false; }
-    if (s.cld) { s.up = 'none'; s.taper = false; }
-    try { var upFs = $('qUp').closest('fieldset'); if (upFs) upFs.hidden = !!s.cld || !!s.alc || s.up === 'none'; } catch (e) {}
+    if (s.cld || s.pic) { s.up = 'none'; s.taper = false; }
+    try { var upFs = $('qUp').closest('fieldset'); if (upFs) upFs.hidden = !!s.cld || !!s.alc || (s.up === 'none' && !s.pic); } catch (e) {}
     try { var sn = 0; document.querySelectorAll('.q-steps > fieldset').forEach(function (f) { var sp = f.querySelector('legend > span'); if (!f.hidden && sp) sp.textContent = ++sn; }); } catch (e) {}
     var NTt = [3, 8, 16, 24][t], NVt = [1, 4, 8, 12][t], stockOn = !!(avDate && AV && AV.items);
     var shortGoldOut = stockOn && freeOf('Gold candle holders') < NTt, tieredOut = stockOn && freeOf('Tiered gold candle holders') < NTt, glassOut = stockOn && freeOf('Glass candle holders') < NTt;
@@ -555,7 +577,7 @@ var WT = (function () {
     var goldMatOut = stockOn && freeOf('Sheer gold placemats') < MAXG[t], juteOut = stockOn && freeOf('Jute placemats') < MAXG[t];
     if (goldMatOut && juteOut && !fbFaux()) fbItemsOut = true;
     if (s.up === 'fb' && (fbItemsOut || fbFlowerWhy)) { s.up = 'none'; s.gm = false; styleMsg = 'Full Bloom ' + (fbFlowerWhy && !fbItemsOut ? 'flowers in this color aren’t available on ' + niceDate(avDate) : 'is booked on ' + niceDate(avDate)) + ', so we switched you to Standard Whimsy. You can pick another color or date.'; }
-    if (shortGoldOut && t < 3 && s.up === 'none' && !(tieredOut && glassOut)) { s.up = 'fd'; styleMsg = 'Our Standard gold holders are fully booked on ' + niceDate(avDate) + ', so your table comes as Fairy Dust (tiered gold or glass holders).'; }
+    if (shortGoldOut && t < 3 && s.up === 'none' && !s.cld && !s.pic && !(tieredOut && glassOut)) { s.up = 'fd'; styleMsg = 'Our Standard gold holders are fully booked on ' + niceDate(avDate) + ', so your table comes as Fairy Dust (tiered gold or glass holders).'; }
     if (s.up !== 'none') { if (s.holder === 'tiered' && tieredOut && !glassOut) s.holder = 'glass'; if (s.holder === 'glass' && glassOut && !tieredOut) s.holder = 'tiered'; }
     if (s.up === 'fb') { if (s.mat === 'gold' && goldMatOut) s.mat = 'jute'; if (s.mat === 'jute' && juteOut) s.mat = 'gold'; if (s.nap === 'red' && (redNapOff || redNapOut)) s.nap = 'white'; if (s.nap === 'white' && whiteNapOut) s.nap = 'red'; }
     var ub = $('qUp'); ub.innerHTML = '';
@@ -564,21 +586,33 @@ var WT = (function () {
       stB.innerHTML = '';
       [['none', 'Standard Whimsy', 'img/ts-std-1-s.jpg', 'from ' + WT.peso(BASE[1]), shortGoldOut && t < 3 && !(tieredOut && glassOut)],
        ['fd', 'Fairy Dust', 'img/ts-fd-1-s.jpg', 'from ' + WT.peso(BASE[1] + FD.tiered[1]), false],
-       ['fb', 'Full Bloom', 'img/ts-fb-1-s.jpg', !fbOpen() ? 'not available on ' + niceDate(avDate) : fbItemsOut ? 'booked that day' : 'from ' + WT.peso(BASE[1] + fbPrice(1)) + (fbFaux() ? ' · special' : ''), !fbOpen() || fbItemsOut],
-       ['cld', 'Calla Lily Dream', 'img/cld-main-s.jpg', WT.peso(CLD.price) + ' · special', false]].forEach(function (x) {
-        var on = x[0] === 'cld' ? !!s.cld : !s.cld && !s.alc && s.up === x[0];
+       ['fb', 'Full Bloom', 'img/ts-fb-1-s.jpg', t === 3 ? 'not available for 30–40 guests' : !fbOpen() ? 'not available on ' + niceDate(avDate) : fbItemsOut ? 'fully booked on ' + niceDate(avDate) : 'from ' + WT.peso(BASE[1] + fbPrice(1)) + (fbFaux() ? ' · special' : ''), t === 3 || !fbOpen() || fbItemsOut],
+       ['cld', 'Calla Lily Dream', 'img/cld-main-s.jpg', WT.peso(CLD.price) + ' · special', false],
+       ['pic', 'Whimsy Picnic', 'img/pic-main-1-s.jpg', picBooked() ? 'fully booked on ' + niceDate(avDate) : WT.peso(PIC.price) + ' · up to 8', picBooked()]].forEach(function (x) {
+        var on = x[0] === 'pic' ? !!s.pic : x[0] === 'cld' ? !!s.cld && !s.pic : !s.cld && !s.pic && !s.alc && s.up === x[0];
         var b = WT.el('button', 'st-opt', '<img src="' + x[2] + '" alt=""><span>' + x[1] + '<small>' + x[3] + '</small></span>');
         b.type = 'button'; b.setAttribute('aria-pressed', on ? 'true' : 'false');
         if (x[4] && !on) b.disabled = true; else b.addEventListener('click', function () { pickStyle(x[0]); render(); });
         stB.appendChild(b);
       });
+      if (s.pic && picBooked()) styleMsg = 'Sorry, the picnic is already booked on ' + niceDate(avDate) + '. We take one picnic a day, so please pick another date.';
       var sNote = $('qStyleNote'); if (sNote) { sNote.textContent = styleMsg; sNote.classList.toggle('warn', !!styleMsg); }
     }
     var sub = $('qUpSub'); sub.innerHTML = '';
+    if (s.pic && !s.alc) {
+      var gerOut = stockOn && freeOf('Gerberas') < 12, roseOut = stockOn && (freeOf('Ivory roses') < 12 || freeOf('Eucalyptus stems') < 6);
+      if (s.picFl === 'gerbera' && gerOut && !roseOut) s.picFl = 'roses';
+      if (s.picFl === 'roses' && roseOut && !gerOut) s.picFl = 'gerbera';
+      var pf = WT.el('div', 'q-subrow', '<span class="lbl">Flowers</span>');
+      pf.appendChild(opt('<img class="pm-thumb" src="img/pic-main-8-s.jpg" alt="">Gerberas', gerOut ? 'fully booked on ' + niceDate(avDate) : '2 per vase', s.picFl === 'gerbera', function () { s.picFl = 'gerbera'; render(); }, gerOut && s.picFl !== 'gerbera'));
+      pf.appendChild(opt('<img class="pm-thumb" src="img/pic-brown-5-s.jpg" alt="">Ivory roses', roseOut ? 'fully booked on ' + niceDate(avDate) : '2 roses + 1 eucalyptus per vase', s.picFl === 'roses', function () { s.picFl = 'roses'; render(); }, roseOut && s.picFl !== 'roses'));
+      sub.appendChild(pf);
+      sub.appendChild(WT.el('p', 'q-note', 'Same price for both. Every picnic comes with 8 brown seat cushions.'));
+    }
     if (s.up !== 'none') {
       var row = WT.el('div', 'q-subrow', '<span class="lbl">Candle holder</span>');
-      row.appendChild(opt('<img class="pm-thumb hd-thumb" src="img/holder-tiered.jpg" alt="">Tiered gold', tieredOut ? 'booked that day' : s.up === 'fd' ? WT.peso(FD.tiered[t]) : '', s.holder === 'tiered', function () { s.holder = 'tiered'; render(); }, tieredOut && s.holder !== 'tiered'));
-      row.appendChild(opt('<img class="pm-thumb hd-thumb" src="img/holder-glass.jpg" alt="">Glass', glassOut ? 'booked that day' : s.up === 'fd' ? WT.peso(FD.glass[t]) : '', s.holder === 'glass', function () { s.holder = 'glass'; render(); }, glassOut && s.holder !== 'glass'));
+      row.appendChild(opt('<img class="pm-thumb hd-thumb" src="img/holder-tiered.jpg" alt="">Tiered gold', tieredOut ? 'fully booked on ' + niceDate(avDate) : s.up === 'fd' ? WT.peso(FD.tiered[t]) : '', s.holder === 'tiered', function () { s.holder = 'tiered'; render(); }, tieredOut && s.holder !== 'tiered'));
+      row.appendChild(opt('<img class="pm-thumb hd-thumb" src="img/holder-glass.jpg" alt="">Glass', glassOut ? 'fully booked on ' + niceDate(avDate) : s.up === 'fd' ? WT.peso(FD.glass[t]) : '', s.holder === 'glass', function () { s.holder = 'glass'; render(); }, glassOut && s.holder !== 'glass'));
       sub.appendChild(row);
       {
         var rr = WT.el('div', 'q-subrow', '<span class="lbl">Ribbon</span>');
@@ -594,16 +628,17 @@ var WT = (function () {
           sub.appendChild(ri);
         }
       }
+      if (s.up === 'fb' && !fbFaux() && todayStr_() < FB_NEW.from) sub.appendChild(WT.el('p', 'q-note', 'Full Bloom for 10–15 guests goes up to ₱2,500 for bookings made from Dec 1. Book now to keep today’s rate.'));
       if (s.up === 'fb' && !fbFaux()) {
         var row2 = WT.el('div', 'q-subrow', '<span class="lbl">Placemat</span>');
-        row2.appendChild(opt('<img class="pm-thumb" src="img/placemat-gold.jpg" alt="">Sheer Gold', goldMatOut ? 'booked that day' : '', s.mat === 'gold', function () { s.mat = 'gold'; render(); }, goldMatOut && s.mat !== 'gold'));
-        row2.appendChild(opt('<img class="pm-thumb" src="img/placemat-jute.jpg" alt="">Jute', juteOut ? 'booked that day' : '', s.mat === 'jute', function () { s.mat = 'jute'; render(); }, juteOut && s.mat !== 'jute'));
+        row2.appendChild(opt('<img class="pm-thumb" src="img/placemat-gold.jpg" alt="">Sheer Gold', goldMatOut ? 'fully booked on ' + niceDate(avDate) : '', s.mat === 'gold', function () { s.mat = 'gold'; render(); }, goldMatOut && s.mat !== 'gold'));
+        row2.appendChild(opt('<img class="pm-thumb" src="img/placemat-jute.jpg" alt="">Jute', juteOut ? 'fully booked on ' + niceDate(avDate) : '', s.mat === 'jute', function () { s.mat = 'jute'; render(); }, juteOut && s.mat !== 'jute'));
         sub.appendChild(row2);
       }
       if (s.up === 'fb') {
         var row3 = WT.el('div', 'q-subrow', '<span class="lbl">Napkin</span>');
-        row3.appendChild(opt('<img class="pm-thumb" src="img/napkin-white.jpg" alt="">White', whiteNapOut ? 'booked that day' : 'leaf ring', s.nap === 'white', function () { s.nap = 'white'; render(); }, whiteNapOut && s.nap !== 'white'));
-        row3.appendChild(opt('<img class="pm-thumb" src="img/napkin-red.jpg" alt="">Red satin', redNapOff ? 'up to Storybook only' : redNapOut ? 'booked that day' : 'gold ring', s.nap === 'red', function () { s.nap = 'red'; render(); }, (redNapOff || redNapOut) && s.nap !== 'red'));
+        row3.appendChild(opt('<img class="pm-thumb" src="img/napkin-white.jpg" alt="">White', whiteNapOut ? 'fully booked on ' + niceDate(avDate) : 'leaf ring', s.nap === 'white', function () { s.nap = 'white'; render(); }, whiteNapOut && s.nap !== 'white'));
+        row3.appendChild(opt('<img class="pm-thumb" src="img/napkin-red.jpg" alt="">Red satin', redNapOff ? 'up to 15 guests only' : redNapOut ? 'fully booked on ' + niceDate(avDate) : 'gold ring', s.nap === 'red', function () { s.nap = 'red'; render(); }, (redNapOff || redNapOut) && s.nap !== 'red'));
         sub.appendChild(row3);
       }
     }
@@ -613,7 +648,7 @@ var WT = (function () {
     var pinkOk = !pinkOut, pinkForced = creamOut && !pinkOut;
     if (pinkForced) s.taper = true;
     if (!pinkOk) s.taper = false;
-    if (s.up !== 'fb' && !s.cld) s.gm = false;
+    if (s.up !== 'fb' && !s.cld && !s.pic) s.gm = false;
     function check(label, price, on, ok, why, set, locked) {
       var l = WT.el('label', 'q-check' + (ok ? '' : ' off'));
       var c = document.createElement('input'); c.type = 'checkbox'; c.checked = on; c.disabled = !ok || !!locked;
@@ -622,7 +657,13 @@ var WT = (function () {
       l.appendChild(WT.el('span', '', label + ' <b>+' + WT.peso(price) + '</b>' + (ok && !locked ? '' : '<small>' + why + '</small>')));
       eb.appendChild(l);
     }
-    if (!s.cld) check('Pink LED taper candles', TAPER[t], s.taper, pinkOk, pinkForced ? 'Our cream candles are fully booked on ' + niceDate(avDate) + ', so your table comes with pink LED taper candles.' : 'Pink candles are fully booked on ' + niceDate(avDate) + '.', function (v) { s.taper = v; }, pinkForced);
+    if (s.pic) {
+      var clothOut = stockOn && freeOf('Satin tablecloth') < 1;
+      if (clothOut) s.picCloth = false;
+      check('Extra wooden table <small style="display:inline">(90 × 60 cm, about 10 kg)</small>', PIC.table, s.picTable, true, '', function (v) { s.picTable = v; });
+      check('White satin tablecloth', PIC.cloth, s.picCloth, !clothOut, 'Fully booked on ' + niceDate(avDate) + '.', function (v) { s.picCloth = v; });
+    }
+    if (!s.cld && !s.pic) check('Pink LED taper candles', TAPER[t], s.taper, pinkOk, pinkForced ? 'Our cream candles are fully booked on ' + niceDate(avDate) + ', so your table comes with pink LED taper candles.' : 'Pink candles are fully booked on ' + niceDate(avDate) + '.', function (v) { s.taper = v; }, pinkForced);
     var xw = $('qXday');
     if (xw) {
       if (s.alc || !avDate) { xw.innerHTML = ''; xw._d = ''; }
@@ -644,7 +685,7 @@ var WT = (function () {
         if (nd && !ri.value) ri.value = addDays_(avDate, nd + 1);
         xw.querySelector('#qRetNote').innerHTML = nd ? 'Extra ' + nd + ' day' + (nd > 1 ? 's' : '') + ': <b>+' + WT.peso(per * nd) + '</b> (' + WT.peso(per) + ' per day, 30% of your rental). All pieces stay reserved until ' + niceDate(addDays_(avDate, nd + 1)) + '.'
           : 'Leave this blank for a regular rental (24 hours, same day or next day pickup). For a later return, each extra day is <b>+' + WT.peso(per) + '</b> (30% of your rental).';
-        try { var rq = document.querySelector('#qPickWhen .q-radio'), pq = document.getElementById('qPickQ'); if (rq) rq.style.display = nd ? 'none' : ''; if (pq) pq.textContent = nd ? 'Pickup on ' + niceDate(addDays_(avDate, nd + 1)) : 'Pickup'; } catch (e) {}
+        try { var rq = document.querySelector('#qPickWhen .q-radio'), pq = document.getElementById('qPickQ'); if (rq) rq.style.display = nd ? 'none' : ''; var picRet = s.pic && !s.alc && !s.gm; if (pq) pq.textContent = nd ? (picRet ? 'Return on ' : 'Pickup on ') + niceDate(addDays_(avDate, nd + 1)) : picRet ? (s.picHow === 'grab' ? 'Return (we collect it)' : 'Return to Deca Cabantian') : 'Pickup'; } catch (e) {}
         if (avLost && nd) xw.querySelector('#qRetNote').innerHTML = '<b>' + avLost + ' is already booked on one of those days.</b> Please pick an earlier return date, or go back and choose another color.';
       }
     }
@@ -655,11 +696,21 @@ var WT = (function () {
     var gmOffDay = !!avDate && GM_OFF.some(function (r) { return avDate >= r[0] && avDate <= r[1]; });
     if (gmOffDay) s.gm = false;
     var gmOk = (s.cld || t < 3 && s.up === 'fb') && !gmOffDay;
-    sb.appendChild(opt('I’ll set it up', 'included · with our care card', !s.gm, function () { s.gm = false; render(); }));
-    sb.appendChild(opt('Fairy Godmother Service', GM_PAUSED ? 'paused for now' : gmOffDay ? 'not available on ' + niceDate(avDate) : t < 3 ? 'we set up & pack down · +' + WT.peso(GM[t]) : 'not for Ever After', s.gm, function () { s.gm = true; render(); }, GM_PAUSED || !gmOk));
-    $('qSetupNote').textContent = GM_PAUSED ? 'Fairy Godmother Service is paused for now. Every table comes with our care card to guide your setup.' : gmOffDay ? 'Fairy Godmother Service isn’t available on ' + niceDate(avDate) + ', but you can still book your table and set it up yourself with our care card.' : gmOk ? 'Free delivery within Roxas–Lanang–Indangan. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
+    var gmStyle = s.cld || s.up === 'fb';
+    if (s.pic) {
+      sb.appendChild(opt('I’ll pick it up', 'at Deca Cabantian · I set it up', !s.gm && s.picHow !== 'grab', function () { s.gm = false; s.picHow = 'pickup'; render(); }));
+      sb.appendChild(opt('Request delivery', 'subject to availability · Grab Car rate', !s.gm && s.picHow === 'grab', function () { s.gm = false; s.picHow = 'grab'; render(); }));
+      sb.appendChild(opt('Fairy Godmother Service', GM_PAUSED ? 'paused for now' : gmOffDay ? 'not available on ' + niceDate(avDate) : 'we bring, set up & pack down · +' + WT.peso(PIC.gm), s.gm, function () { s.gm = true; render(); }, GM_PAUSED || gmOffDay));
+      $('qSetupNote').textContent = s.gm ? 'Only within our picnic area: around Cabantian, Tigatto, Lanang, the airport, Pampanga, Ubalde, Abreeza and Crocodile Park. Add your Google Maps pin on the next step and we’ll confirm.'
+        : s.picHow === 'grab' ? 'The picnic is pickup only. Delivery is subject to availability, and the delivery fee follows the Grab Car rate for your location. We’ll confirm it with you after you book. You set up the picnic yourself.'
+        : 'Pickup only, at Deca Cabantian. The full address is sent once your booking is confirmed. You set up the picnic yourself. The table is about 9 kg.';
+    } else {
+    sb.appendChild(opt('I’ll set it up', 'DIY setup · with our care card', !s.gm, function () { s.gm = false; render(); }));
+    if (gmStyle) sb.appendChild(opt('Fairy Godmother Service', GM_PAUSED ? 'paused for now' : gmOffDay ? 'not available on ' + niceDate(avDate) : t < 3 ? 'we set up & pack down · +' + WT.peso(GM[t]) : 'not available for 30–40 guests', s.gm, function () { s.gm = true; render(); }, GM_PAUSED || !gmOk));
+    $('qSetupNote').textContent = !gmStyle ? 'You’ll set up the table yourself with our care card. Setup is not included with ' + (s.up === 'fd' ? 'Fairy Dust' : 'Standard Whimsy') + '. Fairy Godmother Service (we set it up for you) is only available with Full Bloom and Calla Lily Dream.' : GM_PAUSED ? 'Fairy Godmother Service is paused for now. Every table comes with our care card to guide your setup.' : gmOffDay ? 'Fairy Godmother Service isn’t available on ' + niceDate(avDate) + ', but you can still book your table and set it up yourself with our care card.' : gmOk ? 'Free delivery within Roxas–Lanang–Indangan. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
+    }
     // summary
-    var lines = [], total = s.alc ? 0 : s.cld ? CLD.price : BASE[t];
+    var lines = [], total = s.alc ? 0 : s.pic ? PIC.price : s.cld ? CLD.price : BASE[t];
     if (s.alc) lines.push(['À la carte order', 0]);
     else {
     var NV = [1, 4, 8, 12][t], NT = [3, 8, 16, 24][t], NR = R ? WT.nr(R, t) : WT.nr(null, t);
@@ -667,19 +718,24 @@ var WT = (function () {
     var holderTxt = NT + ' ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders with ' + ribTxt;
     var incG = [
       NR + (NR > 1 ? ' runners' : ' runner') + (R ? ' in ' + runnerName : ''),
-      NV + (s.up === 'fb' ? (NV > 1 ? ' glass vases' : ' glass vase') : (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase')) + (s.up === 'fb' ? '' : ' with faux flowers (2 ivory roses, 2 eucalyptus, 2 ivory carnations each)')
+      NV + (s.up === 'fb' ? (NV > 1 ? ' glass vases' : ' glass vase') : (NV > 1 ? ' clear acrylic vases' : ' clear acrylic vase')) + (s.up === 'fb' ? '' : ' with faux flowers (3 ivory roses, 3 eucalyptus, 3 ivory carnations each)')
     ];
     if (s.up === 'fb') incG.push(
-      NV + (NV > 1 ? ' faux flower arrangements, one at every vase' : ' faux flower arrangement') + ' (2 ' + (fbFlowers(t) ? Object.keys(fbFlowers(t)).join(' + ').toLowerCase() : 'colored') + ' flowers to match your runner, 2 ivory carnations and fillers each)',
+      NV + (NV > 1 ? ' faux flower arrangements, one at every vase' : ' faux flower arrangement') + ' (3 ' + (fbFlowers(t) ? Object.keys(fbFlowers(t)).join(' + ').toLowerCase() : 'colored') + ' flowers to match your runner, 3 ivory carnations and 3 eucalyptus each)',
       NV + (NV > 1 ? ' LED pillar candles, one at every vase' : ' LED pillar candle'));
     incG.push(NT + ' ' + (s.taper ? 'pink' : 'cream') + ' LED taper candles');
     incG.push(s.up === 'none' ? NT + ' gold candle holders' : holderTxt);
-    if (s.up === 'fb') incG.push.apply(incG, fbFaux() ? [s.nap === 'red' ? 'Red satin napkins with gold rings' : 'White cloth napkins with leaf rings'] : [(s.mat === 'gold' ? 'Sheer gold' : 'Jute') + ' placemats', s.nap === 'red' ? 'Red satin napkins with gold rings' : 'White cloth napkins with leaf rings', 'Name cards']);
+    if (s.up === 'fb') incG.push.apply(incG, fbFaux() ? [s.nap === 'red' ? 'Red satin napkins with gold rings' : 'White cloth napkins with leaf rings'] : [(s.mat === 'gold' ? 'Sheer gold' : 'Jute') + ' placemats', s.nap === 'red' ? 'Red satin napkins with gold rings' : 'White cloth napkins with leaf rings', 'Printed name cards with your guests’ names']);
     incG.push('Spare batteries and a care card');
     incG.push('24-hour rental, starting when you receive the items');
-    if (s.cld) {
-      incG = [CLD.runners + ' runners' + (R ? ' in ' + R.name : ''), '9 glass vases: 4 with calla lilies, 5 with carnations', '10 cream LED taper candles in glass holders',
-        '9 LED pillar candles on black stands', 'Table napkins for up to 20 guests', 'Acrylic name cards and holders for up to 20 guests, with a reusable pen', 'Spare batteries and a care card', '24-hour rental, starting when you receive the items'];
+    if (s.pic) {
+      incG = ['Low wooden picnic table', 'Waterproof picnic mat with a soft picnic blanket on top', '8 brown seat cushions', R ? (R2 ? 'Layered runners: ' + R.name + ' + ' + R2.name : '1 runner in ' + runnerName) : '1 runner',
+        '6 small glass vases with ' + (s.picFl === 'roses' ? 'ivory roses (2 roses and 1 eucalyptus each)' : 'gerberas (2 each)'), '5 LED taper candles in short gold holders', '8 jute placemats',
+        '24-hour rental, starting when you ' + (!s.gm && s.picHow !== 'grab' ? 'pick it up' : 'receive the items')];
+      lines.push(['Whimsy Picnic (up to 8 guests)', PIC.price, incG, 'Food and tableware (plates, glasses and cutlery) not included']);
+    } else if (s.cld) {
+      incG = [CLD.runners + ' runners' + (R ? ' in ' + R.name : ''), '9 glass vases: 4 with calla lilies (3 each), 5 with carnations (3 each)', '10 cream LED taper candles in glass holders',
+        '9 LED pillar candles on black stands', 'Table napkins for up to 20 guests', 'Printed name cards in holders for up to 20 guests, with your guests’ names', 'Spare batteries and a care card', '24-hour rental, starting when you receive the items'];
       lines.push(['Calla Lily Dream (special setup)', CLD.price, incG, 'Tableware (plates, glasses and cutlery) not included']);
     } else
     lines.push([(s.up === 'none' ? 'Standard Whimsy · ' : '') + GUESTS[t] + ' · ' + WT.TIERS[t] + ' gathering', BASE[t], s.up === 'none' ? incG : null, null, s.up === 'none' ? 'Standard Whimsy · ' + GUESTS[t] : 'Table for ' + GUESTS[t]]);
@@ -687,7 +743,9 @@ var WT = (function () {
     if (s.up === 'fb') lines.push([fbFaux() ? 'Full Bloom special (colored faux flowers, no placemats or name cards)' : 'Full Bloom', fbPrice(t), incG, 'Tableware (plates, glasses and cutlery) not included']);
     if (s.layer && R) lines.push([R2 ? 'Layering: ' + R2.name : 'Layering: second color to choose', layerFee(t)]);
     if (s.taper) lines.push(['Pink LED taper candles', TAPER[t]]);
-    if (s.gm) lines.push(['Setup: Fairy Godmother Service', GM[t]]);
+    if (s.pic && s.picTable) lines.push(['Extra wooden table (90 × 60 cm)', PIC.table]);
+    if (s.pic && s.picCloth) lines.push(['White satin tablecloth', PIC.cloth]);
+    if (s.gm) lines.push(['Setup: Fairy Godmother Service', s.pic ? PIC.gm : GM[t]]);
     if (lateFee()) lines.push(['Late-night pack-down (after 11 PM)', LATE_FEE]);
     if (extraFee()) lines.push(['Extra rental days: ' + s.extra + (avDate ? ' (return by ' + niceDate(addDays_(avDate, s.extra + 1)) + ')' : ''), extraFee()]);
     var dl = deliveryLine();
@@ -700,15 +758,21 @@ var WT = (function () {
       var inc = (l[2] ? '<ul class="q-inc">' + l[2].map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>' : '') + (l[3] ? '<em class="q-inc-note">' + l[3] + '</em>' : '');
       ul.appendChild(WT.el('li', (l[2] ? 'has-inc' : '') + (i === 0 && !s.alc && s.up !== 'none' ? ' q-joined' : ''), '<span>' + (l[4] || l[0]) + inc + '</span><span>' + (i === 0 ? (s.alc ? '' : WT.peso(l[1])) : l[1] ? (s.alc ? WT.peso(l[1]) : '+' + WT.peso(l[1])) : (s.alc ? '' : 'included')) + '</span>'));
     });
-    var depAmt = s.alc ? (alaLines.length ? ALA_DEP : 0) : s.cld ? CLD.deposit : (s.up === 'fb' ? [350, 500, 600, 500] : [300, 300, 500, 500])[t];
+    var depAmt = s.alc ? (alaLines.length ? ALA_DEP : 0) : s.pic ? PIC.deposit : s.cld ? CLD.deposit : (s.up === 'fb' ? [500, 500, 600, 500] : [300, 300, 300, 500])[t];
     if (depAmt) ul.appendChild(WT.el('li', '', '<span>Security deposit<em class="q-inc-note">Refundable</em></span><span>+' + WT.peso(depAmt) + '</span>'));
-    if (!needsDelivery()) ul.appendChild(WT.el('li', '', '<span>Delivery &amp; pickup<em class="q-inc-note">Grab rate, paid to the rider (their QR or cash)</em></span><span>to rider</span>'));
+    if (s.pic && !s.alc) ul.appendChild(WT.el('li', '', s.gm ? '<span>Delivery &amp; pickup<em class="q-inc-note">With Fairy Godmother Service, within our picnic area</em></span><span>included</span>'
+      : s.picHow === 'grab' ? '<span>Delivery (requested)<em class="q-inc-note">Subject to availability · fee follows the Grab Car rate</em></span><span>Grab Car rate</span>'
+      : '<span>Pickup at Deca Cabantian<em class="q-inc-note">Full address sent once your booking is confirmed</em></span><span>free</span>'));
+    else if (!needsDelivery()) ul.appendChild(WT.el('li', '', '<span>Delivery &amp; pickup<em class="q-inc-note">Grab rate, paid to the rider (their QR or cash)</em></span><span>to rider</span>'));
     if (dl) { total += dl[1]; ul.appendChild(WT.el('li', '', '<span>' + dl[0] + (dl[3] ? '<em class="q-inc-note">' + dl[3] + '</em>' : '') + '</span><span>' + (dl[1] ? '+' + WT.peso(dl[1]) : 'free') + '</span>')); }
     var tot = $('qTotal'), newTxt = WT.peso(total), shown = WT.peso(total + depAmt);
     var pending = needsDelivery() && !DLV;
     var info = $('qDlvInfo');
     var R24 = '';
     var RIDER = 'Our rider delivers and picks up. Before each trip, pay the rider the <b>Grab rate</b> through <b>their QR code</b>, or in <b>exact cash</b> on arrival.';
+    if (s.pic && !s.alc) RIDER = s.gm ? 'Fairy Godmother Service brings the picnic to you and takes it home, <b>within our picnic area</b> only. Please add your venue’s Google Maps pin so we can confirm.'
+      : s.picHow === 'grab' ? 'The picnic is <b>pickup only</b>. Delivery is <b>subject to availability</b>, and the delivery fee follows the <b>Grab Car rate</b> for your location.'
+      : 'Pickup only, at <b>Deca Cabantian</b>. The full address is sent once your booking is confirmed.';
     if (info) info.innerHTML = !needsDelivery() ? RIDER + R24 :
       'Delivery is <b>free within Roxas–Lanang–Indangan</b>. Farther venues: ' + WT.peso(DLV_PER_KM) + ' per km past it, each way.' + R24;
     var fine = $('qFine');
@@ -716,35 +780,50 @@ var WT = (function () {
       'Includes the refundable security deposit.';
     if (pending) tot.innerHTML = shown + '<small>+ delivery</small>';
     else if (tot.textContent !== shown) { tot.textContent = shown; tot.classList.remove('pop'); void tot.offsetWidth; tot.classList.add('pop'); }
-    var ph = $('qPhoto'), want = s.cld && !s.alc ? CLD.img : (!s.alc && R) ? R.img : ({ none: 'img/ts-std-1.jpg', fd: 'img/ts-fd-1.jpg', fb: 'img/ts-fb-1.jpg' }[s.up] || 'img/standard-setup.jpg');
+    var ph = $('qPhoto'), want = s.pic && !s.alc ? PIC.img[s.picFl] || PIC.img.gerbera : s.cld && !s.alc ? CLD.img : (!s.alc && R) ? R.img : ({ none: 'img/ts-std-1.jpg', fd: 'img/ts-fd-1.jpg', fb: 'img/ts-fb-1.jpg' }[s.up] || 'img/standard-setup.jpg');
     if (ph.getAttribute('src') !== want) { ph.classList.add('fade'); var pre = new Image(); pre.onload = pre.onerror = function () { if (ph._want === want) { ph.src = want; ph.classList.remove('fade'); } }; ph._want = want; pre.src = want; }
     ph.alt = R ? R.name + ' ' + R.fabric + ' runner' : 'Standard setup';
     ph.parentNode.hidden = !!s.alc;
     var inset = $('qInset'), upImg = s.alc || !R ? '' : s.up === 'fb' ? 'img/ts-fb-1-s.jpg' : s.up === 'fd' ? (s.holder === 'glass' ? 'img/fairydust-glass.jpg' : 'img/fairydust-tiered.jpg') : '';
+    if (s.pic && !s.alc) upImg = 'img/pic-layered-s.jpg';
     inset.hidden = !upImg;
-    if (upImg) { inset.querySelector('img').src = upImg; inset.querySelector('figcaption').textContent = s.up === 'fb' ? 'Full Bloom' : 'Fairy Dust · ' + (s.holder === 'glass' ? 'glass' : 'tiered'); }
+    if (upImg) { inset.querySelector('img').src = upImg; inset.querySelector('figcaption').textContent = s.pic ? 'Two layers: mat + blanket' : s.up === 'fb' ? 'Full Bloom' : 'Fairy Dust · ' + (s.holder === 'glass' ? 'glass' : 'tiered'); }
     // customer-facing lines for the payment / confirmation messages
-    var PAX = [2, 15, 30, 40], DEP = [300, 300, 500, 500];
+    var PAX = [2, 15, 30, 40], DEP = [300, 300, 300, 500];
     var rib = s.ribbon === 'custom' ? (s.ribbonColor.trim() ? s.ribbonColor.trim() + ' ribbon' : 'ribbon color to confirm') : 'ribbon matched to runner';
-    var ml = [];
-    var first = s.cld ? 'Calla Lily Dream special setup (10–20 pax), ' + CLD.runners + ' runners' + (R ? ' in ' + R.name : '') + ', calla lilies, carnations, taper and pillar candles, napkins and name cards, ' + WT.peso(CLD.price)
-      : (STYLE_NAME[s.up] || 'Standard Whimsy') + ' tablescape for ' + (t === 0 ? '2 pax' : GUESTS[t].replace(' guests', ' pax'));
-    if (R && !R2 && !s.cld) first += ', ' + R.name + ' runner';
+    var ml = [], P = WT.peso;
+    var holderTxt = (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' holders' + (s.ribbon === 'custom' && s.ribbonColor.trim() ? ', ' + s.ribbonColor.trim() + ' ribbon' : '');
+    var runTxt = R ? (R2 ? R.name + ' + ' + R2.name + ' runners' : R.name + ' runner') : '';
+    var first;
+    if (s.pic) first = 'Whimsy Picnic for up to 8 pax' + (runTxt ? ', ' + runTxt : '') + ', ' + (s.picFl === 'roses' ? 'ivory roses' : 'gerberas') + ': ' + P(PIC.price);
+    else if (s.cld) first = 'Calla Lily Dream for 10–20 pax' + (R ? ', ' + R.name + ' runners' : '') + ': ' + P(CLD.price);
+    else {
+      var pax = t === 0 ? '2 pax' : GUESTS[t].replace(' guests', ' pax');
+      var bits = [(STYLE_NAME[s.up] || 'Standard Whimsy') + ' for ' + pax];
+      if (runTxt) bits.push(runTxt);
+      var price = BASE[t];
+      if (s.up === 'fd') { bits.push(holderTxt); price += FD[s.holder][t]; }
+      if (s.up === 'fb') {
+        bits.push(holderTxt);
+        if (!fbFaux()) bits.push((s.mat === 'gold' ? 'sheer gold' : 'jute') + ' placemats');
+        bits.push(s.nap === 'red' ? 'red satin napkins' : 'white napkins');
+        price += fbPrice(t);
+      }
+      first = bits.join(', ') + ': ' + P(price);
+    }
     ml.push(first);
-    if (R2) ml.push('Layered ' + R.name + ' + ' + R2.name + ' runner, +' + WT.peso(layerFee(t)));
-    if (s.up === 'fd') ml.push('Fairy Dust, ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders (' + rib + '), +' + WT.peso(FD[s.holder][t]));
-    if (s.up === 'fb') ml.push(fbFaux() ? 'Full Bloom special with colored faux flowers and pillar candles, ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders, ' + (s.nap === 'red' ? 'red satin napkins' : 'white napkins') + ' (' + rib + '), no placemats or name cards, +' + WT.peso(fbPrice(t))
-      : 'Full Bloom, ' + (s.holder === 'tiered' ? 'tiered gold' : 'glass') + ' candle holders, ' + (s.mat === 'gold' ? 'sheer gold' : 'jute') + ' placemats, ' + (s.nap === 'red' ? 'red satin napkins' : 'white napkins') + ' (' + rib + '), +' + WT.peso(fbPrice(t)));
-    if (s.taper) ml.push('Pink LED taper candles, +' + WT.peso(TAPER[t]));
-    if (s.gm) ml.push('Setup: Fairy Godmother Service, +' + WT.peso(GM[t]));
-    if (lateFee()) ml.push('Late-night pack-down (after 11 PM), +' + WT.peso(LATE_FEE));
-    if (extraFee()) ml.push(s.extra + ' extra rental day' + (s.extra > 1 ? 's' : '') + (avDate ? ' (return by ' + niceDate(addDays_(avDate, s.extra + 1)) + ')' : '') + ', +' + WT.peso(extraFee()));
-    if (dl) ml.push(dl[0] + (dl[1] ? ', +' + WT.peso(dl[1]) : ''));
-    else if (!needsDelivery()) ml.push('Delivery & pickup: by our rider at the Grab rate, paid directly to the rider before each trip through their QR code or exact cash (not deducted from your security deposit)');
-    alaLines.forEach(function (l) { ml.push(l[0] + ', ' + (s.alc ? '' : '+') + WT.peso(l[1])); });
-    if (s.alc) ml = ['À la carte order:'].concat(alaLines.map(function (l) { return l[0] + ', ' + WT.peso(l[1]); }));
+    if (R2) ml.push('Layered runner: ' + P(layerFee(t)));
+    if (s.taper) ml.push('Pink LED taper candles: ' + P(TAPER[t]));
+    if (s.pic && s.picTable) ml.push('Extra wooden table (90 × 60 cm): ' + P(PIC.table));
+    if (s.pic && s.picCloth) ml.push('White satin tablecloth: ' + P(PIC.cloth));
+    if (s.gm) ml.push('Fairy Godmother Service (setup & pack-down): ' + P(s.pic ? PIC.gm : GM[t]));
+    if (lateFee()) ml.push('Late-night pack-down (after 11 PM): ' + P(LATE_FEE));
+    if (extraFee()) ml.push(s.extra + ' extra rental day' + (s.extra > 1 ? 's' : '') + (avDate ? ' (return by ' + niceDate(addDays_(avDate, s.extra + 1)) + ')' : '') + ': ' + P(extraFee()));
+    if (dl && dl[1]) ml.push('Delivery: ' + P(dl[1]));
+    alaLines.forEach(function (l) { ml.push(l[0] + ': ' + P(l[1])); });
+    if (s.alc) ml = alaLines.map(function (l) { return l[0] + ': ' + WT.peso(l[1]); });
     root._msg = { lines: ml, total: total, deposit: s.alc ? ALA_DEP : depAmt, layer: 0, delivery: dl ? dl[1] : 0 };
-    root._total = newTxt; root._hasRunner = (s.alc ? alaLines.length > 0 && !!avDate : (!!avDate && !!R && (!s.layer || !!R2))) && !shortList().length;
+    root._total = newTxt; root._hasRunner = (s.alc ? alaLines.length > 0 && !!avDate : (!!avDate && !!R && (!s.layer || !!R2))) && !shortList().length && !(s.pic && !s.alc && picBooked());
     root._summary = 'My Whimsy Touch table:\n' + lines.map(function (l, i) { return '• ' + l[0] + (i === 0 ? ' — ' + WT.peso(l[1]) : l[1] ? ' — +' + WT.peso(l[1]) : '') + (l[2] ? l[2].map(function (x) { return '\n   – ' + x; }).join('') + '\n' : ''); }).join('\n') + (depAmt ? '\n• Security deposit (refundable) — +' + WT.peso(depAmt) : '') + (dl ? '\n• ' + dl[0] + (dl[1] ? ' — +' + WT.peso(dl[1]) : ' — free') : '') + '\nTotal: ' + shown + (depAmt ? ' (' + newTxt + ' rental + ' + WT.peso(depAmt) + ' refundable deposit)' : '');
   }
   document.getElementById('qCopy').addEventListener('click', function () {
@@ -754,7 +833,7 @@ var WT = (function () {
     if (navigator.clipboard) navigator.clipboard.writeText(txt).then(done, function () { window.prompt('Copy your picks:', txt); });
     else window.prompt('Copy your picks:', txt);
   });
-  function R_missing() { if (avDate && shortList().length) return shortMsg(); if (s.alc) return !avDate ? 'Pick your event date first, then choose your pieces.' : 'Add at least one à la carte item first.'; if (!avDate) return 'Pick your event date first, then choose your runner.'; return s.runner == null ? 'Pick a runner color first, then book.' : 'Pick your second layering color, or turn layering off.'; }
+  function R_missing() { if (s.pic && !s.alc && picBooked()) return 'Sorry, the picnic is already booked on ' + niceDate(avDate) + '. Please pick another date.'; if (avDate && shortList().length) return shortMsg(); if (s.alc) return !avDate ? 'Pick your event date first, then choose your pieces.' : 'Add at least one à la carte item first.'; if (!avDate) return 'Pick your event date first, then choose your runner.'; return s.runner == null ? 'Pick a runner color first, then book.' : 'Pick your second layering color, or turn layering off.'; }
   // ready-to-send messages for Whimsy Touch (saved in the bookings sheet)
   function buildMessages(ref, f) {
     var M = root._msg, peso = WT.peso;
@@ -768,20 +847,31 @@ var WT = (function () {
     }
     var tm = String(f.get('time') || ''), tt = '';
     if (/^\d{1,2}:\d{2}/.test(tm)) { var h = +tm.split(':')[0], m = tm.split(':')[1]; tt = (h % 12 || 12) + ':' + m + ' ' + (h < 12 ? 'AM' : 'PM'); }
-    var dateLine = 'Date: ' + when + (tt ? '\nDelivery arrival: ' + tt : '');
-    var venue = 'Venue: ' + String(f.get('venue') || '').trim() + (pickupText() ? '\nPickup: ' + pickupText() : '');
+    var vname = String(f.get('venue') || '').replace(/\s*·?\s*https?:\/\/\S+/g, '').trim();
+    var dateLine = 'Date: ' + when + '\nDelivery: ' + (tt ? tt + ' at ' : '') + vname;
+    var venue = (pickupText() ? 'Pickup: ' + pickupText() : '') + (!M.delivery && !s.gm ? (pickupText() ? '\n' : '') + 'Delivery fee is paid directly to the rider (Grab rate).' : '');
+    var picPU = s.pic && !s.alc && !s.gm && s.picHow !== 'grab';
+    if (s.pic && !s.alc && !s.gm) {
+      dateLine = 'Date: ' + when + '\n' + (picPU ? 'Pickup: ' + (tt ? tt + ' at ' : '') + 'Deca Cabantian (we\'ll send the full address)' : 'Delivery: ' + (tt ? tt + ' at ' : '') + vname + ' (subject to availability)');
+      venue = (pickupText() ? 'Return: ' + pickupText() : '') + (picPU ? '' : (pickupText() ? '\n' : '') + 'Delivery is subject to availability. The delivery fee follows the Grab Car rate for your location.');
+    }
+    var summary = 'Booking summary (Ref: ' + ref + ')\n' + M.lines.map(function (l) { return '• ' + l; }).join('\n') +
+      '\n• Security deposit (refundable): ' + peso(M.deposit) + '\nTotal: ' + peso(M.total + M.deposit);
+    var nc = '';
+    if (!s.alc && (s.cld || (s.up === 'fb' && !fbFaux())) && d.length === 3) {
+      var nd = new Date(+d[0], +d[1] - 1, +d[2] - 2);
+      nc = 'Please send us your guests\' names by ' + mo[nd.getMonth()] + ' ' + nd.getDate() + ' for the name cards. ';
+    }
     var LF = M.layer || 0, DF = M.delivery || 0, half = Math.round((M.total - LF - DF) / 2), rest = M.total - LF - DF - half;
     var layerBit = (DF ? ' + ' + peso(DF) + ' delivery' : '') + (LF ? ' + ' + peso(LF) + ' layering, once your second color is confirmed' : '');
-    var closer = s.gm ? 'We can\'t wait to set your table!' : 'We hope you have the loveliest time setting up your table!';
-    var pay = 'Hi ' + first + '! Thank you for booking with Whimsy Touch 🌸\n\n' +
-      'Here\'s your booking summary (Ref: ' + ref + '):\n\n' + M.lines.join('\n') + '\n' + dateLine + '\n' + venue + '\n\n' +
-      'Subtotal: ' + peso(M.total) + '\nSecurity deposit: ' + peso(M.deposit) + ' (refundable)\nTotal amount: ' + peso(M.total + M.deposit) + '\n\n' +
-      'To lock in your date, please send the 50% downpayment of ' + peso(half) + ' through the QR above.\n\n' +
-      'Your total remaining balance of ' + peso(rest + LF + DF + M.deposit) + ' (' + peso(rest) + ' rental balance' + layerBit + ' + ' + peso(M.deposit) + ' refundable security deposit) is due on ' + due + ', one day before your event.\n\n' +
-      'Once your downpayment is in, we\'ll send your official invoice. Thank you po! ☺️';
+    var closer = s.pic && !s.alc ? (s.gm ? 'We can\'t wait to set up your picnic!' : 'We hope you have the loveliest picnic!') : s.gm ? 'We can\'t wait to set your table!' : 'We hope you have the loveliest time setting up your table!';
+    var pinAsk = picPU ? 'We\'ll send you the full pickup address in Deca Cabantian.' : 'Please send your exact Google Maps pin so we can confirm delivery.';
+    var pay = 'Hi ' + first + '! Thank you for booking with Whimsy Touch 🌸\n\n' + summary + '\n\n' + dateLine + (venue ? '\n' + venue.replace(/^\n/, '') : '') + '\n\n' +
+      'To lock in your date, please send the ' + peso(half) + ' downpayment through the QR above. The remaining ' + peso(rest + LF + DF + M.deposit) + ' is due on ' + due + '.\n\n' +
+      nc + 'Thank you po! ☺️';
     var conf = 'Hi ' + first + '! We\'ve received your ' + peso(half) + ' downpayment, so your date is officially booked 🌸\n\n' +
       'Attached is your invoice for your records (Ref: ' + ref + '). Your total remaining balance of ' + peso(rest + LF + DF + M.deposit) + (DF || LF ? ' (including ' + [DF ? peso(DF) + ' delivery' : '', LF ? peso(LF) + ' layering, once your second color is confirmed' : ''].filter(String).join(' and ') + ')' : '') + ' is due on ' + due + ', one day before your event.\n\n' +
-      'Please send your exact Google Maps pin so we can confirm delivery. ' + closer + ' Thank you po! ☺️';
+      pinAsk + ' ' + closer + ' Thank you po! ☺️';
     // event today or tomorrow: full payment + deposit now
     var rush = false, dayWord = '';
     if (d.length === 3) {
@@ -791,15 +881,12 @@ var WT = (function () {
     }
     if (rush) {
       var full = M.total + M.deposit;
-      pay = 'Hi ' + first + '! Thank you for booking with Whimsy Touch 🌸\n\n' +
-        'Here\'s your booking summary (Ref: ' + ref + '):\n\n' + M.lines.join('\n') + '\n' + dateLine + '\n' + venue + '\n\n' +
-        'Subtotal: ' + peso(M.total) + '\nSecurity deposit: ' + peso(M.deposit) + ' (refundable)\nTotal amount: ' + peso(M.total + M.deposit) + '\n\n' +
-        'Since your event is ' + dayWord + ', we\'ll need the full payment settled today to lock in your date and prepare your table on time: ' +
-        peso(M.total) + ' rental + ' + peso(M.deposit) + ' refundable security deposit = ' + peso(full) + '. Please send it through the QR above.\n\n' +
-        'Once your payment is in, we\'ll send your official invoice. Thank you po! ☺️';
+      pay = 'Hi ' + first + '! Thank you for booking with Whimsy Touch 🌸\n\n' + summary + '\n\n' + dateLine + (venue ? '\n' + venue.replace(/^\n/, '') : '') + '\n\n' +
+        'Since your event is ' + dayWord + ', please send the full ' + peso(full) + ' today through the QR above to lock in your date.\n\n' +
+        (nc ? 'Please send us your guests\' names as soon as you can for the name cards. ' : '') + 'Thank you po! ☺️';
       conf = 'Hi ' + first + '! We\'ve received your full payment of ' + peso(full) + ', so your date is officially booked 🌸\n\n' +
         'Attached is your invoice for your records (Ref: ' + ref + '). Your ' + peso(M.deposit) + ' security deposit will be returned once every piece is back safe and sound.\n\n' +
-        'Please send your exact Google Maps pin so we can confirm delivery. ' + closer + ' Thank you po! ☺️';
+        pinAsk + ' ' + closer + ' Thank you po! ☺️';
     }
     return { pay: pay, conf: conf, due: rush ? M.total + M.deposit : half, rush: rush, rest: rush ? 0 : rest + LF + DF + M.deposit, restDue: due, df: DF, dep: M.deposit };
   }
@@ -830,7 +917,8 @@ var WT = (function () {
     if (restEl) { restEl.hidden = !mm.rest; if (mm.rest) restEl.innerHTML = '<span>Remaining balance' + (mm.restDue ? ', due ' + mm.restDue : '') + '<small>' + ['rental balance', mm.df ? 'delivery' : '', 'refundable security deposit'].filter(String).join(' + ') + '</small></span><b>' + WT.peso(mm.rest) + '</b>'; }
     var fileIn = document.getElementById('qRcpt'), btn = document.getElementById('qRcptSend'), note = document.getElementById('qRcptNote');
     var pdl = document.getElementById('qPayDlv');
-    if (pdl) pdl.innerHTML = needsDelivery() ? (mm.df ? '<b>Delivery</b> (' + WT.peso(mm.df) + ') is included in your remaining balance.' : '<b>Delivery</b> is free for your venue.') :
+    if (pdl && s.pic && !s.alc) pdl.innerHTML = s.gm ? '<b>Delivery and setup</b> are included with your Fairy Godmother Service.' : s.picHow === 'grab' ? '<b>Delivery</b> is not included above. It is subject to availability, and the fee follows the Grab Car rate for your location.' : '<b>Pickup</b> is at Deca Cabantian. We’ll send you the full address.';
+    else if (pdl) pdl.innerHTML = needsDelivery() ? (mm.df ? '<b>Delivery</b> (' + WT.peso(mm.df) + ') is included in your remaining balance.' : '<b>Delivery</b> is free for your venue.') :
       '<b>Delivery &amp; pickup</b> are not included above. Before each trip, our rider sends you the Grab fare and <b>their QR code</b>: pay before they head out, or have the <b>exact amount in cash</b> ready. It is never deducted from your security deposit.';
     document.getElementById('qPayCopy').onclick = function () { var b = this; if (navigator.clipboard) navigator.clipboard.writeText('15454836781').then(function () { b.textContent = 'Copied!'; }); };
     btn.onclick = function () {
@@ -892,8 +980,8 @@ var WT = (function () {
   function isMapsLink(v) { return /^https?:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|(www\.)?google\.[a-z.]+\/maps|maps\.google\.[a-z.]+)\S*/i.test(String(v || '').trim()); }
   function runnersField() {
     if (s.alc || s.runner == null) return '';
-    var n = s.cld ? CLD.runners : WT.nr(RUN[s.runner], s.tier), out = [RUN[s.runner].name + ' x' + n];
-    if (s.layer && s.runner2 != null) out.push(RUN[s.runner2].name + ' x' + WT.nr(RUN[s.runner2], s.tier));
+    var n = s.cld ? CLD.runners : s.pic ? 1 : WT.nr(RUN[s.runner], s.tier), out = [RUN[s.runner].name + ' x' + n];
+    if (s.layer && s.runner2 != null) out.push(RUN[s.runner2].name + ' x' + (s.pic ? 1 : WT.nr(RUN[s.runner2], s.tier)));
     return out.join(', ');
   }
   function detailsMode(on) {
@@ -934,12 +1022,12 @@ var WT = (function () {
       var er4 = document.getElementById('qErr'); er4.hidden = false; er4.textContent = 'Please paste a Google Maps link for pickup (it starts with https://maps.app.goo.gl/), or tick “Pick up the items from the same place”.';
       pickIn.focus(); return;
     }
-    if ((needsDelivery() || venueIn.value.trim()) && !isMapsLink(venueIn.value)) {
+    if ((needsDelivery() || (s.pic && s.gm && !s.alc) || venueIn.value.trim()) && !isMapsLink(venueIn.value)) {
       var er1 = document.getElementById('qErr'); er1.hidden = false; er1.textContent = 'Please paste the Google Maps link of your exact venue (open Google Maps, tap your venue, then Share → Copy link).';
       venueIn.focus(); return;
     }
     var endIn = document.getElementById('qEndTime');
-    if (needsDelivery() && endIn && !endIn.value) {
+    if ((needsDelivery() || (s.pic && s.gm && !s.alc)) && endIn && !endIn.value) {
       var er6 = document.getElementById('qErr'); er6.hidden = false; er6.textContent = 'Please add what time your event finishes.';
       endIn.focus(); return;
     }
@@ -992,6 +1080,7 @@ var WT = (function () {
     try { mm = buildMessages(ref, new FormData(form)); sheetBody.set('payment_msg', mm.pay); sheetBody.set('confirm_msg', mm.conf); } catch (err) {}
     var dlx = deliveryLine();
     if (dlx) { var pq0 = pickQ(); sheetBody.set('delivery_fee', String(dlx[1])); sheetBody.set('delivery_info', WT.peso(dlx[1]) + ' · ' + dlx[3] + (DLV.km ? ' · venue ' + DLV.km + ' km from ' + (DLV.from || 'edge') : '') + (DLV.place ? ' · ' + DLV.place : '') + (selfReturn() ? '' : pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + pickIn.value.trim() + (pq0 && pq0.place ? ' (' + pq0.place + ')' : '')) + ' · pickup time: ' + pickupText()); }
+    else if (s.pic && !s.alc) { sheetBody.set('delivery_fee', '0'); sheetBody.set('delivery_info', (s.gm ? 'Picnic · Fairy Godmother (within picnic area)' : s.picHow === 'grab' ? 'Picnic · delivery requested (subject to availability, Grab Car rate)' : 'Picnic · pickup at Deca Cabantian') + ' · return: ' + pickupText()); }
     else { sheetBody.set('delivery_fee', '0'); sheetBody.set('delivery_info', 'Our rider · Grab rate, paid to rider before each trip' + (pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + (pickIn.value.trim() || 'pin to follow')) + ' · pickup time: ' + pickupText()); }
     // Send to the sheet without waiting for Google's reply (the booking is saved on their side either way)
     var toSheet = !window.WT_SHEETS_URL ? Promise.reject(new Error('no sheet'))
@@ -1351,4 +1440,5 @@ var WT = (function () {
 (function () {
   var d = new Date(), today = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
   document.querySelectorAll('[data-from][data-new]').forEach(function (el) { if (today >= el.getAttribute('data-from')) el.textContent = el.getAttribute('data-new'); });
+  document.querySelectorAll('[data-until]').forEach(function (el) { if (today >= el.getAttribute('data-until')) el.style.display = 'none'; });
 })();

@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Whimsy Picnic — The Whimsy Touch</title>
+<meta name="description" content="A picnic setup for up to 8 in Davao City: low wooden table, waterproof mat, blanket, cushions, flowers and candlelight. ₱4,000.">
+<meta property="og:title" content="The Whimsy Touch">
+<meta property="og:description" content="The table of your dreams, borrowed, not bought. Table décor rentals in Davao City.">
+<meta property="og:image" content="img/pic-main-1.jpg">
+<link rel="icon" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20261119p">
+</head>
+<body id="top">
+<a class="skip" href="#main">Skip to content</a>
+
+
+<header class="nav">
+  <div class="wrap">
+    <a class="nav-brand" href="index.html" aria-label="Whimsy Touch home"><img class="nav-logo" src="img/logo-script.webp" alt="Whimsy Touch" width="700" height="187"></a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <ul class="nav-links" id="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="catalog.html" aria-current="page">Catalog</a></li>
+      <li><a href="runners.html">Runners</a></li>
+      <li><a href="moments.html">Moments</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="faq.html">FAQs</a></li>
+      <li class="nav-cta"><a href="book.html">Book a Table</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="main">
+<style>
+.cld{padding:0 !important;background:var(--bg);color:var(--ink)}
+.cld-hero{position:relative;min-height:78vh;display:flex;align-items:flex-end;justify-content:center;text-align:center;padding:0 20px 14vh;overflow:hidden}
+.cld-hero img,.cld-hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%}
+.cld-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(79,85,54,.05) 0%,rgba(79,85,54,.25) 45%,rgba(56,60,38,.88) 100%)}
+.cld-hero .in{position:relative;z-index:1;max-width:760px}
+.cld-kick{font-family:var(--sans);font-weight:600;font-size:12px;letter-spacing:.4em;text-transform:uppercase;color:#EAD9B8}
+.cld-title{font-family:var(--script);font-weight:400;font-size:clamp(60px,9vw,116px);line-height:1;color:#F6EFE4;margin:12px 0 4px;text-shadow:0 2px 26px rgba(30,32,20,.45)}
+.cld-sub{font-family:var(--serif);font-style:italic;font-size:clamp(19px,2.2vw,24px);color:#F2E6D3}
+.cld-rule{width:90px;height:1px;background:linear-gradient(90deg,transparent,#EAD9B8,transparent);margin:24px auto}
+.cld-meta{display:flex;justify-content:center;gap:clamp(24px,5vw,66px);font-family:var(--serif)}
+.cld-meta div{display:flex;flex-direction:column;align-items:center}
+.cld-meta b{font-weight:500;font-size:clamp(30px,3.6vw,42px);color:#F6EFE4;line-height:1}
+.cld-meta span{font-family:var(--sans);font-weight:600;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#EAD9B8;margin-top:8px}
+.cld-body{max-width:740px;margin:0 auto;padding:72px 22px 30px;text-align:center}
+.cld-body .intro{font-family:var(--serif);font-size:clamp(21px,2.5vw,26px);line-height:1.55;color:var(--ink)}
+.cld-orn{font-family:var(--script);font-size:34px;color:var(--rose);margin-top:14px}
+.cld-inc{margin:44px auto 0;border-top:1px solid var(--gold-line);border-bottom:1px solid var(--gold-line);text-align:left}
+.cld-inc summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:22px 4px;font-family:var(--sans);font-weight:600;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--sage-deep)}
+.cld-inc summary::-webkit-details-marker{display:none}
+.cld-inc summary i{font-style:normal;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--gold-line);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:18px;transition:transform .3s,background .3s,color .3s}
+.cld-inc[open] summary i{transform:rotate(45deg);background:var(--sage-deep);color:#fff;border-color:var(--sage-deep)}
+.cld-inc ul{list-style:none;margin:0;padding:0 4px 24px}
+.cld-inc li{display:flex;gap:18px;padding:13px 0;font-family:var(--serif);font-size:19px;color:var(--ink);border-top:1px dashed rgba(140,110,63,.25)}
+.cld-inc li:first-child{border-top:0}
+.cld-inc li em{font-style:normal;font-family:var(--sans);font-weight:600;color:var(--rose);min-width:26px;font-size:14px;padding-top:4px}
+.cld-cols{margin-top:34px}
+.cld-cols p{font-family:var(--sans);font-weight:600;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.cld-cols div{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 20px}
+.cld-cols span{display:inline-flex;align-items:center;gap:8px;font-family:var(--serif);font-size:18px;color:var(--ink)}
+.cld-cols i{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.18)}
+.cld-gm{max-width:880px;margin:64px auto 0;background:var(--sage-deep);color:#F2F0EB;text-align:center;padding:40px 30px 30px;border-radius:22px;position:relative}
+.cld-gm summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px}.cld-gm summary::-webkit-details-marker{display:none}
+.cld-gm .q{font-family:var(--serif);font-weight:500;font-size:clamp(28px,3.4vw,38px);color:#F6EFE4;line-height:1.15}
+.cld-gm .more{display:inline-flex;align-items:center;gap:10px;margin-top:14px;font:600 12px var(--sans);letter-spacing:.22em;text-transform:uppercase;color:#EAD9B8}
+.cld-gm .more i{font-style:normal;width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(234,217,184,.6);display:flex;align-items:center;justify-content:center;transition:transform .3s}
+.cld-gm[open] .more i{transform:rotate(45deg)}
+.cld-gm .k{font-family:var(--script);font-size:30px;color:#EAD9B8}
+
+.cld-gm p.l{max-width:520px;margin:14px auto 0;font-size:16px;color:#E8E2D4}
+.cld-gm ul{list-style:none;padding:0;margin:22px auto 0;max-width:520px;text-align:left}
+.cld-gm li{display:grid;grid-template-columns:86px 1fr;gap:10px;padding:9px 0;border-top:1px solid rgba(234,217,184,.22);font-size:15.5px;color:#F2F0EB}
+.cld-gm li b{font:600 13px var(--sans);letter-spacing:.06em;color:#EAD9B8;padding-top:2px}
+.cld-cta{padding:56px 20px 90px;text-align:center}
+.cld-btn{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:0 46px;background:var(--sage-deep);color:#F6EFE4;text-decoration:none;font-family:var(--sans);font-weight:600;font-size:13px;letter-spacing:.3em;text-transform:uppercase;border-radius:999px;transition:background .25s}
+.cld-btn:hover{background:#3d4229}
+.cld-fine{display:block;margin-top:14px;font-family:var(--serif);font-style:italic;font-size:15px;color:var(--muted)}
+.cld-band{position:relative;z-index:2;max-width:900px;margin:-70px auto 0;padding:0 20px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.cld-tile{background:var(--card);border:1px solid var(--gold-line);border-radius:20px;padding:22px 10px 20px;text-align:center;box-shadow:0 14px 34px rgba(46,42,36,.14)}
+.cld-tile span{display:block;font:600 11.5px var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+.cld-tile b{display:block;font:500 clamp(34px,4.6vw,52px) var(--serif);color:var(--sage-deep);line-height:1.05;margin-top:6px;white-space:nowrap}
+.cld-tile i{display:block;font:italic 15px var(--serif);color:var(--muted);margin-top:4px}
+
+.cld-band-cta{text-align:center;margin-top:28px}
+@media (max-width:560px){.cld-band{grid-template-columns:repeat(3,1fr);gap:6px;margin-top:-40px;padding:0 12px}.cld-tile{padding:12px 4px 11px;border-radius:14px}.cld-tile span{font-size:9.5px;letter-spacing:.14em}.cld-tile b{font-size:24px;margin-top:4px}.cld-tile i{font-size:11.5px;margin-top:2px;line-height:1.2}
+.cld-hero{min-height:0;height:400px;padding-bottom:60px}.cld-title{font-size:54px}.cld-sub{font-size:17px}.cld-kick{font-size:10.5px;letter-spacing:.3em}
+.cld-band-cta{margin-top:20px}.cld-btn{min-height:46px;padding:0 28px;font-size:11.5px;letter-spacing:.22em}
+.cld-gal{margin-top:40px}.cld-gk{font-size:28px}.cld-body{padding-top:48px}.cld-body .intro{font-size:19px}.cld-gm{padding:30px 18px 22px}.cld-gm .p{font-size:42px}.cld-gm .q{font-size:25px}.cld-cta{padding:40px 16px 64px}}
+.cld-gm{display:flex;flex-direction:column;align-items:center;gap:6px}
+.cld-gm .gm-name{font-family:var(--sans);font-weight:600;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#EAD9B8;margin-top:6px}
+.cld-gm .p{font-family:var(--serif);font-weight:400;font-size:clamp(46px,6vw,64px);line-height:1;color:#F6EFE4}
+.gm-more{position:relative;max-height:96px;overflow:hidden;cursor:pointer;margin-top:14px;width:100%;transition:max-height .5s ease;-webkit-mask-image:linear-gradient(180deg,#000 20%,transparent 100%);mask-image:linear-gradient(180deg,#000 20%,transparent 100%)}
+.gm-more.open{max-height:700px;-webkit-mask-image:none;mask-image:none;cursor:default}
+.gm-hint{display:inline-flex;align-items:center;gap:8px;margin-top:6px;font:600 11.5px var(--sans);letter-spacing:.22em;text-transform:uppercase;color:#EAD9B8;cursor:pointer;animation:gmb 1.8s ease-in-out infinite}.gm-hint i{font-style:normal;font-size:16px}
+.cld-gm.is-open .gm-hint{display:none}
+@keyframes gmb{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+.gm-more:hover{opacity:.9}
+.cld-gal{max-width:1040px;margin:56px auto 0;padding:0 20px;text-align:center}
+.cld-gk{font-family:var(--script);font-size:32px;color:var(--rose);margin-bottom:16px}
+.cld-grid{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:8px;max-width:820px;margin:0 auto;aspect-ratio:3/2}
+.cld-grid a[hidden]{display:none}
+.cld-grid .more{position:relative}.cld-grid .more:after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.cld-grid .more span{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--sans);font-weight:600;font-size:clamp(28px,4vw,40px)}
+.cld-grid a{display:block;border-radius:14px;overflow:hidden;background:var(--card);min-height:0}
+.cld-grid .big{grid-row:1 / span 2}
+.cld-grid img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.cld-grid a:hover img{transform:scale(1.04)}
+.cld-lb{position:fixed;inset:0;z-index:200;background:rgba(30,32,22,.92);display:none;align-items:center;justify-content:center}
+.cld-lb.on{display:flex}.cld-lb img{max-width:92vw;max-height:88vh;border-radius:8px}
+.cld-lb button{position:absolute;width:46px;height:46px;border-radius:50%;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:24px;cursor:pointer}
+.cld-lb .x{top:16px;right:16px}.cld-lb .pv{left:12px;top:50%;transform:translateY(-50%)}.cld-lb .nx{right:12px;top:50%;transform:translateY(-50%)}
+@media (max-width:640px){.cld-grid{gap:5px;aspect-ratio:4/5}.cld-grid a{border-radius:10px}}
+.pic-fl,.pic-add,.pic-pick{margin-top:40px;text-align:center}
+.pic-fl>p,.pic-add>p,.pic-pick>p{font-family:var(--sans);font-weight:600;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.pic-fl>div{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pic-fl figure{margin:0;background:var(--card);border:1px solid var(--gold-line);border-radius:18px;overflow:hidden}
+.pic-fl img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}
+.pic-fl figcaption{padding:12px 10px 14px}
+.pic-fl figcaption b{display:block;font:500 22px var(--serif);color:var(--sage-deep)}
+.pic-fl figcaption span{display:block;font:italic 15px var(--serif);color:var(--muted);margin-top:2px}
+.pic-fl>small{display:block;margin-top:10px;font:italic 15px var(--serif);color:var(--muted)}
+.pic-two{max-width:900px;margin:44px auto 0;padding:0;text-align:left;display:grid;grid-template-columns:1.1fr 1fr;gap:34px;align-items:center}
+.pic-two img{width:100%;border-radius:22px;display:block;box-shadow:0 16px 36px rgba(46,42,36,.16)}
+.pic-two .k{display:block;font:600 11.5px var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--gold)}
+.pic-two b{display:block;font:500 clamp(30px,3.6vw,42px)/1.1 var(--serif);color:var(--sage-deep);margin-top:8px}
+.pic-two p{font-family:var(--serif);font-size:20px;line-height:1.55;color:var(--ink);margin-top:14px}
+.cld-tile.pic-pu{display:flex;flex-direction:column;justify-content:center}
+.cld-tile.pic-pu b{font-size:clamp(28px,3.4vw,40px);padding-top:6px}
+@media (max-width:560px){.cld-tile.pic-pu b{font-size:17px;padding-top:5px;white-space:normal}.cld-tile.pic-pu span{font-size:8.5px;letter-spacing:.1em}}
+.pic-colors{max-width:820px;margin:14px auto 0;font:italic 17px var(--serif);color:var(--muted)}
+.pic-colors b{font-style:normal;font-weight:600;color:var(--sage-deep)}
+.pic-colors a{color:var(--rose)}
+@media (max-width:700px){.pic-two{grid-template-columns:1fr;gap:16px;text-align:center;padding:0}.pic-two p{font-size:17.5px}}
+.pic-add ul{list-style:none;padding:0;margin:0;text-align:left;border-top:1px solid var(--gold-line);border-bottom:1px solid var(--gold-line)}
+.pic-add li{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:13px 4px;font-family:var(--serif);font-size:19px;border-top:1px dashed rgba(140,110,63,.25)}
+.pic-add li:first-child{border-top:0}
+.pic-add li small{display:block;font-style:italic;font-size:15px;color:var(--muted)}
+.pic-add li b{font-weight:600;color:var(--rose);white-space:nowrap}
+.pic-loc{display:inline-block;margin:0 auto 10px;padding:16px 28px 14px;background:var(--card);border:1px solid var(--gold-line);border-radius:18px}
+.pic-loc small{display:block;font:600 11px var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--rose)}
+.pic-loc b{display:block;font:500 26px var(--serif);color:var(--sage-deep);margin-top:4px}
+.pic-loc i{display:block;font:italic 15px var(--serif);color:var(--muted);margin-top:2px}
+.pic-pick span{display:block;font-family:var(--serif);font-size:18px;line-height:1.5;color:var(--ink);margin-top:6px}
+.pic-pick span:last-child{font-style:italic;font-size:16px;color:var(--muted)}
+@media (max-width:560px){.pic-fl>div{gap:8px}.pic-fl figcaption b{font-size:19px}.pic-fl figcaption span{font-size:13px}.pic-add li{font-size:17px}.pic-pick span{font-size:16.5px}}
+</style>
+<section class="cld">
+  <div class="cld-hero">
+    <img src="img/pic-main-1.jpg" alt="A picnic table on the grass with gerberas and candles" style="object-position:center 60%">
+    <div class="in">
+      <div class="cld-kick">New · Picnic Setup</div>
+      <h1 class="cld-title">Whimsy Picnic</h1>
+      <div class="cld-sub">a low table, soft blankets &amp; flowers on the grass</div>
+    </div>
+  </div>
+  <div class="cld-band">
+    <div class="cld-tile"><span>Rental</span><b>₱4,000</b><i>everything below</i></div>
+    <div class="cld-tile"><span>Guests</span><b>Up to 8</b><i>pax</i></div>
+    <div class="cld-tile pic-pu"><b>Pickup only</b><i>delivery subject to availability</i></div>
+  </div>
+  <div class="cld-band-cta"><a class="cld-btn" href="book.html?style=picnic">Book a Picnic</a></div>
+  <div class="cld-gal">
+    <div class="cld-gk">A closer look</div>
+    <div class="cld-grid">
+      <a href="img/pic-main-6.jpg" class="big"><img src="img/pic-main-6-s.jpg" alt="The picnic table with gerberas and taper candles" loading="lazy"></a>
+      <a href="img/pic-brown-2.jpg"><img src="img/pic-brown-2-s.jpg" alt="Ivory roses with a rust runner and brown cushions" loading="lazy"></a>
+      <a href="img/pic-yellow-2.jpg" class="more"><img src="img/pic-yellow-2-s.jpg" alt="A yellow runner with gerberas" loading="lazy"><span>+17</span></a>
+      <a href="img/pic-main-2.jpg" hidden></a>
+      <a href="img/pic-main-3.jpg" hidden></a>
+      <a href="img/pic-main-4.jpg" hidden></a>
+      <a href="img/pic-main-5.jpg" hidden></a>
+      <a href="img/pic-main-7.jpg" hidden></a>
+      <a href="img/pic-main-8.jpg" hidden></a>
+      <a href="img/pic-brown-1.jpg" hidden></a>
+      <a href="img/pic-brown-3.jpg" hidden></a>
+      <a href="img/pic-brown-5.jpg" hidden></a>
+      <a href="img/pic-brown-6.jpg" hidden></a>
+      <a href="img/pic-brown-7.jpg" hidden></a>
+      <a href="img/pic-brown-8.jpg" hidden></a>
+      <a href="img/pic-brown-4.jpg" hidden></a>
+      <a href="img/pic-yellow-1.jpg" hidden></a>
+      <a href="img/pic-yellow-3.jpg" hidden></a>
+      <a href="img/pic-yellow-4.jpg" hidden></a>
+      <a href="img/pic-main-1.jpg" hidden></a>
+    </div>
+    <p class="pic-colors">Shown with lilac, rust and yellow runners. <b>Available in other colors as well.</b> <a href="runners.html">See all runner colors</a></p>
+  </div>
+  <div class="cld-lb" id="cldLb"><button class="x" aria-label="Close">×</button><button class="pv" aria-label="Previous">‹</button><img alt=""><button class="nx" aria-label="Next">›</button></div>
+  <div class="cld-body">
+    <p class="intro">Everything for a pretty picnic for up to 8, ready to take to the park, the beach or your own garden. A low wooden table, a waterproof mat with a soft blanket on top, cushions for everyone, and flowers and candlelight down the middle.</p>
+    <div class="cld-orn">a touch of whimsy</div>
+    <details class="cld-inc" open>
+      <summary>What’s included <i>+</i></summary>
+      <ul>
+        <li><em>01</em>Low wooden picnic table</li>
+        <li><em>01</em>Waterproof picnic mat</li>
+        <li><em>01</em>Soft picnic blanket, laid on top of the mat</li>
+        <li><em>08</em>Brown seat cushions</li>
+        <li><em>01</em>Runner in your chosen color</li>
+        <li><em>06</em>Small glass vases with your choice of flowers</li>
+        <li><em>05</em>LED taper candles in short gold holders</li>
+        <li><em>08</em>Jute placemats</li>
+      </ul>
+    </details>
+    <div class="pic-fl">
+      <p>Choose your flowers</p>
+      <div>
+        <figure><img src="img/pic-main-8-s.jpg" alt="Gerberas in small glass vases" loading="lazy"><figcaption><b>Gerberas</b><span>12 colorful gerberas, 2 in every vase</span></figcaption></figure>
+        <figure><img src="img/pic-brown-5-s.jpg" alt="Ivory roses and eucalyptus in small glass vases" loading="lazy"><figcaption><b>Ivory roses</b><span>2 roses and 1 eucalyptus in every vase</span></figcaption></figure>
+      </div>
+      <small>Same price for both.</small>
+    </div>
+    <div class="pic-two">
+      <img src="img/pic-layered.jpg" alt="Two layers: a waterproof picnic mat underneath and a soft picnic blanket on top, with brown seat cushions">
+      <div><span class="k">Made for the grass</span><b>Two layers, dry &amp; comfy</b><p>A <strong>waterproof picnic mat</strong> goes down first to keep you dry, with a <strong>soft picnic blanket</strong> on top and <strong>8 brown cushions</strong> to sit on.</p></div>
+    </div>
+    <div class="pic-add">
+      <p>Add-ons</p>
+      <ul>
+        <li><span>Layered runner<small>a second color on top of the first</small></span><b>+₱100</b></li>
+        <li><span>Extra wooden table<small>90 × 60 cm, about 10 kg</small></span><b>+₱300</b></li>
+        <li><span>White satin tablecloth</span><b>+₱100</b></li>
+      </ul>
+    </div>
+    <div class="pic-pick">
+      <p>Pickup &amp; delivery</p>
+      <div class="pic-loc"><small>Pickup location</small><b>Deca Cabantian, Davao City</b><i>The full address is sent once your booking is confirmed.</i></div>
+      <span><b>Need it delivered?</b> Delivery is subject to availability. The delivery fee follows the Grab Car rate for your location.</span>
+      <span>Heads up: the picnic table weighs about 9 kg, and the extra table about 10 kg.</span>
+    </div>
+    <div class="cld-gm">
+      <span class="k">Skip the hassle</span>
+      <span class="q">Want us to set it up for you?</span>
+      <span class="gm-name">Fairy Godmother Service</span>
+      <span class="p">+₱2,000</span>
+      <div class="gm-more" role="button" tabindex="0" aria-expanded="false">
+      <p class="l">We bring your picnic, set it all up, then pack it away after.</p>
+      <ul>
+        <li><b>Area</b><span>Around Cabantian, Tigatto, Lanang, the airport, Pampanga, Ubalde, Abreeza and Crocodile Park. Send us your Google Maps pin and we’ll confirm.</span></li>
+        <li><b>Included</b><span>Bringing it to you, setting it up, packing everything away and taking it home</span></li>
+      </ul>
+      </div>
+      <span class="gm-hint">Tap to read more <i>⌄</i></span>
+    </div>
+  </div>
+  <div class="cld-cta"><a class="cld-btn" href="book.html?style=picnic">Book a Picnic</a><span class="cld-fine">₱800 refundable security deposit · one picnic a day · food and tableware not included</span></div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <span class="brand">Whimsy Touch</span>
+    <span>Davao City, Philippines</span>
+    <span>Prices in Philippine Pesos for a 24-hour rental, exclusive of security deposit &amp; delivery fee</span>
+    <a href="namecards.html" class="ft-nc">Send your guest names</a>
+    <a href="terms.html">Terms &amp; Conditions</a>
+  </div>
+</footer>
+
+<script src="site.js?v=20261119r"></script>
+<script>document.querySelectorAll('.gm-more').forEach(function(m){function o(){m.classList.add('open');m.setAttribute('aria-expanded','true');m.closest('.cld-gm').classList.add('is-open');}m.addEventListener('click',o);var h=m.parentNode.querySelector('.gm-hint');if(h)h.addEventListener('click',o);m.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' ')o();});});</script>
+<script>(function(){var L=[].slice.call(document.querySelectorAll('.cld-grid a')),b=document.getElementById('cldLb');if(!b)return;var im=b.querySelector('img'),i=0,x0=null;function sh(k){i=(k+L.length)%L.length;im.src=L[i].href;}
+L.forEach(function(a,k){a.addEventListener('click',function(e){e.preventDefault();sh(k);b.classList.add('on');document.body.style.overflow='hidden';});});
+function cl(){b.classList.remove('on');document.body.style.overflow='';}b.querySelector('.x').onclick=cl;b.querySelector('.pv').onclick=function(){sh(i-1)};b.querySelector('.nx').onclick=function(){sh(i+1)};
+b.addEventListener('click',function(e){if(e.target===b)cl();});document.addEventListener('keydown',function(e){if(!b.classList.contains('on'))return;if(e.key==='Escape')cl();if(e.key==='ArrowLeft')sh(i-1);if(e.key==='ArrowRight')sh(i+1);});
+b.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});b.addEventListener('touchend',function(e){if(x0===null)return;var d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>40)sh(i+(d<0?1:-1));x0=null;});})();</script>
+</body>
+</html>

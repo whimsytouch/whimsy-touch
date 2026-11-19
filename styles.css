@@ -873,7 +873,7 @@ section.quote.is-details{padding-top:28px}
 @media(max-width:640px){.nav-brand img.nav-logo{height:38px}}
 
 /* Tablescape style picker (Book a Table step 1) */
-.st-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.st-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
 .st-opt{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;border:1.5px solid rgba(94,87,77,.2);background:var(--card);cursor:pointer;text-align:left;padding:0;font:inherit;color:var(--ink);transition:box-shadow .15s,border-color .15s}
 .st-opt img{aspect-ratio:1/1;width:100%;object-fit:cover;display:block}
 .st-opt span{padding:9px 10px 10px;font:400 15px var(--serif);line-height:1.2;flex:1}
@@ -914,3 +914,6 @@ section.quote.is-details{padding-top:28px}
 .q-xret small{text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted)}
 .q-xhint{margin-top:4px}
 .q-grid.is-details .q-xhint{display:none}
+
+.ts-diy{display:block;margin-top:6px;font-size:13px;font-style:italic;color:#6B4F3F}
+.sd-diy{margin-top:6px;font-size:14px;font-style:italic;color:#6B4F3F}

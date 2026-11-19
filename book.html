@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261116m">
+<link rel="stylesheet" href="styles.css?v=20261119p">
 </head>
 <body id="top">
 <a class="skip" href="#main">Skip to content</a>
@@ -59,7 +59,7 @@
       <aside class="q-summary" aria-live="polite">
         <button type="button" class="q-back" id="qBack" hidden>← Back to edit my table</button>
         <div class="q-venue" id="qVenueStep" hidden>
-          <h4>Venue &amp; pickup</h4>
+          <h4 id="qVenueH">Venue &amp; pickup</h4>
           <p class="q-note" id="qDlvInfo"></p>
           <label>Venue name <input id="qVenueName" placeholder="e.g. Rustica Bistro, Lanang branch"></label>
           <label>Google Maps link of your venue <small>(Google Maps → Share → Copy link)</small><input id="qVenueLink" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/…"></label>
@@ -106,8 +106,8 @@
           <input type="hidden" name="social" id="qSocial">
           <p class="q-sublabel">The account you message us from <small>(at least one)</small></p>
           <div class="q-two"><label>Instagram<input id="qIg" placeholder="@yourname" autocapitalize="off"></label><label>Facebook<input id="qFb" placeholder="Your Facebook name"></label></div>
-          <div class="q-two"><label>Event date<input name="date" type="date" required id="qDate"></label><label>Delivery arrival time<input name="time" type="time" required></label></div>
-          <p class="q-note">This is when your items arrive at the venue, so pick a time that gives you enough time to set up before your event starts.</p>
+          <div class="q-two"><label>Event date<input name="date" type="date" required id="qDate"></label><label><span id="qTimeLbl">Delivery arrival time</span><input name="time" type="time" required></label></div>
+          <p class="q-note" id="qTimeNote">This is when your items arrive at the venue, so pick a time that gives you enough time to set up before your event starts.</p>
           <input type="hidden" name="venue" id="qVenue">
           <label id="qNotesLbl">Anything else? <small>(optional)</small><textarea name="notes" rows="2"></textarea></label>
           <label class="q-agree q-req"><input type="checkbox" name="request_ack" value="yes" required> <span>I understand my date is <strong>only secured once my downpayment is confirmed</strong>.</span></label>
@@ -183,11 +183,12 @@
     <span class="brand">Whimsy Touch</span>
     <span>Davao City, Philippines</span>
     <span>Prices in Philippine Pesos for a 24-hour rental, exclusive of security deposit &amp; delivery fee</span>
+    <a href="namecards.html" class="ft-nc">Send your guest names</a>
     <a href="terms.html">Terms &amp; Conditions</a>
   </div>
 </footer>
 
 <script src="runners-data.js?v=20261116m"></script>
-<script src="site.js?v=20261116m"></script>
+<script src="site.js?v=20261119r"></script>
 </body>
 </html>

@@ -13,8 +13,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261119p">
-<style>@media (max-width:640px){.g-pt.flipf .g-txt .w{display:none}}</style>
+<link rel="stylesheet" href="styles.css?v=20261123b">
+<style>@media (max-width:640px){.g-pt.flipf .g-txt .w{display:none}}.px{cursor:pointer}.px td:first-child small{display:block;font:italic 13.5px var(--serif);color:var(--rose);margin-top:2px}.px.on td:first-child small:after{content:" −"}.px:not(.on) td:first-child small:after{content:" +"}.pxd td{background:rgba(255,255,255,.55);padding:4px 14px 12px !important}.pxd ul{margin:0;padding-left:18px;font:400 15px/1.55 var(--serif);color:var(--body)}
+</style>
 <style>@media (min-width:861px){.gatherings{grid-template-columns:repeat(3,minmax(0,1fr));gap:40px 36px;max-width:1080px}}</style>
 </head>
 <body id="top">
@@ -103,8 +104,8 @@
         <div class="sd-k">Our fullest table</div>
         <h1 class="sd-t">Full Bloom</h1>
         <p class="sd-lead">Colored flowers matched to your runner, pillar and taper candlelight, placemats, cloth napkins and a printed name card for every guest.</p>
-        <table class="sd-tbl sd-tbl-h"><thead><tr><th>Guests</th><th style="text-align:right">Price</th></tr></thead><tbody><tr><td>10–15 guests</td><td class="n"><span data-from="2026-12-01" data-new="₱2,500">₱2,200</span></td></tr><tr><td>15–30 guests</td><td class="n"><span data-from="2026-12-01" data-new="₱4,500">₱4,000</span></td></tr></tbody></table>
-        <p class="sd-fine" data-until="2026-12-01" style="color:var(--rose);font-style:normal"><b>New rates from Dec 1:</b> ₱2,500 for 10–15 guests and ₱4,500 for 15–30 guests. Book before Dec 1 to keep today’s rate.</p>
+        <table class="sd-tbl sd-tbl-h"><thead><tr><th>Guests</th><th style="text-align:right">Price</th></tr></thead><tbody><tr class="px"><td>10–15 guests<small>see what’s included</small></td><td class="n"><span data-from="2026-12-01" data-new="₱2,500">₱2,200</span></td></tr><tr class="pxd" hidden><td colspan="2"><ul><li>1 runner in your color</li><li>4 glass vases, each with 3 colored flowers matched to your runner, 3 ivory carnations and 3 eucalyptus</li><li>4 LED pillar candles</li><li>8 cream LED taper candles in tiered gold or glass holders with ribbon</li><li>15 sheer gold or jute placemats</li><li>15 cloth napkins with rings</li><li>15 printed name cards</li><li>Spare batteries and a care card</li></ul></td></tr><tr class="px"><td>15–30 guests<small>see what’s included</small></td><td class="n">₱4,000</td></tr><tr class="pxd" hidden><td colspan="2"><ul><li>Up to 3 runners in your color</li><li>8 glass vases, each with 3 colored flowers matched to your runner, 3 ivory carnations and 3 eucalyptus</li><li>8 LED pillar candles</li><li>16 cream LED taper candles in tiered gold or glass holders with ribbon</li><li>30 sheer gold or jute placemats</li><li>30 cloth napkins with rings</li><li>30 printed name cards</li><li>Spare batteries and a care card</li></ul></td></tr></tbody></table>
+        <p class="sd-fine" data-until="2026-12-01" style="color:var(--rose);font-style:normal"><b>New rate from Dec 1:</b> ₱2,500 for 10–15 guests. Book before Dec 1 to keep today’s rate.</p>
         <p class="sd-fine">24-hour rental. Refundable security deposit and delivery are separate.</p>
         <a class="sd-btn" href="book.html?style=fb">Book this style</a>
       </div>
@@ -142,6 +143,7 @@ b.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:tr
 <script>window.addEventListener('DOMContentLoaded',function(){var box=document.getElementById('sdCols');if(!box)return;var all=[];(window.RUNNER_GROUPS||[]).forEach(function(g){g.items.forEach(function(r){all.push(r)})});
 box.innerHTML=all.map(function(r){return '<i title="'+r.name+'" style="background:'+r.hex+'"></i>'}).join('');});</script>
 <script src="runners-data.js?v=20261117a"></script>
-<script src="site.js?v=20261119u"></script>
+<script src="site.js?v=20261123b"></script>
+<script>document.querySelectorAll("tr.px").forEach(function(r){r.addEventListener("click",function(){var d=r.nextElementSibling;d.hidden=!d.hidden;r.classList.toggle("on");});});</script>
 </body>
 </html>

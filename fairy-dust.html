@@ -13,8 +13,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261119p">
-<style>@media (max-width:640px){.g-pt.flipf .g-txt .w{display:none}}</style>
+<link rel="stylesheet" href="styles.css?v=20261123b">
+<style>@media (max-width:640px){.g-pt.flipf .g-txt .w{display:none}}.px{cursor:pointer}.px td:first-child small{display:block;font:italic 13.5px var(--serif);color:var(--rose);margin-top:2px}.px.on td:first-child small:after{content:" −"}.px:not(.on) td:first-child small:after{content:" +"}.pxd td{background:rgba(255,255,255,.55);padding:4px 14px 12px !important}.pxd ul{margin:0;padding-left:18px;font:400 15px/1.55 var(--serif);color:var(--body)}
+</style>
 <style>@media (min-width:861px){.gatherings{grid-template-columns:repeat(3,minmax(0,1fr));gap:40px 36px;max-width:1080px}}</style>
 </head>
 <body id="top">
@@ -103,8 +104,8 @@
         <div class="sd-k">A little extra sparkle</div>
         <h1 class="sd-t">Fairy Dust</h1>
         <p class="sd-lead">Everything in Standard Whimsy, dressed up with tiered gold or glass candle holders tied with ribbon in your color.</p>
-        <table class="sd-tbl sd-tbl-h"><thead><tr><th>Guests</th><th style="text-align:right">Tiered gold</th><th style="text-align:right">Glass</th></tr></thead><tbody><tr><td>10–15 guests</td><td class="n"><span data-from="2026-12-01" data-new="₱1,500">₱1,150</span></td><td class="n"><span data-from="2026-12-01" data-new="₱1,500">₱1,250</span></td></tr><tr><td>15–30 guests</td><td class="n"><span data-from="2026-12-01" data-new="₱2,500">₱2,250</span></td><td class="n">₱2,500</td></tr></tbody></table>
-        <p class="sd-fine" data-until="2026-12-01" style="color:var(--rose);font-style:normal"><b>New rates from Dec 1:</b> ₱1,500 for 10–15 guests and ₱2,500 for 15–30 guests, with either holder. Book before Dec 1 to keep today’s rate.</p>
+        <table class="sd-tbl sd-tbl-h"><thead><tr><th>Guests</th><th style="text-align:right">Tiered gold</th><th style="text-align:right">Glass</th></tr></thead><tbody><tr class="px"><td>10–15 guests<small>see what’s included</small></td><td class="n"><span data-from="2026-12-01" data-new="₱1,250">₱1,150</span></td><td class="n">₱1,250</td></tr><tr class="pxd" hidden><td colspan="3"><ul><li>1 runner in your color</li><li>4 clear vases with faux flowers (3 ivory roses, 3 carnations and 3 eucalyptus each)</li><li>8 cream LED taper candles</li><li>8 tiered gold or glass candle holders with ribbon in your color</li><li>Spare batteries and a care card</li></ul></td></tr><tr class="px"><td>15–30 guests<small>see what’s included</small></td><td class="n"><span data-from="2026-12-01" data-new="₱2,500">₱2,250</span></td><td class="n">₱2,500</td></tr><tr class="pxd" hidden><td colspan="3"><ul><li>Up to 3 runners in your color</li><li>8 clear vases with faux flowers (3 ivory roses, 3 carnations and 3 eucalyptus each)</li><li>16 cream LED taper candles</li><li>16 tiered gold or glass candle holders with ribbon in your color</li><li>Spare batteries and a care card</li></ul></td></tr></tbody></table>
+        <p class="sd-fine" data-until="2026-12-01" style="color:var(--rose);font-style:normal"><b>New rates from Dec 1:</b> ₱1,250 for 10–15 guests and ₱2,500 for 15–30 guests, with either holder. Book before Dec 1 to keep today’s rate.</p>
         <p class="sd-fine">24-hour rental. Refundable security deposit and delivery are separate.</p><p class="sd-diy">DIY setup only: we deliver the pieces and you set up the table yourself with our care card. Setup service isn’t available for this style.</p>
         <a class="sd-btn" href="book.html?style=fd">Book this style</a>
       </div>
@@ -142,6 +143,7 @@ b.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:tr
 <script>window.addEventListener('DOMContentLoaded',function(){var box=document.getElementById('sdCols');if(!box)return;var all=[];(window.RUNNER_GROUPS||[]).forEach(function(g){g.items.forEach(function(r){all.push(r)})});
 box.innerHTML=all.map(function(r){return '<i title="'+r.name+'" style="background:'+r.hex+'"></i>'}).join('');});</script>
 <script src="runners-data.js?v=20261117a"></script>
-<script src="site.js?v=20261119u"></script>
+<script src="site.js?v=20261123b"></script>
+<script>document.querySelectorAll("tr.px").forEach(function(r){r.addEventListener("click",function(){var d=r.nextElementSibling;d.hidden=!d.hidden;r.classList.toggle("on");});});</script>
 </body>
 </html>

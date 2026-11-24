@@ -917,3 +917,6 @@ section.quote.is-details{padding-top:28px}
 
 .ts-diy{display:block;margin-top:6px;font-size:13px;font-style:italic;color:#6B4F3F}
 .sd-diy{margin-top:6px;font-size:14px;font-style:italic;color:#6B4F3F}
+
+.q-check.q-swap{border:1.5px solid #E7A9BE;background:#FCEEF3}.q-check.q-swap b{color:#A85F6D}
+.q-ala-tg{min-width:96px;min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--sage-deep);background:transparent;color:var(--sage-deep);font:600 13px var(--sans);letter-spacing:.06em;cursor:pointer}.q-ala-tg.on{background:var(--sage-deep);color:#fff}.q-ala-tg:disabled{opacity:.45;cursor:default}

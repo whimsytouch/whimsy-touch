@@ -162,13 +162,13 @@ var WT = (function () {
   if (!root || !window.RUNNER_GROUPS) return;
   var BASE = [500, 1000, 2000, 3000], GUESTS = ['2 guests', '10–15 guests', '15–30 guests', '30–40 guests'];
   var FD = { tiered: [60, 150, 250], glass: [100, 250, 500] }, FB = [700, 1200, 2000];
-  // Full Bloom price change: bookings made from Dec 1, 2026 use the new rates (10–15 ₱2,500 · 15–30 ₱4,500)
-  (function () { var d = new Date(), t = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); if (t >= 20261201) { FB = [700, 1500, 2500]; FD = { tiered: [60, 500, 500], glass: [100, 500, 500] }; } })();   // Fairy Dust from Dec 1: ₱1,500 (10–15) / ₱2,500 (15–30), either holder
+  // Full Bloom price change: bookings made from Dec 1, 2026 use the new rate (10–15 ₱2,500 · 15–30 stays ₱4,000)
+  (function () { var d = new Date(), t = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); if (t >= 20261201) { FB = [700, 1500, 2000]; FD = { tiered: [60, 250, 500], glass: [100, 250, 500] }; } })();   // Fairy Dust from Dec 1: ₱1,250 (10–15) / ₱2,500 (15–30), either holder
   var TAPER = [50, 150, 200, 400], GM = [1000, 1500, 2000], LAYER_PER_RUNNER = 100;
   // layering: ₱100 for every runner in the gathering
   function layerFee(t) { if (s.pic) return PIC.layer; return LAYER_PER_RUNNER * WT.nr(s.runner != null ? RUN[s.runner] : null, t); }
   var ALA = [
-    { id: 'cakestand', name: 'Gold cake stand', set: '25 cm wide × 20 cm tall', price: 100 },
+    { id: 'cakestand', name: 'Gold cake stand', set: '25 cm wide × 20 cm tall', price: 100, max: 1 },
     { id: 'napbow', name: 'Pink bow disposable napkins', set: 'pack of 10', price: 30 },
     { id: 'napflo', name: 'Floral disposable napkins', set: 'pack of 10', price: 30 }
   ], ALA_DEP = 200;
@@ -269,8 +269,9 @@ var WT = (function () {
   var AV = null, avDate = '', avBusy = false, avLost = '', avAt = 0;
   // delivery (Full Bloom / Fairy Godmother): zone check runs in the bookings sheet
   var DLV = null, DLVP = null, dlvBusy = false, dlvFor = '';
-  function needsDelivery() { return !s.alc && s.gm && !s.pic; }  // only Fairy Godmother has a computed delivery fee; everyone else pays our rider the Grab rate on the day
-  var ZONE_NAME = { buhangin: 'Buhangin', lanang: 'Roxas–Lanang–Indangan' };
+  function needsDelivery() { return !s.alc && s.gm; }  // only Fairy Godmother has a computed delivery fee; everyone else pays our rider the Grab rate on the day
+  var ZONE_NAME = { buhangin: 'Buhangin', lanang: 'Roxas–Lanang–Indangan', picnic: 'Crocodile Park–Azuela–Indangan' };
+  function freeArea() { return s.pic ? 'Crocodile Park–Azuela–Indangan' : 'Roxas–Lanang–Indangan'; }
   var DLV_PER_KM = 25, DLV_MAX_KM = 20;   // venues outside Roxas–Lanang–Indangan: per km past it, each way; farther = message us
   // price of ONE trip (drop-off or pickup) for a checked location; null = too far, message us
   function tripPrice(q) {
@@ -281,7 +282,7 @@ var WT = (function () {
   }
   function tripWhere(q) {
     if (q.zone !== 'outside') return ZONE_NAME[q.zone];
-    return q.km <= DLV_MAX_KM ? q.km + ' km past Roxas–Lanang–Indangan, ' + WT.peso(DLV_PER_KM) + '/km' : 'over ' + DLV_MAX_KM + ' km past Roxas–Lanang–Indangan';
+    return q.km <= DLV_MAX_KM ? q.km + ' km past ' + freeArea() + ', ' + WT.peso(DLV_PER_KM) + '/km' : 'over ' + DLV_MAX_KM + ' km past ' + freeArea();
   }
   function fmt12(tm) { if (!/^\d{1,2}:\d{2}/.test(tm || '')) return ''; var h = +tm.split(':')[0]; return (h % 12 || 12) + ':' + tm.split(':')[1] + ' ' + (h < 12 ? 'AM' : 'PM'); }
   // Extra rental days: 30% of the tablescape price for every day after the first 24 hours
@@ -428,14 +429,14 @@ var WT = (function () {
   var CLD = { price: 3000, deposit: 500, runners: 2, colors: ['Pearl White', 'Blush Pink', 'Sage Green', 'Ruby Red', 'Buttercup Yellow', 'Midnight Black'], img: 'img/cld-main.jpg' };
   if (/[?&]special=calla\b/.test(location.search)) { s.cld = true; s.tier = 2; }
   // Whimsy Picnic: up to 8 guests, 1 runner, one picnic a day, pickup at Deca Cabantian (delivery on request, subject to availability; Fairy Godmother within the picnic area)
-  var PIC = { price: 4000, deposit: 800, gm: 2000, table: 300, cloth: 100, layer: 100, img: { gerbera: 'img/pic-main-1.jpg', roses: 'img/pic-brown-1.jpg' } };
+  var PIC = { price: 4000, deposit: 800, gm: 1500, table: 300, cloth: 100, layer: 100, img: { gerbera: 'img/pic-main-1.jpg', roses: 'img/pic-brown-1.jpg' } };
   function picBooked() { return !!(AV && (AV.picnic || 0) >= 1); }
   // Tablescape styles (Book a Table step 1). ?style=std|fd|fb|calla picks one from the Tablescapes page.
   var STYLE_NAME = { none: 'Standard Whimsy', fd: 'Fairy Dust', fb: 'Full Bloom' };
   var styleMsg = '';
   (function () { var m = location.search.match(/[?&]style=(std|fd|fb|calla|picnic)\b/); if (!m) return; if (m[1] === 'picnic') { s.pic = true; s.tier = 1; } else if (m[1] === 'calla') { s.cld = true; s.tier = 2; } else { s.cld = false; s.up = m[1] === 'std' ? 'none' : m[1]; } })();
   function pickStyle(k) {
-    styleMsg = '';
+    styleMsg = ''; DLV = null; DLVP = null; dlvFor = '';
     if (k === 'pic') { s.pic = true; s.cld = false; s.tier = 1; s.alc = false; s.up = 'none'; s.taper = false; s.gm = false; return; }
     if (s.pic) { s.pic = false; s.gm = false; s.layer = false; s.runner2 = null; }
     if (k === 'cld') { s.cld = true; s.tier = 2; s.alc = false; s.up = 'none'; s.layer = false; s.runner2 = null; s.taper = false; return; }
@@ -443,8 +444,8 @@ var WT = (function () {
     s.alc = false; s.up = k; if (k !== 'fb') s.gm = false; if (k !== 'none' && s.tier === 3) s.tier = 2;
   }
   function fbFaux() { return SPECIAL_LINK && !!avDate && avDate === FB_FAUX.date; }
-  // Full Bloom goes up on bookings made from Dec 1, 2026 (₱2,500 for 10–15, ₱4,500 for 15–30)
-  var FB_NEW = { from: '2026-12-01', price: [700, 1500, 2500] };
+  // Full Bloom goes up on bookings made from Dec 1, 2026 (₱2,500 for 10–15; 15–30 stays ₱4,000)
+  var FB_NEW = { from: '2026-12-01', price: [700, 1500, 2000] };
   function fbList() { return todayStr_() >= FB_NEW.from ? FB_NEW.price : FB; }
   function fbPrice(t) { return fbFaux() ? FB_FAUX.price[t] : fbList()[t]; }
   function fbOpen() { return !avDate || fbFaux() || !FB_CLOSED.some(function (r) { return avDate >= r[0] && avDate <= r[1]; }); }
@@ -484,7 +485,14 @@ var WT = (function () {
       minus.addEventListener('click', function () { s.ala[it.id] = Math.max(0, q - 1); render(); });
       var num = WT.el('b', '', String(q));
       var full = !!avDate && shortList(it.id).some(function (x) { return x[0] === SETS[it.id][0]; });
-      var plus = WT.el('button', '', '+'); plus.type = 'button'; plus.setAttribute('aria-label', 'Add one ' + it.name); plus.disabled = q >= 10 || (s.alc && !avDate) || full;
+      if (it.max === 1) {   // only one piece: a simple add / remove toggle
+        if (full && !q) row.classList.add('q-ala-full');
+        var tg = WT.el('button', 'q-ala-tg' + (q ? ' on' : ''), q ? 'Added ✓' : (full ? 'Booked' : 'Add')); tg.type = 'button'; tg.setAttribute('aria-pressed', q ? 'true' : 'false');
+        tg.disabled = !q && ((s.alc && !avDate) || full);
+        tg.addEventListener('click', function () { s.ala[it.id] = q ? 0 : 1; render(); });
+        row.appendChild(tg); ab.appendChild(row); return;
+      }
+      var plus = WT.el('button', '', '+'); plus.type = 'button'; plus.setAttribute('aria-label', 'Add one ' + it.name); plus.disabled = q >= (it.max || 10) || (s.alc && !avDate) || full;
       if (full) row.classList.add('q-ala-full');
       plus.addEventListener('click', function () { s.ala[it.id] = q + 1; render(); });
       st.appendChild(minus); st.appendChild(num); st.appendChild(plus); row.appendChild(st); ab.appendChild(row);
@@ -584,11 +592,11 @@ var WT = (function () {
     var stB = $('qStyle');
     if (stB) {
       stB.innerHTML = '';
-      [['none', 'Standard Whimsy', 'img/ts-std-1-s.jpg', 'from ' + WT.peso(BASE[1]), shortGoldOut && t < 3 && !(tieredOut && glassOut)],
-       ['fd', 'Fairy Dust', 'img/ts-fd-1-s.jpg', 'from ' + WT.peso(BASE[1] + FD.tiered[1]), false],
-       ['fb', 'Full Bloom', 'img/ts-fb-1-s.jpg', t === 3 ? 'not available for 30–40 guests' : !fbOpen() ? 'not available on ' + niceDate(avDate) : fbItemsOut ? 'fully booked on ' + niceDate(avDate) : 'from ' + WT.peso(BASE[1] + fbPrice(1)) + (fbFaux() ? ' · special' : ''), t === 3 || !fbOpen() || fbItemsOut],
+      [['pic', 'Whimsy Picnic', 'img/pic-main-1-s.jpg', picBooked() ? 'fully booked on ' + niceDate(avDate) : WT.peso(PIC.price) + ' · up to 8', picBooked()],
        ['cld', 'Calla Lily Dream', 'img/cld-main-s.jpg', WT.peso(CLD.price) + ' · special', false],
-       ['pic', 'Whimsy Picnic', 'img/pic-main-1-s.jpg', picBooked() ? 'fully booked on ' + niceDate(avDate) : WT.peso(PIC.price) + ' · up to 8', picBooked()]].forEach(function (x) {
+       ['fb', 'Full Bloom', 'img/ts-fb-1-s.jpg', t === 3 ? 'not available for 30–40 guests' : !fbOpen() ? 'not available on ' + niceDate(avDate) : fbItemsOut ? 'fully booked on ' + niceDate(avDate) : 'from ' + WT.peso(BASE[1] + fbPrice(1)) + (fbFaux() ? ' · special' : ''), t === 3 || !fbOpen() || fbItemsOut],
+       ['fd', 'Fairy Dust', 'img/ts-fd-1-s.jpg', 'from ' + WT.peso(BASE[1] + FD.tiered[1]), false],
+       ['none', 'Standard Whimsy', 'img/ts-std-1-s.jpg', 'from ' + WT.peso(BASE[1]), shortGoldOut && t < 3 && !(tieredOut && glassOut)]].forEach(function (x) {
         var on = x[0] === 'pic' ? !!s.pic : x[0] === 'cld' ? !!s.cld && !s.pic : !s.cld && !s.pic && !s.alc && s.up === x[0];
         var b = WT.el('button', 'st-opt', '<img src="' + x[2] + '" alt=""><span>' + x[1] + '<small>' + x[3] + '</small></span>');
         b.type = 'button'; b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -628,8 +636,8 @@ var WT = (function () {
           sub.appendChild(ri);
         }
       }
-      if (s.up === 'fd' && todayStr_() < '2026-12-01') sub.appendChild(WT.el('p', 'q-note', 'Fairy Dust goes up to ₱1,500 (10–15 guests) and ₱2,500 (15–30 guests), either holder, for bookings made from Dec 1. Book now to keep today’s rate.'));
-      if (s.up === 'fb' && !fbFaux() && todayStr_() < FB_NEW.from) sub.appendChild(WT.el('p', 'q-note', 'Full Bloom goes up to ₱2,500 (10–15 guests) and ₱4,500 (15–30 guests) for bookings made from Dec 1. Book now to keep today’s rate.'));
+      if (s.up === 'fd' && todayStr_() < '2026-12-01') sub.appendChild(WT.el('p', 'q-note', 'Fairy Dust goes up to ₱1,250 (10–15 guests) and ₱2,500 (15–30 guests), either holder, for bookings made from Dec 1. Book now to keep today’s rate.'));
+      if (s.up === 'fb' && !fbFaux() && todayStr_() < FB_NEW.from) sub.appendChild(WT.el('p', 'q-note', 'Full Bloom for 10–15 guests goes up to ₱2,500 for bookings made from Dec 1. Book now to keep today’s rate.'));
       if (s.up === 'fb' && !fbFaux()) {
         var row2 = WT.el('div', 'q-subrow', '<span class="lbl">Placemat</span>');
         row2.appendChild(opt('<img class="pm-thumb" src="img/placemat-gold.jpg" alt="">Sheer Gold', goldMatOut ? 'fully booked on ' + niceDate(avDate) : '', s.mat === 'gold', function () { s.mat = 'gold'; render(); }, goldMatOut && s.mat !== 'gold'));
@@ -661,10 +669,11 @@ var WT = (function () {
     if (s.pic) {
       var clothOut = stockOn && freeOf('Satin tablecloth') < 1;
       if (clothOut) s.picCloth = false;
-      check('Extra wooden table <small style="display:inline">(90 × 60 cm, about 10 kg)</small>', PIC.table, s.picTable, true, '', function (v) { s.picTable = v; });
+      check('<img src="img/pic-table-s.jpg" alt="" style="width:44px;height:44px;object-fit:cover;border-radius:8px;display:inline-block;vertical-align:middle;margin-right:8px">Extra wooden table <small style="display:inline">(90 × 60 cm, about 10 kg)</small>', PIC.table, s.picTable, true, '', function (v) { s.picTable = v; });
       check('White satin tablecloth', PIC.cloth, s.picCloth, !clothOut, 'Fully booked on ' + niceDate(avDate) + '.', function (v) { s.picCloth = v; });
     }
-    if (!s.cld && !s.pic) check('Pink LED taper candles', TAPER[t], s.taper, pinkOk, pinkForced ? 'Our cream candles are fully booked on ' + niceDate(avDate) + ', so your table comes with pink LED taper candles.' : 'Pink candles are fully booked on ' + niceDate(avDate) + '.', function (v) { s.taper = v; }, pinkForced);
+    if (!s.cld && !s.pic) check('🌸 Swap to pink LED taper candles <small style="display:block;font-style:italic;opacity:.75">instead of cream, same number of candles</small>', TAPER[t], s.taper, pinkOk, pinkForced ? 'Our cream candles are fully booked on ' + niceDate(avDate) + ', so your table comes with pink LED taper candles.' : 'Pink candles are fully booked on ' + niceDate(avDate) + '.', function (v) { s.taper = v; }, pinkForced);
+    try { if (!s.cld && !s.pic && eb.lastChild) eb.lastChild.classList.add('q-swap'); } catch (e) {}
     var xw = $('qXday');
     if (xw) {
       if (s.alc || !avDate) { xw.innerHTML = ''; xw._d = ''; }
@@ -702,13 +711,13 @@ var WT = (function () {
       sb.appendChild(opt('I’ll pick it up', 'at Deca Cabantian · I set it up', !s.gm && s.picHow !== 'grab', function () { s.gm = false; s.picHow = 'pickup'; render(); }));
       sb.appendChild(opt('Request delivery', 'subject to availability · Grab Car rate', !s.gm && s.picHow === 'grab', function () { s.gm = false; s.picHow = 'grab'; render(); }));
       sb.appendChild(opt('Fairy Godmother Service', GM_PAUSED ? 'paused for now' : gmOffDay ? 'not available on ' + niceDate(avDate) : 'we bring, set up & pack down · +' + WT.peso(PIC.gm), s.gm, function () { s.gm = true; render(); }, GM_PAUSED || gmOffDay));
-      $('qSetupNote').textContent = s.gm ? 'Only within our picnic area: around Cabantian, Tigatto, Lanang, the airport, Pampanga, Ubalde, Abreeza and Crocodile Park. Add your Google Maps pin on the next step and we’ll confirm.'
+      $('qSetupNote').textContent = s.gm ? 'Only within our picnic area: free delivery between Crocodile Park, Azuela and Indangan. Farther venues are ₱25/km each way, worked out from your Google Maps pin on the next step.'
         : s.picHow === 'grab' ? 'The picnic is pickup only. Delivery is subject to availability, and the delivery fee follows the Grab Car rate for your location. We’ll confirm it with you after you book. You set up the picnic yourself.'
         : 'Pickup only, at Deca Cabantian. The full address is sent once your booking is confirmed. You set up the picnic yourself. The table is about 9 kg.';
     } else {
     sb.appendChild(opt('I’ll set it up', 'DIY setup · with our care card', !s.gm, function () { s.gm = false; render(); }));
     if (gmStyle) sb.appendChild(opt('Fairy Godmother Service', GM_PAUSED ? 'paused for now' : gmOffDay ? 'not available on ' + niceDate(avDate) : t < 3 ? 'we set up & pack down · +' + WT.peso(GM[t]) : 'not available for 30–40 guests', s.gm, function () { s.gm = true; render(); }, GM_PAUSED || !gmOk));
-    $('qSetupNote').textContent = !gmStyle ? 'You’ll set up the table yourself with our care card. Setup is not included with ' + (s.up === 'fd' ? 'Fairy Dust' : 'Standard Whimsy') + '. Fairy Godmother Service (we set it up for you) is only available with Full Bloom and Calla Lily Dream.' : GM_PAUSED ? 'Fairy Godmother Service is paused for now. Every table comes with our care card to guide your setup.' : gmOffDay ? 'Fairy Godmother Service isn’t available on ' + niceDate(avDate) + ', but you can still book your table and set it up yourself with our care card.' : gmOk ? 'Free delivery within Roxas–Lanang–Indangan. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
+    $('qSetupNote').textContent = !gmStyle ? 'You’ll set up the table yourself with our care card. Setup is not included with ' + (s.up === 'fd' ? 'Fairy Dust' : 'Standard Whimsy') + '. Fairy Godmother Service (we set it up for you) is only available with Full Bloom, Calla Lily Dream and the Whimsy Picnic.' : GM_PAUSED ? 'Fairy Godmother Service is paused for now. Every table comes with our care card to guide your setup.' : gmOffDay ? 'Fairy Godmother Service isn’t available on ' + niceDate(avDate) + ', but you can still book your table and set it up yourself with our care card.' : gmOk ? 'Free delivery within Roxas–Lanang–Indangan. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
     }
     // summary
     var lines = [], total = s.alc ? 0 : s.pic ? PIC.price : s.cld ? CLD.price : BASE[t];
@@ -761,7 +770,7 @@ var WT = (function () {
     });
     var depAmt = s.alc ? (alaLines.length ? ALA_DEP : 0) : s.pic ? PIC.deposit : s.cld ? CLD.deposit : (s.up === 'fb' ? [500, 500, 600, 500] : [300, 300, 300, 500])[t];
     if (depAmt) ul.appendChild(WT.el('li', '', '<span>Security deposit<em class="q-inc-note">Refundable</em></span><span>+' + WT.peso(depAmt) + '</span>'));
-    if (s.pic && !s.alc) ul.appendChild(WT.el('li', '', s.gm ? '<span>Delivery &amp; pickup<em class="q-inc-note">With Fairy Godmother Service, within our picnic area</em></span><span>included</span>'
+    if (s.pic && !s.alc && !s.gm) ul.appendChild(WT.el('li', '', s.gm ? ''
       : s.picHow === 'grab' ? '<span>Delivery (requested)<em class="q-inc-note">Subject to availability · fee follows the Grab Car rate</em></span><span>Grab Car rate</span>'
       : '<span>Pickup at Deca Cabantian<em class="q-inc-note">Full address sent once your booking is confirmed</em></span><span>free</span>'));
     else if (!needsDelivery()) ul.appendChild(WT.el('li', '', '<span>Delivery &amp; pickup<em class="q-inc-note">Grab rate, paid to the rider (their QR or cash)</em></span><span>to rider</span>'));
@@ -771,11 +780,11 @@ var WT = (function () {
     var info = $('qDlvInfo');
     var R24 = '';
     var RIDER = 'Our rider delivers and picks up. Before each trip, pay the rider the <b>Grab rate</b> through <b>their QR code</b>, or in <b>exact cash</b> on arrival.';
-    if (s.pic && !s.alc) RIDER = s.gm ? 'Fairy Godmother Service brings the picnic to you and takes it home, <b>within our picnic area</b> only. Please add your venue’s Google Maps pin so we can confirm.'
+    if (s.pic && !s.alc) RIDER = s.gm ? ''
       : s.picHow === 'grab' ? 'The picnic is <b>pickup only</b>. Delivery is <b>subject to availability</b>, and the delivery fee follows the <b>Grab Car rate</b> for your location.'
       : 'Pickup only, at <b>Deca Cabantian</b>. The full address is sent once your booking is confirmed.';
     if (info) info.innerHTML = !needsDelivery() ? RIDER + R24 :
-      'Delivery is <b>free within Roxas–Lanang–Indangan</b>. Farther venues: ' + WT.peso(DLV_PER_KM) + ' per km past it, each way.' + R24;
+      'Delivery is <b>free within ' + freeArea() + '</b>. Farther venues: ' + WT.peso(DLV_PER_KM) + ' per km past it, each way.' + R24;
     var fine = $('qFine');
     if (fine) fine.textContent = needsDelivery() ? (DLV ? 'Includes delivery and the refundable security deposit.' : 'Includes the refundable security deposit.') :
       'Includes the refundable security deposit.';
@@ -814,7 +823,7 @@ var WT = (function () {
     }
     ml.push(first);
     if (R2) ml.push('Layered runner: ' + P(layerFee(t)));
-    if (s.taper) ml.push('Pink LED taper candles: ' + P(TAPER[t]));
+    if (s.taper) ml.push('Pink LED taper candles (swap): ' + P(TAPER[t]));
     if (s.pic && s.picTable) ml.push('Extra wooden table (90 × 60 cm): ' + P(PIC.table));
     if (s.pic && s.picCloth) ml.push('White satin tablecloth: ' + P(PIC.cloth));
     if (s.gm) ml.push('Fairy Godmother Service (setup & pack-down): ' + P(s.pic ? PIC.gm : GM[t]));
@@ -918,7 +927,7 @@ var WT = (function () {
     if (restEl) { restEl.hidden = !mm.rest; if (mm.rest) restEl.innerHTML = '<span>Remaining balance' + (mm.restDue ? ', due ' + mm.restDue : '') + '<small>' + ['rental balance', mm.df ? 'delivery' : '', 'refundable security deposit'].filter(String).join(' + ') + '</small></span><b>' + WT.peso(mm.rest) + '</b>'; }
     var fileIn = document.getElementById('qRcpt'), btn = document.getElementById('qRcptSend'), note = document.getElementById('qRcptNote');
     var pdl = document.getElementById('qPayDlv');
-    if (pdl && s.pic && !s.alc) pdl.innerHTML = s.gm ? '<b>Delivery and setup</b> are included with your Fairy Godmother Service.' : s.picHow === 'grab' ? '<b>Delivery</b> is not included above. It is subject to availability, and the fee follows the Grab Car rate for your location.' : '<b>Pickup</b> is at Deca Cabantian. We’ll send you the full address.';
+    if (pdl && s.pic && !s.alc && !s.gm) pdl.innerHTML = s.gm ? '<b>Delivery and setup</b> are included with your Fairy Godmother Service.' : s.picHow === 'grab' ? '<b>Delivery</b> is not included above. It is subject to availability, and the fee follows the Grab Car rate for your location.' : '<b>Pickup</b> is at Deca Cabantian. We’ll send you the full address.';
     else if (pdl) pdl.innerHTML = needsDelivery() ? (mm.df ? '<b>Delivery</b> (' + WT.peso(mm.df) + ') is included in your remaining balance.' : '<b>Delivery</b> is free for your venue.') :
       '<b>Delivery &amp; pickup</b> are not included above. Before each trip, our rider sends you the Grab fare and <b>their QR code</b>: pay before they head out, or have the <b>exact amount in cash</b> ready. It is never deducted from your security deposit.';
     document.getElementById('qPayCopy').onclick = function () { var b = this; if (navigator.clipboard) navigator.clipboard.writeText('15454836781').then(function () { b.textContent = 'Copied!'; }); };
@@ -967,8 +976,8 @@ var WT = (function () {
   if (dtIn0) dtIn0.addEventListener('change', function () { pickWarn(); });
   document.querySelectorAll('input[name="pickup_when"]').forEach(function (r) { r.addEventListener('change', function () { setTimeout(pickWarn, 0); }); });
   if (pickSame) pickSame.addEventListener('change', function () { document.getElementById('qPickBox').hidden = pickSame.checked; resetDlv(); });
-  function dlvKey() { return venueIn.value.trim() + '|' + (pickupSame() ? '' : pickIn.value.trim()); }
-  function quote(q) { return fetch(window.WT_SHEETS_URL + '?delivery=' + encodeURIComponent(q)).then(function (r) { return r.json(); }).then(function (j) { return j && j.ok ? j : false; }).catch(function () { return false; }); }
+  function dlvKey() { return (s.pic ? 'picnic|' : '') + venueIn.value.trim() + '|' + (pickupSame() ? '' : pickIn.value.trim()); }
+  function quote(q) { return fetch(window.WT_SHEETS_URL + '?delivery=' + encodeURIComponent(q) + (s.pic ? '&zone=picnic' : '')).then(function (r) { return r.json(); }).then(function (j) { return j && j.ok ? j : false; }).catch(function () { return false; }); }
   if (dlvBtn) dlvBtn.addEventListener('click', function () {
     var q = venueIn.value.trim(), pq = pickupSame() ? '' : pickIn.value.trim();
     var bad = !isMapsLink(q) ? venueIn : (!pickupSame() && !isMapsLink(pq)) ? pickIn : null;
@@ -1081,7 +1090,7 @@ var WT = (function () {
     try { mm = buildMessages(ref, new FormData(form)); sheetBody.set('payment_msg', mm.pay); sheetBody.set('confirm_msg', mm.conf); } catch (err) {}
     var dlx = deliveryLine();
     if (dlx) { var pq0 = pickQ(); sheetBody.set('delivery_fee', String(dlx[1])); sheetBody.set('delivery_info', WT.peso(dlx[1]) + ' · ' + dlx[3] + (DLV.km ? ' · venue ' + DLV.km + ' km from ' + (DLV.from || 'edge') : '') + (DLV.place ? ' · ' + DLV.place : '') + (selfReturn() ? '' : pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + pickIn.value.trim() + (pq0 && pq0.place ? ' (' + pq0.place + ')' : '')) + ' · pickup time: ' + pickupText()); }
-    else if (s.pic && !s.alc) { sheetBody.set('delivery_fee', '0'); sheetBody.set('delivery_info', (s.gm ? 'Picnic · Fairy Godmother (within picnic area)' : s.picHow === 'grab' ? 'Picnic · delivery requested (subject to availability, Grab Car rate)' : 'Picnic · pickup at Deca Cabantian') + ' · return: ' + pickupText()); }
+    else if (s.pic && !s.alc && !s.gm) { sheetBody.set('delivery_fee', '0'); sheetBody.set('delivery_info', (s.gm ? 'Picnic · Fairy Godmother (within picnic area)' : s.picHow === 'grab' ? 'Picnic · delivery requested (subject to availability, Grab Car rate)' : 'Picnic · pickup at Deca Cabantian') + ' · return: ' + pickupText()); }
     else { sheetBody.set('delivery_fee', '0'); sheetBody.set('delivery_info', 'Our rider · Grab rate, paid to rider before each trip' + (pickupSame() ? ' · pickup same as venue' : ' · pickup: ' + (pickIn.value.trim() || 'pin to follow')) + ' · pickup time: ' + pickupText()); }
     // Send to the sheet without waiting for Google's reply (the booking is saved on their side either way)
     var toSheet = !window.WT_SHEETS_URL ? Promise.reject(new Error('no sheet'))

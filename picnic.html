@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Pinyon+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261119p">
+<link rel="stylesheet" href="styles.css?v=20261123b">
 </head>
 <body id="top">
 <a class="skip" href="#main">Skip to content</a>
@@ -145,6 +145,8 @@
 .pic-add ul{list-style:none;padding:0;margin:0;text-align:left;border-top:1px solid var(--gold-line);border-bottom:1px solid var(--gold-line)}
 .pic-add li{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:13px 4px;font-family:var(--serif);font-size:19px;border-top:1px dashed rgba(140,110,63,.25)}
 .pic-add li:first-child{border-top:0}
+.pic-add li span{flex:1}
+.pic-addimg{width:64px;height:64px;object-fit:cover;border-radius:12px;flex:none}
 .pic-add li small{display:block;font-style:italic;font-size:15px;color:var(--muted)}
 .pic-add li b{font-weight:600;color:var(--rose);white-space:nowrap}
 .pic-loc{display:inline-block;margin:0 auto 10px;padding:16px 28px 14px;background:var(--card);border:1px solid var(--gold-line);border-radius:18px}
@@ -175,7 +177,7 @@
     <div class="cld-grid">
       <a href="img/pic-main-6.jpg" class="big"><img src="img/pic-main-6-s.jpg" alt="The picnic table with gerberas and taper candles" loading="lazy"></a>
       <a href="img/pic-brown-2.jpg"><img src="img/pic-brown-2-s.jpg" alt="Ivory roses with a rust runner and brown cushions" loading="lazy"></a>
-      <a href="img/pic-yellow-2.jpg" class="more"><img src="img/pic-yellow-2-s.jpg" alt="A yellow runner with gerberas" loading="lazy"><span>+17</span></a>
+      <a href="img/pic-yellow-2.jpg" class="more"><img src="img/pic-yellow-2-s.jpg" alt="A yellow runner with gerberas" loading="lazy"><span>+18</span></a>
       <a href="img/pic-main-2.jpg" hidden></a>
       <a href="img/pic-main-3.jpg" hidden></a>
       <a href="img/pic-main-4.jpg" hidden></a>
@@ -193,6 +195,7 @@
       <a href="img/pic-yellow-3.jpg" hidden></a>
       <a href="img/pic-yellow-4.jpg" hidden></a>
       <a href="img/pic-main-1.jpg" hidden></a>
+      <a href="img/pic-table.jpg" hidden></a>
     </div>
     <p class="pic-colors">Shown with lilac, rust and yellow runners. <b>Available in other colors as well.</b> <a href="runners.html">See all runner colors</a></p>
   </div>
@@ -230,7 +233,7 @@
       <p>Add-ons</p>
       <ul>
         <li><span>Layered runner<small>a second color on top of the first</small></span><b>+₱100</b></li>
-        <li><span>Extra wooden table<small>90 × 60 cm, about 10 kg</small></span><b>+₱300</b></li>
+        <li><img class="pic-addimg" src="img/pic-table-s.jpg" alt="The extra wooden picnic table" loading="lazy"><span>Extra wooden table<small>90 × 60 cm, about 10 kg</small></span><b>+₱300</b></li>
         <li><span>White satin tablecloth</span><b>+₱100</b></li>
       </ul>
     </div>
@@ -244,11 +247,12 @@
       <span class="k">Skip the hassle</span>
       <span class="q">Want us to set it up for you?</span>
       <span class="gm-name">Fairy Godmother Service</span>
-      <span class="p">+₱2,000</span>
+      <span class="p">+₱1,500</span>
       <div class="gm-more" role="button" tabindex="0" aria-expanded="false">
       <p class="l">We bring your picnic, set it all up, then pack it away after.</p>
       <ul>
-        <li><b>Area</b><span>Around Cabantian, Tigatto, Lanang, the airport, Pampanga, Ubalde, Abreeza and Crocodile Park. Send us your Google Maps pin and we’ll confirm.</span></li>
+        <li><b>Included</b><span>Delivery and pickup between Crocodile Park, Azuela and Indangan</span></li>
+        <li><b>₱25/km</b><span>Venues farther out, each way. Send us your Google Maps pin and we’ll confirm.</span></li>
         <li><b>Included</b><span>Bringing it to you, setting it up, packing everything away and taking it home</span></li>
       </ul>
       </div>
@@ -269,7 +273,7 @@
   </div>
 </footer>
 
-<script src="site.js?v=20261119u"></script>
+<script src="site.js?v=20261123b"></script>
 <script>document.querySelectorAll('.gm-more').forEach(function(m){function o(){m.classList.add('open');m.setAttribute('aria-expanded','true');m.closest('.cld-gm').classList.add('is-open');}m.addEventListener('click',o);var h=m.parentNode.querySelector('.gm-hint');if(h)h.addEventListener('click',o);m.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' ')o();});});</script>
 <script>(function(){var L=[].slice.call(document.querySelectorAll('.cld-grid a')),b=document.getElementById('cldLb');if(!b)return;var im=b.querySelector('img'),i=0,x0=null;function sh(k){i=(k+L.length)%L.length;im.src=L[i].href;}
 L.forEach(function(a,k){a.addEventListener('click',function(e){e.preventDefault();sh(k);b.classList.add('on');document.body.style.overflow='hidden';});});

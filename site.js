@@ -161,9 +161,9 @@ var WT = (function () {
   var root = document.getElementById('quote');
   if (!root || !window.RUNNER_GROUPS) return;
   var BASE = [500, 1000, 2000, 3000], GUESTS = ['2 guests', '10–15 guests', '15–30 guests', '30–40 guests'];
-  var FD = { tiered: [60, 150, 250], glass: [100, 250, 500] }, FB = [700, 1200, 2000];
+  var FD = { tiered: [60, 200, 250], glass: [100, 200, 500] }, FB = [700, 1000, 2000];
   // Full Bloom price change: bookings made from Dec 1, 2026 use the new rate (10–15 ₱2,500 · 15–30 stays ₱4,000)
-  (function () { var d = new Date(), t = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); if (t >= 20261201) { FB = [700, 1500, 2000]; FD = { tiered: [60, 250, 500], glass: [100, 250, 500] }; } })();   // Fairy Dust from Dec 1: ₱1,250 (10–15) / ₱2,500 (15–30), either holder
+  
   var TAPER = [50, 150, 200, 400], GM = [1000, 1500, 2000], LAYER_PER_RUNNER = 100;
   // layering: ₱100 for every runner in the gathering
   function layerFee(t) { if (s.pic) return PIC.layer; return LAYER_PER_RUNNER * WT.nr(s.runner != null ? RUN[s.runner] : null, t); }
@@ -445,7 +445,7 @@ var WT = (function () {
   }
   function fbFaux() { return SPECIAL_LINK && !!avDate && avDate === FB_FAUX.date; }
   // Full Bloom goes up on bookings made from Dec 1, 2026 (₱2,500 for 10–15; 15–30 stays ₱4,000)
-  var FB_NEW = { from: '2026-12-01', price: [700, 1500, 2000] };
+  var FB_NEW = { from: '2099-01-01', price: [700, 1000, 2000] };
   function fbList() { return todayStr_() >= FB_NEW.from ? FB_NEW.price : FB; }
   function fbPrice(t) { return fbFaux() ? FB_FAUX.price[t] : fbList()[t]; }
   function fbOpen() { return !avDate || fbFaux() || !FB_CLOSED.some(function (r) { return avDate >= r[0] && avDate <= r[1]; }); }
@@ -592,11 +592,11 @@ var WT = (function () {
     var stB = $('qStyle');
     if (stB) {
       stB.innerHTML = '';
-      [['pic', 'Whimsy Picnic', 'img/pic-main-1-s.jpg', picBooked() ? 'fully booked on ' + niceDate(avDate) : WT.peso(PIC.price) + ' · up to 8', picBooked()],
-       ['cld', 'Calla Lily Dream', 'img/cld-main-s.jpg', WT.peso(CLD.price) + ' · special', false],
+      [['cld', 'Calla Lily Dream', 'img/cld-main-s.jpg', WT.peso(CLD.price) + ' · special', false],
        ['fb', 'Full Bloom', 'img/ts-fb-1-s.jpg', t === 3 ? 'not available for 30–40 guests' : !fbOpen() ? 'not available on ' + niceDate(avDate) : fbItemsOut ? 'fully booked on ' + niceDate(avDate) : 'from ' + WT.peso(BASE[1] + fbPrice(1)) + (fbFaux() ? ' · special' : ''), t === 3 || !fbOpen() || fbItemsOut],
        ['fd', 'Fairy Dust', 'img/ts-fd-1-s.jpg', 'from ' + WT.peso(BASE[1] + FD.tiered[1]), false],
-       ['none', 'Standard Whimsy', 'img/ts-std-1-s.jpg', 'from ' + WT.peso(BASE[1]), shortGoldOut && t < 3 && !(tieredOut && glassOut)]].forEach(function (x) {
+       ['none', 'Standard Whimsy', 'img/ts-std-1-s.jpg', 'from ' + WT.peso(BASE[1]), shortGoldOut && t < 3 && !(tieredOut && glassOut)],
+       ['pic', 'Whimsy Picnic', 'img/pic-main-1-s.jpg', picBooked() ? 'fully booked on ' + niceDate(avDate) : WT.peso(PIC.price) + ' · up to 8', picBooked()]].forEach(function (x) {
         var on = x[0] === 'pic' ? !!s.pic : x[0] === 'cld' ? !!s.cld && !s.pic : !s.cld && !s.pic && !s.alc && s.up === x[0];
         var b = WT.el('button', 'st-opt', '<img src="' + x[2] + '" alt=""><span>' + x[1] + '<small>' + x[3] + '</small></span>');
         b.type = 'button'; b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -636,8 +636,6 @@ var WT = (function () {
           sub.appendChild(ri);
         }
       }
-      if (s.up === 'fd' && todayStr_() < '2026-12-01') sub.appendChild(WT.el('p', 'q-note', 'Fairy Dust goes up to ₱1,250 (10–15 guests) and ₱2,500 (15–30 guests), either holder, for bookings made from Dec 1. Book now to keep today’s rate.'));
-      if (s.up === 'fb' && !fbFaux() && todayStr_() < FB_NEW.from) sub.appendChild(WT.el('p', 'q-note', 'Full Bloom for 10–15 guests goes up to ₱2,500 for bookings made from Dec 1. Book now to keep today’s rate.'));
       if (s.up === 'fb' && !fbFaux()) {
         var row2 = WT.el('div', 'q-subrow', '<span class="lbl">Placemat</span>');
         row2.appendChild(opt('<img class="pm-thumb" src="img/placemat-gold.jpg" alt="">Sheer Gold', goldMatOut ? 'fully booked on ' + niceDate(avDate) : '', s.mat === 'gold', function () { s.mat = 'gold'; render(); }, goldMatOut && s.mat !== 'gold'));
@@ -715,9 +713,9 @@ var WT = (function () {
         : s.picHow === 'grab' ? 'The picnic is pickup only. Delivery is subject to availability, and the delivery fee follows the Grab Car rate for your location. We’ll confirm it with you after you book. You set up the picnic yourself.'
         : 'Pickup only, at Deca Cabantian. The full address is sent once your booking is confirmed. You set up the picnic yourself. The table is about 9 kg.';
     } else {
-    sb.appendChild(opt('I’ll set it up', 'DIY setup · with our care card', !s.gm, function () { s.gm = false; render(); }));
+    sb.appendChild(opt('I’ll set it up', 'DIY setup · with our setup guide card', !s.gm, function () { s.gm = false; render(); }));
     if (gmStyle) sb.appendChild(opt('Fairy Godmother Service', GM_PAUSED ? 'paused for now' : gmOffDay ? 'not available on ' + niceDate(avDate) : t < 3 ? 'we set up & pack down · +' + WT.peso(GM[t]) : 'not available for 30–40 guests', s.gm, function () { s.gm = true; render(); }, GM_PAUSED || !gmOk));
-    $('qSetupNote').textContent = !gmStyle ? 'You’ll set up the table yourself with our care card. Setup is not included with ' + (s.up === 'fd' ? 'Fairy Dust' : 'Standard Whimsy') + '. Fairy Godmother Service (we set it up for you) is only available with Full Bloom, Calla Lily Dream and the Whimsy Picnic.' : GM_PAUSED ? 'Fairy Godmother Service is paused for now. Every table comes with our care card to guide your setup.' : gmOffDay ? 'Fairy Godmother Service isn’t available on ' + niceDate(avDate) + ', but you can still book your table and set it up yourself with our care card.' : gmOk ? 'Free delivery within Roxas–Lanang–Indangan. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
+    $('qSetupNote').textContent = !gmStyle ? 'You’ll set up the table yourself with our setup guide card. Setup is not included with ' + (s.up === 'fd' ? 'Fairy Dust' : 'Standard Whimsy') + '. Fairy Godmother Service (we set it up for you) is only available with Full Bloom, Calla Lily Dream and the Whimsy Picnic.' : GM_PAUSED ? 'Fairy Godmother Service is paused for now. Every table comes with our setup guide card to guide your setup.' : gmOffDay ? 'Fairy Godmother Service isn’t available on ' + niceDate(avDate) + ', but you can still book your table and set it up yourself with our setup guide card.' : gmOk ? 'Free delivery within Roxas–Lanang–Indangan. Farther venues have a delivery fee, shown when you enter your venue.' : (t < 3 ? 'Fairy Godmother Service is available with Full Bloom.' : '');
     }
     // summary
     var lines = [], total = s.alc ? 0 : s.pic ? PIC.price : s.cld ? CLD.price : BASE[t];
@@ -736,7 +734,7 @@ var WT = (function () {
     incG.push(NT + ' ' + (s.taper ? 'pink' : 'cream') + ' LED taper candles');
     incG.push(s.up === 'none' ? NT + ' gold candle holders' : holderTxt);
     if (s.up === 'fb') incG.push.apply(incG, fbFaux() ? [s.nap === 'red' ? 'Red satin napkins with gold rings' : 'White cloth napkins with leaf rings'] : [(s.mat === 'gold' ? 'Sheer gold' : 'Jute') + ' placemats', s.nap === 'red' ? 'Red satin napkins with gold rings' : 'White cloth napkins with leaf rings', 'Printed name cards with your guests’ names']);
-    incG.push('Spare batteries and a care card');
+    incG.push('Spare batteries and a setup guide card');
     incG.push('24-hour rental, starting when you receive the items');
     if (s.pic) {
       incG = ['Low wooden picnic table', 'Waterproof picnic mat with a soft picnic blanket on top', '8 brown seat cushions', R ? (R2 ? 'Layered runners: ' + R.name + ' + ' + R2.name : '1 runner in ' + runnerName) : '1 runner',
@@ -745,7 +743,7 @@ var WT = (function () {
       lines.push(['Whimsy Picnic (up to 8 guests)', PIC.price, incG, 'Food, paper plates and tableware (glasses and cutlery) not included']);
     } else if (s.cld) {
       incG = [CLD.runners + ' runners' + (R ? ' in ' + R.name : ''), '9 glass vases: 4 with calla lilies (3 each), 5 with carnations (3 each)', '10 cream LED taper candles in glass holders',
-        '9 LED pillar candles on black stands', 'Table napkins for up to 20 guests', 'Printed name cards in holders for up to 20 guests, with your guests’ names', 'Spare batteries and a care card', '24-hour rental, starting when you receive the items'];
+        '9 LED pillar candles on black stands', 'Table napkins for up to 20 guests', 'Printed name cards in holders for up to 20 guests, with your guests’ names', 'Spare batteries and a setup guide card', '24-hour rental, starting when you receive the items'];
       lines.push(['Calla Lily Dream (special setup)', CLD.price, incG, 'Tableware (plates, glasses and cutlery) not included']);
     } else
     lines.push([(s.up === 'none' ? 'Standard Whimsy · ' : '') + GUESTS[t] + ' · ' + WT.TIERS[t] + ' gathering', BASE[t], s.up === 'none' ? incG : null, null, s.up === 'none' ? 'Standard Whimsy · ' + GUESTS[t] : 'Table for ' + GUESTS[t]]);

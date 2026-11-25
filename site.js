@@ -164,7 +164,7 @@ var WT = (function () {
   var FD = { tiered: [60, 200, 250], glass: [100, 200, 500] }, FB = [700, 1000, 2000];
   // Full Bloom price change: bookings made from Dec 1, 2026 use the new rate (10–15 ₱2,500 · 15–30 stays ₱4,000)
   
-  var TAPER = [50, 150, 200, 400], GM = [1000, 1500, 2000], LAYER_PER_RUNNER = 100;
+  var TAPER = [50, 150, 300, 450], GM = [1000, 1500, 2000], LAYER_PER_RUNNER = 100;
   // layering: ₱100 for every runner in the gathering
   function layerFee(t) { if (s.pic) return PIC.layer; return LAYER_PER_RUNNER * WT.nr(s.runner != null ? RUN[s.runner] : null, t); }
   var ALA = [
